@@ -1,0 +1,170 @@
+/**
+ * Created by maneptha on 24-Feb-15.
+ */
+
+module.exports = function (grunt) {
+  "use strict";
+
+  require('load-grunt-tasks')(grunt);
+
+  grunt.initConfig({
+
+    uglify: {
+      deploy: {
+        options: {
+          sourceMap: true
+        },
+        files: {
+          'libs/compiled.min.js': ['libs/compiled-temp.js']
+        }
+      },
+
+      admin_academics: { //jshint ignore: line
+        options: {
+          sourceMap: true
+        },
+        files: {
+          'admin_academics/home/js/home-bundle.min.js': 'admin_academics/home/js/home-bundle.js'
+        }
+      }
+    },
+
+    concat: {
+      deploy: {
+        options: {separator: ';\n'},
+        files: {
+          'libs/compiled-temp.js': [
+            'libs/jquery/dist/jquery.js',
+            'libs/moment/min/moment.min.js',
+            'libs/bootstrap/js/bootstrap.js',
+            'libs/jquery-ui-autocomplete.min.js',
+            'libs/jquery.slimscroll.min.js',
+            'libs/jquery.easing.min.js',
+            'libs/underscore.min.js',
+            'libs/mustache.min.js',
+            'libs/mutation-summary/mutation-summary.js',
+            'libs/formValidation/js/formValidation.js',
+            'libs/formValidation/js/framework/bootstrap.js',
+            'libs/ajax-alert/dist/js/ajax-alert.min.js',
+            'libs/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',
+            'libs/appear/jquery.appear.js',
+            'libs/jquery.placeholder.js',
+            'libs/fastclick.js',
+            'libs/offscreen.js',
+            'libs/main.js',
+            'libs/bootstrap-validator.js',
+            'libs/number-format.js'
+          ]
+        }
+        
+      },
+
+      'admin_academics': {
+        options: {separator: ';'},
+        files: {
+          'admin_academics/home/js/home-bundle.js': [
+            'admin_academics/home/js/home.js',
+            'admin_academics/semester/js/*.js',
+            'admin_academics/academic_session/js/*.js'
+          ]
+        }
+      }
+    },
+
+    watch: {
+      'admin_academics': {
+        options: {
+          livereload: true
+        },
+
+        files: [
+          'admin_academics/home/js/home.js',
+          'admin_academics/semester/js/*.js',
+          'admin_academics/academic_session/js/*.js',
+          'admin_academics/courses/*'
+        ],
+
+        tasks: [
+          'browserify:admin_academics',
+          'uglify:admin_academics'
+        ]
+      }
+    },
+
+    browserify: {
+      options: {
+        alias: [
+          './libs/date-time-picker.js:dateTimePicker'
+        ]
+      },
+
+      admin_academics: { // jshint ignore: line
+        options: {
+          alias: [
+            './admin_academics/home/js/session-validation-callback.js:sessionValidationCb',
+            './admin_academics/home/js/session-auto-complete-setting.js:sessionAutoCompleteSetting',
+            './libs/date-time-picker.js:dateTimePicker',
+            './libs/getFormData.js:getFormData'
+          ]
+        },
+        files: {
+          'admin_academics/home/js/home-bundle.js': [
+            'admin_academics/home/js/home.js',
+            'admin_academics/semester/js/semester.js',
+            'admin_academics/academic_session/js/session.js'
+          ]
+        }
+      }
+    },
+
+    clean: {
+      deploy: {
+        src: ['./../deploy/*']
+      }
+    },
+
+    cssmin: {
+      combine: {
+        options: {
+          shorthandCompacting: false,
+          roundingPrecision: -1
+        },
+        files: {
+          'libs/css/compiled.css': [
+            'libs/bootstrap/css/bootstrap.min.css',
+            'libs/css/themify-icons.css',
+            'libs/css/animate.min.css',
+            'libs/css/jquery-ui-autocomplete.min.css',
+            'libs/formValidation/css/formValidation.min.css',
+            'libs/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css',
+            'libs/css/skins/palette.css',
+            'libs/css/main.css'
+          ]
+        }
+      },
+      deploy: {
+        options: {
+          sourceMap: true, s0: true
+        },
+        files: [{
+          expand: true,
+          src: ['libs/css/compiled.css'],
+          //dest: 'libs/css',
+          ext: '.min.css'
+        }]
+      }
+    },
+
+    less: {
+      deploy: {
+        files: {
+          "libs/css/compiled.min.css": "libs/css/compiled.css"
+        }
+      }
+    }
+
+  });
+
+  grunt.registerTask('dist-js', 'uglify');
+  grunt.registerTask('deploy', ['cssmin:combine', 'cssmin:deploy', 'concat:deploy', 'uglify:deploy']);
+};

@@ -1,0 +1,1 @@
+ALTER TABLE `semester` ADD UNIQUE( `start_date`, `end_date`);

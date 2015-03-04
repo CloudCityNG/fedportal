@@ -1,0 +1,51 @@
+<div class="img-and-name media">
+  <a class="pull-left" href="">
+    <img class="media-object" width="120px"
+         src="{{ student.photo }}"
+         alt="{{ student.names }}"/>
+  </a>
+
+  <div class="media-body">
+    <div><strong>NAMES:</strong> {{ student.names }}</div>
+
+    <div><strong>MATRIC NO:</strong> {{ regNo }}</div>
+
+    <div><strong>DEPARTMENT:</strong> {{ student.dept_name }}</div>
+
+    <div><strong>LEVEL:</strong> {{ student.level }}</div>
+
+    <div>
+      <strong>TOTAL OWING:</strong> {{ student.owing }}
+    </div>
+  </div>
+</div>
+
+<table class=" table table-bordered table-striped table-condensed">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>When Payment Registered</th>
+      <th>Amount Paid</th>
+      <th>Receipt No.</th>
+      <th>Remark</th>
+    </tr>
+  </thead>
+
+  <tbody>
+      {{#billsHistory}}
+
+        <tr>
+          <td>{{ idx }}</td>
+
+          <td>{{ created_at }}</td>
+
+          <td align="right">{{#formatAmount}}{{amount}}{{/formatAmount}} </td>
+
+          <td>{{ receipt_no }}</td>
+
+          <td>{{ remark }}</td>
+        </tr>
+
+      {{/billsHistory}}
+  </tbody>
+</table>

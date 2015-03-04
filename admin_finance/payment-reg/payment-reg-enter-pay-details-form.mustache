@@ -1,0 +1,113 @@
+<div class="pay-details">
+  <table class="img-and-name">
+    <tbody>
+      <tr>
+        <td>
+          <img src="{{ receive_payment.student.photo }}" alt="{{ receive_payment.student.names }}"/>
+        </td>
+
+        <td class="names">
+          <div>
+            <div><strong>NAMES: </strong> {{ receive_payment.student.names }}</div>
+
+            <div><strong>MATRIC NO: </strong> {{ receive_payment.reg_no }}</div>
+
+            <div><strong>DEPARTMENT: </strong> {{ receive_payment.student.dept_name }}</div>
+
+            <div><strong>LEVEL:</strong> {{ receive_payment.student.level }}</div>
+
+            <div>
+              <strong>TOTAL OWING: </strong> NGN {{receive_payment.student.owing}}
+
+              <span id="amount-owing" style="display: none">{{receive_payment.student.owing}}</span>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <form class="payment-reg-enter-pay-details-form">
+    <input type="hidden" name="student_payment[reg_no]"
+           value="{{ receive_payment.reg_no }}"/>
+
+    <input type="hidden" name="student_payment[dept_code]" value="{{ receive_payment.student.dept_code }}"/>
+
+    <input type="hidden" name="student_payment[level]" value="{{ receive_payment.student.level }}"/>
+
+    <input type="hidden" name="student_payment[amount]" id="amount"/>
+
+    <fieldset>
+      <legend>Enter Details of Payment Received From Student</legend>
+
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="amount-text">Amount Received</label>
+
+        <div class="input-group col-sm-9">
+          <span class="input-group-addon">NGN</span>
+
+          <input class="form-control" id="amount-text" name="amount-text"
+                 required data-native-error="Invalid amount"
+                 maxlength="10"
+                 pattern="\d+(?:,\d+)*(?:\.\d{0,})?"/>
+        </div>
+
+        <div class="text-center help-block with-errors"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="receipt-no">Receipt Number</label>
+
+        <div class="input-group col-sm-9">
+          <span class="input-group-addon">#</span>
+
+          <input class="form-control" name="student_payment[receipt_no]"
+                 id="receipt-no" data-minlength-error="Invalid receipt number"
+                 required data-native-error="Invalid receipt number" data-minlength="3"/>
+        </div>
+
+        <div class="text-center help-block with-errors"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="remark">Remark</label>
+
+        <div class="input-group col-sm-9">
+          <?php $default_remark = "Payment received for $receive_payment->academic_year session, $level." ?>
+
+          <textarea class="form-control" name="student_payment[remark]"
+                    id="remark"><?php echo $default_remark ?></textarea>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="academic_year">Academic Year</label>
+
+        <div class="input-group col-sm-9">
+          <select class="form-control" name="student_payment[academic_year]" id="academic_year">
+            <option value="<?php echo $receive_payment->academic_year ?>">
+              <?php echo $receive_payment->academic_year ?>
+            </option>
+
+            <?php
+                          foreach ($receive_payment->past_academic_years as $past_year) {
+
+            echo "
+            <option value='$past_year'>$past_year</option>
+            ";
+            }
+            ?>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="text-center">
+      <button class="btn btn-lg btn-success" type="submit"
+              name="process-pay-details-received-from-student-submit"
+              id="process-pay-details-received-from-student-submit">
+        Register Payment
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,44 @@
+form {
+  border: 1px solid #D8D8D8;
+  padding: 15px;
+  box-sizing: content-box;
+  background-color: #EDEDED;
+  border-radius: 5px;
+}
+
+.reg-no-form-group {
+  & > .help-block {
+    display: inline;
+
+    & * {
+      display: inline;
+    }
+  }
+}
+
+.payment-history-data-container {
+  margin-top: 30px;
+  border: 1px solid #D9D9D9;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #B2B3C3;
+
+  & > .img-and-name {
+    color: #ffffff;
+    margin-bottom: 20px;
+  }
+
+  & > .table-striped {
+    & > thead {
+      background-color: #DEDEDE;
+    }
+
+    & > tbody {
+      & > tr {
+        &:nth-child(even) {
+          background-color: #DEDEDE;
+        }
+      }
+    }
+  }
+}

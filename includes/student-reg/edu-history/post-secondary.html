@@ -1,0 +1,73 @@
+<fieldset class="post-secondary">
+  <legend class="text-center">
+    Post Secondary School Details
+  </legend>
+
+  <h5 class="text-center text-warning">
+    Please leave blank if you do not have any details for this section, else you will not be able to submit form!
+  </h5>
+
+  <div class="post-secondary-education history-details">
+    <div class="form-group">
+      <label for="post_secondary_sch_name" class="control-label">Institution Name</label>
+
+      <input class="form-control" type="text" name="post_secondary[name]"
+             id="post_secondary_sch_name" data-minlength="5"
+             data-minlength-error="Institution name too short"/>
+    </div>
+
+    <div class="form-group">
+      <label class="control-label" for="post_secondary_sch_address">Institution Address</label>
+
+      <textarea class="form-control" name="post_secondary[address]"
+                id="post_secondary_sch_address" data-minlength="5"
+                data-minlength-error="Institution address too short" rows="4"
+          ></textarea>
+    </div>
+
+    <div class="row post-secondary-edu-dates">
+      <div class="form-group col-sm-6">
+        <label class="control-label col-sm-4" for="post_secondary_sch_start_date">
+          Start Date
+        </label>
+
+        <div class="col-sm-6">
+          <input class="form-control" type="text" placeholder="dd-mm-yyyy"
+                 name="post_secondary[start_date]" id="post_secondary_sch_start_date"
+                 pattern="\d{1,2}-\d{1,2}-\d{4}" data-native-error="Invalid Date"/>
+        </div>
+      </div>
+
+      <div class="form-group col-sm-6">
+        <label class="control-label col-sm-4" for="post_secondary_sch_end_date">
+          End Date
+        </label>
+
+        <div class="col-sm-6">
+          <input class="form-control" type="text" placeholder="dd-mm-yyyy"
+                 name="post_secondary[end_date]" id="post_secondary_sch_end_date"
+                 pattern="\d{1,2}-\d{1,2}-\d{4}" data-native-error="Invalid Date"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="control-label" for="post_secondary_course_of_study">
+        Course of Study
+      </label>
+
+      <input class="form-control" type="text" placeholder="Bio Chemistry"
+             id="post_secondary_course_of_study" name="post_secondary[course_of_study]"
+          />
+    </div>
+
+    <div class="form-group">
+      <label class="control-label" for="post_secondary_qualification">Qualification
+        Obtained</label>
+      <input class="form-control" type="text" placeholder="B.Ed"
+             id="post_secondary_qualification"
+             name="post_secondary[qualification]"
+          />
+    </div>
+  </div>
+</fieldset>

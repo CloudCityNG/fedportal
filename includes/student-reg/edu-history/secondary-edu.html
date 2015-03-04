@@ -1,0 +1,53 @@
+<fieldset class="secondary-edu">
+  <legend class="text-center">Secondary School Details</legend>
+  <div class="secondary-education history-details">
+    <div class="form-group">
+      <label for="secondary_sch[name]" class="control-label">Secondary School Name</label>
+
+      <input class="form-control" type="text" name="secondary_sch[name]"
+             id="secondary_sch[name]"
+             required data-minlength="5"
+             data-minLength-error="Invalid secondary school name"
+          />
+    </div>
+
+    <div class="form-group">
+      <label class="control-label" for="secondary_sch[address]">Secondary School Address</label>
+
+      <textarea class="form-control" type="text" name="secondary_sch[address]" id="secondary_sch[address]"
+                required data-minlength="5" data-minLength-error="Invalid secondary school address"
+                rows="4"
+          ></textarea>
+    </div>
+
+    <div class="row secondary-sch-dates">
+      <div class="form-group col-sm-6">
+        <label class="control-label col-sm-4" for="secondary_sch[start_date]">Start Date</label>
+
+        <div class="col-sm-6">
+          <input class="form-control" type="text" placeholder="dd-mm-yyyy"
+                 name="secondary_sch[start_date]"
+                 id="secondary_sch[start_date]"
+                 pattern="\d{1,2}-\d{1,2}-\d{4}"
+                 data-native-error="Invalid Date"
+                 required/>
+        </div>
+      </div>
+
+      <div class="form-group col-sm-6">
+        <label class="control-label col-sm-4" for="secondary_sch[end_date]">
+          End Date
+        </label>
+
+        <div class="col-sm-6">
+          <input class="form-control" type="text" placeholder="dd-mm-yyyy"
+                 name="secondary_sch[end_date]"
+                 id="secondary_sch[end_date]"
+                 pattern="\d{1,2}-\d{1,2}-\d{4}"
+                 data-native-error="Invalid Date"
+                 required/>
+        </div>
+      </div>
+    </div>
+  </div>
+</fieldset>

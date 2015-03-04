@@ -1,0 +1,1 @@
+ALTER TABLE course_table CHANGE `title` `title` VARCHAR(300) NOT NULL;

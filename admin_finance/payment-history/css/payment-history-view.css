@@ -1,0 +1,30 @@
+form {
+  border: 1px solid #D8D8D8;
+  padding: 15px;
+  box-sizing: content-box;
+  background-color: #EDEDED;
+  border-radius: 5px;
+}
+.reg-no-form-group > .help-block {
+  display: inline;
+}
+.reg-no-form-group > .help-block * {
+  display: inline;
+}
+.payment-history-data-container {
+  margin-top: 30px;
+  border: 1px solid #D9D9D9;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #B2B3C3;
+}
+.payment-history-data-container > .img-and-name {
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+.payment-history-data-container > .table-striped > thead {
+  background-color: #DEDEDE;
+}
+.payment-history-data-container > .table-striped > tbody > tr:nth-child(even) {
+  background-color: #DEDEDE;
+}

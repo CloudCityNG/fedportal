@@ -1,0 +1,2 @@
+ALTER TABLE `semester` CHANGE `created_at`
+`created_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00';

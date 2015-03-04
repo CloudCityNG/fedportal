@@ -1,0 +1,122 @@
+<div class="row academic-session-view">
+  <div class="panel panel-default current-session-panel">
+    <div class="panel-heading">
+      <h1 class="panel-title">Current Session</h1>
+    </div>
+
+    <div class="panel-body">
+      <form class="form-horizontal academic-session-form current-session-form {{current_session_not_found}}"
+            role="form">
+        <input type="hidden" value="{{ id }}" name="_id"/>
+
+        <fieldset>
+          <div class="form-group">
+            <label class="control-label col-sm-3" for="session">Session</label>
+
+            <div class="col-sm-4">
+              <input disabled class="form-control" name="session" id="session" value="{{ session }}" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="control-label col-sm-3" for=start_date>Start Date</label>
+
+            <div class="col-sm-4">
+              <div class="input-group date show-date-picker">
+                <input disabled class="form-control" name="start_date"
+                       required id="start_date" value="{{ start_date }}"/>
+
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+              </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="control-label col-sm-3" for=end_date>End Date</label>
+
+            <div class="col-sm-4">
+              <div class="input-group date show-date-picker">
+                <input disabled class="form-control date-picker" name="end_date"
+                       required id="end_date" value="{{ end_date }}"/>
+
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+              </span>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="row">
+          <div class="current-session-form-btn col-sm-4 col-sm-offset-3">
+            <button class="btn btn-default" type="submit" name="current-session-form-submit">
+              Edit Current Session
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel-footer">
+       <span class="glyphicon glyphicon-edit current-session-edit-trigger"
+             data-toggle="tooltip" title="Edit current session"
+             id="session-form-edit-icon1"></span>
+    </div>
+  </div>
+
+  <div class="col-sm-8">
+    <form class="form-horizontal academic-session-form new-session-form" role="form">
+      <fieldset>
+        <legend class="clearfix">
+          <span class="pull-left">Create New Session</span>
+        </legend>
+
+        <div class="form-group">
+          <label class="control-label col-sm-4" for="new-session">Session</label>
+
+          <div class="col-sm-5">
+            <input class="form-control" name="session" id="new-session" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="control-label col-sm-4" for=new-session-start-date>Start Date</label>
+
+          <div class="col-sm-5">
+            <div class="input-group show-date-picker date">
+              <input class="form-control" name="start_date" required id="new-session-start-date"/>
+
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="control-label col-sm-4" for=new-session-end-date>End Date</label>
+
+          <div class="col-sm-5">
+            <div class="input-group date show-date-picker">
+              <input class="form-control" name="end_date" required id="new-session-end-date"/>
+
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="row">
+        <div class="new-session-form-btn col-sm-4 col-sm-offset-4">
+          <button class="btn btn-default" type="submit" name="new-session-form-submit">
+            Create New Session
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

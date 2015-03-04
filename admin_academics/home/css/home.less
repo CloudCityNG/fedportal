@@ -1,0 +1,117 @@
+form .has-feedback .form-control-feedback {
+  top: 0;
+  right: -15px;
+}
+
+.content-wrap {
+  position: static;
+}
+
+.app > .layout > section, .app > .layout > aside {
+  position: static;
+}
+
+.main-content {
+  background-color: #ffffff;
+
+  & > .content-wrap {
+    & > .wrapper {
+//      min-height: 500px;
+//      max-width: 1025px;
+      margin: 55px auto 0;
+    }
+  }
+}
+
+.top-info {
+  & > .legend {
+    font-size: 25px;
+    font-family: monospace;
+    color: #6A6A6A;
+  }
+
+  & > .divider {
+    border: 1px solid #D0D0D0;
+    background-color: #EAEAEA;
+    min-height: 38px;
+
+    & > .date-time {
+      background-color: #156779;
+      border-color: #156779;
+      color: #ffffff;
+      display: inline-block;
+      min-height: 38px;
+      padding: 8px;
+      font-size: 12px;
+    }
+  }
+}
+
+.content-area {
+  margin-top: 30px;
+
+  form .has-feedback .form-control-feedback {
+    top: 0;
+    right: -15px;
+  }
+
+  & > .side-bar-navs {
+
+    & .side-nav {
+      border-top: 1px solid #BBB;
+      padding: 8px 0 8px;
+      font-weight: bolder;
+
+      &:last-child {
+        border-bottom: 1px solid #BBB;
+      }
+
+      &.collapsed {
+        font-size: 12px;
+      }
+
+      &.expanded {
+        font-size: 15px;
+        padding-top: 0;
+
+        & > .title {
+          background-color: #EEE;
+          border: 1px solid #D9D9D9;
+          padding: 6px;
+        }
+      }
+
+      & > .title {
+        cursor: pointer;
+        display: block;
+      }
+
+      & > .links {
+        display: none;
+        padding-left: 15px;
+        font-weight: normal;
+        font-size: 11px;
+
+        & > .link {
+          cursor: pointer;
+          display: block;
+          padding: 5px;
+          margin-top: 5px;
+
+          &:hover {
+            color: #E57171;
+            font-weight: bolder;
+          }
+
+          &.selected {
+            border: 1px solid #D8D6D6;
+            background-color: #F8F7F7;
+            color: #E57171;
+            font-weight: bolder;
+          }
+        }
+      }
+    }
+
+  }
+}

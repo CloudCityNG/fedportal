@@ -1,0 +1,5 @@
+# disable directory browsing
+Options -Indexes
+
+#prevent folder listing
+IndexIgnore *
