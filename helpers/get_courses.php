@@ -7,17 +7,33 @@
  */
 
 require_once(__DIR__ . '/databases.php');
+require_once(__DIR__ . '/app_settings.php');
 
 function get_courses($semester_limit = null, $department_limit = null)
 {
-  $semester_limit_text = !$semester_limit ? '' : "where semester = '$semester_limit'";
-
-  $dept_limit_text = !$department_limit ? '' : " and department = '$department_limit' ";
-
   $db = get_db();
 
-  $resource = $db->query(
-    "select * from course_table $semester_limit_text $dept_limit_text");
+  $log = get_logger("get-courses");
+
+  $log->addInfo("semester limit = {$semester_limit}");
+  $log->addInfo("department limit = {$department_limit}");
+
+  if ($semester_limit && $department_limit) {
+    $query = "select * from course_table
+              where department = '$department_limit'
+              and semester = '$semester_limit' ";
+
+  } else if ($semester_limit && !$department_limit) {
+    $query = "select * from course_table where semester = '$semester_limit' ";
+
+  } else if (!$semester_limit && $department_limit) {
+    $query = "select * from course_table where department = '$department_limit' ";
+
+  } else {
+    $query = "SELECT * FROM course_table";
+  }
+
+  $resource = $db->query($query);
 
   $result = [];
 

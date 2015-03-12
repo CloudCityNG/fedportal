@@ -9,5 +9,6 @@ module.exports = function (selector) {
     //viewMode: 'years',
     format: 'DD-MM-YYYY',
     showTodayButton: true
+    //startView: 2
   });
 };

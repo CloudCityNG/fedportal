@@ -6,15 +6,13 @@
  * Time: 1:20 PM
  */
 
-include_once(__DIR__ . '/../databases.php');
+require_once(__DIR__ . '/../databases.php');
 
-include_once(__DIR__ . '/../set_student_reg_form_completion_session.php');
+require_once(__DIR__ . '/../app_settings.php');
 
-include_once(__DIR__ . '/../app_settings.php');
+require_once(__DIR__ . '/AcademicYear.php');
 
-include_once(__DIR__ . '/AcademicYear.php');
-
-include_once(__DIR__ . '/StudentProfile.php');
+require_once(__DIR__ . '/StudentProfile.php');
 
 
 class StudentBilling
@@ -182,11 +180,6 @@ class StudentBilling
       return $rowCount;
 
     } catch (PDOException $e) {
-
-      set_student_reg_form_completion_session(
-        'error', 'Unable to create bill for student. Action aborted!'
-      );
-
       $log->addError("Error occurred while attempting to insert student bill");
 
       $log->addError($e->getMessage());

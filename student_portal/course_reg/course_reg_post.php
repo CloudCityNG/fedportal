@@ -13,7 +13,7 @@ include_once(__DIR__ . '/../../vendor/autoload.php');
 
 include_once(__DIR__ . '/../../helpers/app_settings.php');
 
-include_once(__DIR__ . '/../../helpers/set_student_reg_form_completion_session.php');
+require_once(__DIR__ . '/../home/set_student_reg_form_completion_session.php');
 
 include_once(__DIR__ . '/../../helpers/models/StudentBilling.php');
 
@@ -57,7 +57,7 @@ class CourseRegistration
 
       } else {
 
-        set_student_reg_form_completion_session('error', 'Did you forget to select your courses?');
+        set_student_reg_form_completion_session1('error', 'Did you forget to select your courses?');
 
         $this->redirect_to_dashboard();
         return;
@@ -114,7 +114,7 @@ class CourseRegistration
 
       $log->addError($e->getMessage());
 
-      set_student_reg_form_completion_session(
+      set_student_reg_form_completion_session1(
         'error',
 
         "Something went wrong. But this does not mean your courses have not been saved."
@@ -131,7 +131,7 @@ class CourseRegistration
 
     $bill->insert_bill($this->reg_no, $this->academic_year, $this->level, $this->dept_code);
 
-    set_student_reg_form_completion_session(
+    set_student_reg_form_completion_session1(
       'success',
 
       "You have registered for $count courses this semester. Click on
@@ -145,8 +145,9 @@ class CourseRegistration
 
   private function redirect_to_dashboard()
   {
-    $dashboard_url = STATIC_ROOT . 'student_dashboard.php';
-    header("Location: {$dashboard_url}");
+    $home = STATIC_ROOT . 'student_portal/home/';
+    header("Location: {$home}");
+
     return;
   }
 

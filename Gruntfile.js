@@ -7,6 +7,11 @@ module.exports = function (grunt) {
 
   require('load-grunt-tasks')(grunt);
 
+  var projectBrowserifyAliases = [
+    './libs/date-time-picker.js:dateTimePicker',
+    './libs/getFormData.js:getFormData'
+  ];
+
   grunt.initConfig({
 
     uglify: {
@@ -36,7 +41,7 @@ module.exports = function (grunt) {
           'libs/compiled-temp.js': [
             'libs/jquery/dist/jquery.js',
             'libs/moment/min/moment.min.js',
-            'libs/bootstrap/js/bootstrap.js',
+            'libs/bootstrap/dist/js/bootstrap.js',
             'libs/jquery-ui-autocomplete.min.js',
             'libs/jquery.slimscroll.min.js',
             'libs/jquery.easing.min.js',
@@ -47,6 +52,7 @@ module.exports = function (grunt) {
             'libs/formValidation/js/framework/bootstrap.js',
             'libs/ajax-alert/dist/js/ajax-alert.min.js',
             'libs/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',
+            'libs/bootstrap-datepicker/dist/js/bootstrap-datepicker.js',
             'libs/appear/jquery.appear.js',
             'libs/jquery.placeholder.js',
             'libs/fastclick.js',
@@ -56,7 +62,7 @@ module.exports = function (grunt) {
             'libs/number-format.js'
           ]
         }
-        
+
       },
 
       'admin_academics': {
@@ -102,10 +108,8 @@ module.exports = function (grunt) {
         options: {
           alias: [
             './admin_academics/home/js/session-validation-callback.js:sessionValidationCb',
-            './admin_academics/home/js/session-auto-complete-setting.js:sessionAutoCompleteSetting',
-            './libs/date-time-picker.js:dateTimePicker',
-            './libs/getFormData.js:getFormData'
-          ]
+            './admin_academics/home/js/session-auto-complete-setting.js:sessionAutoCompleteSetting'
+          ].concat(projectBrowserifyAliases)
         },
         files: {
           'admin_academics/home/js/home-bundle.js': [
@@ -113,6 +117,15 @@ module.exports = function (grunt) {
             'admin_academics/semester/js/semester.js',
             'admin_academics/academic_session/js/session.js'
           ]
+        }
+      },
+
+      'edu_history': {
+        options: {
+          alias: projectBrowserifyAliases
+        },
+        files: {
+          'student_portal/edu_history/js/scripts.js': ['student_portal/edu_history/js/scripts-raw.js']
         }
       }
     },
@@ -131,12 +144,13 @@ module.exports = function (grunt) {
         },
         files: {
           'libs/css/compiled.css': [
-            'libs/bootstrap/css/bootstrap.min.css',
+            'libs/bootstrap/dist/css/bootstrap.css',
             'libs/css/themify-icons.css',
             'libs/css/animate.min.css',
             'libs/css/jquery-ui-autocomplete.min.css',
             'libs/formValidation/css/formValidation.min.css',
             'libs/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css',
+            'libs/bootstrap-datepicker/dist/css/bootstrap-datepicker.css',
             'libs/css/skins/palette.css',
             'libs/css/main.css'
           ]
@@ -149,7 +163,6 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           src: ['libs/css/compiled.css'],
-          //dest: 'libs/css',
           ext: '.min.css'
         }]
       }

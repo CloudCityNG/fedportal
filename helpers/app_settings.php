@@ -29,3 +29,13 @@ function get_log_file()
 {
   return __DIR__ . '/../out_log.log';
 }
+
+function get_photo_dir()
+{
+  $uploadsDirectory =  __DIR__ . '/../photo_files/' ;
+
+  if (!file_exists($uploadsDirectory)) {
+    mkdir($uploadsDirectory);
+  }
+
+  return $uploadsDirectory;}

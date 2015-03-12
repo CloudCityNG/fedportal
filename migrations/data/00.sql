@@ -207,4 +207,6 @@ INSERT INTO `course_table` (`id`, `title`, `code`, `unit`, `department`, `semest
 INSERT INTO `session_table` (`session`) VALUES
   ('2014/2015');
 
-
+INSERT INTO semester (number, start_date, end_date, created_at, session_id) VALUES (
+    1, '2015-01-01', '2015-04-30', NOW(), 1
+);

@@ -29,9 +29,9 @@ function get_photo($reg_no = null, $path_only = null)
 
   if ($stmt->rowCount()) {
 
-    $image_path = STATIC_ROOT . 'photo_files/' . $stmt->fetch(PDO::FETCH_ASSOC)['nameofpic'];
+    $image_path = STATIC_ROOT . 'photo_files/' . $stmt->fetch(PDO::FETCH_NUM)[0];
 
-    return $path_only ? $image_path : "<img src=\"$image_path\"/>";
+    return $path_only ? $image_path : "<img src='$image_path'/>";
   }
 
   return '';
