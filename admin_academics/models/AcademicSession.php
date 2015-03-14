@@ -157,6 +157,37 @@ class AcademicSession
     return [];
   }
 
+  public static function update_session($data)
+  {
+    $db = get_db();
+
+    $log = get_logger(self::$LOG_NAME);
+
+    $query = "UPDATE session_table
+              SET start_date = :start_date,
+              end_date = :end_date,
+              session = :session
+              WHERE id = :id";
+
+    $data['start_date'] = self::transform_date($data['start_date']);
+    $data['end_date'] = self::transform_date($data['end_date']);
+
+    $log->addInfo(
+      "About to update academic session with query: {$query} and param: ", $data
+    );
+
+    $stmt = $db->prepare($query);
+    $stmt->execute($data);
+
+    if ($stmt->rowCount()) {
+      $log->addInfo("Session successfully updated!");
+
+      return $data;
+    }
+
+    return null;
+  }
+
   private static function transform_date($val)
   {
     return implode('-', array_reverse(explode('-', $val)));

@@ -66,11 +66,15 @@ class AcademicSessionController
 
   public function post()
   {
-    header("Content-Type: application/json");
+    if (isset($_POST['new-session-form-submit'])) {
 
-    if (isset($_POST['create']) && $_POST['create']) {
+      $newSessionData = $_POST['new_session'];
 
-      echo json_encode(self::create_session($_POST));
+      $postStatus = self::create_session($newSessionData);
+
+      $oldNewSessionData = $postStatus['posted'] ? null : $newSessionData;
+
+      $this->renderPage($oldNewSessionData, $postStatus);
       return;
     }
   }
@@ -79,18 +83,27 @@ class AcademicSessionController
   {
     $log = get_logger(self::$LOG_NAME);
 
-    $data = $_POST['data'];
+    $session = $data['session'];
 
     try {
-      if (AcademicSession::session_exists($data['session'])) {
-        return ['exists' => true];
+      if (AcademicSession::session_exists($session)) {
+        return [
+          'posted' => false,
+
+          'messages' => [
+            $session . ' session already exists.'
+          ]
+        ];
 
       }
 
-      $academic_session = AcademicSession::create_session($data);
-      $academic_session['created'] = true;
+      AcademicSession::create_session($data);
 
-      return $academic_session;
+      return [
+        'posted' => true,
+
+        'messages' => [$session . ' session successfully created.']
+      ];
 
     } catch (PDOException $e) {
 
@@ -98,6 +111,11 @@ class AcademicSessionController
     }
 
     return ['error' => true];
+  }
+
+  private static function update_session($data)
+  {
+
   }
 }
 

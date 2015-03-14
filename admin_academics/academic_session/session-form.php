@@ -83,6 +83,40 @@
     </div>
   </div>
 
+  <?php
+  if ($postStatus) {
+
+    if ($postStatus['posted']) {
+      $alertClass = 'alert-success';
+      $status = $postStatus['messages'][0];
+      $messages = '';
+
+    } else {
+      $alertClass = 'alert-danger';
+      $status = "New session not created for following reasons:";
+
+      $messages = '';
+
+      foreach ($postStatus['messages'] as $message) {
+        $messages .= "<li>{$message}</li>\n";
+      }
+    }
+
+    echo "
+      <div class='alert alert-dismissible {$alertClass}' role='alert'>
+        <button type=button class=close data-dismiss=alert aria-label=Close>
+          <span aria-hidden=true>&times;</span>
+        </button>
+
+        <h5>{$status}</h5>
+
+        <ol>
+          {$messages}
+        </ol>
+      </div> ";
+  }
+  ?>
+
   <div class="col-sm-8">
     <form class="form-horizontal academic-session-form new-session-form"
           role="form" method="post"
@@ -98,7 +132,7 @@
 
           <div class="col-sm-5">
             <input class="form-control" name="new_session[session]" id="new-session" required
-              value="<?php echo $oldNewSessionData ? $oldNewSessionData['session'] : ''?>">
+                   value="<?php echo $oldNewSessionData ? $oldNewSessionData['session'] : '' ?>">
           </div>
         </div>
 
@@ -109,7 +143,7 @@
             <div class="input-group show-date-picker date">
               <input class="form-control" name="new_session[start_date]"
                      required id="new-session-start-date"
-                     value="<?php echo $oldNewSessionData ? $oldNewSessionData['start_date'] : ''?>"
+                     value="<?php echo $oldNewSessionData ? $oldNewSessionData['start_date'] : '' ?>"
                      data-fv-date
                      data-fv-date-format="DD-MM-YYYY"/>
 
@@ -127,7 +161,7 @@
             <div class="input-group date show-date-picker">
               <input class="form-control" name="new_session[end_date]"
                      required id="new-session-end-date"
-                     value="<?php echo $oldNewSessionData ? $oldNewSessionData['end_date'] : ''?>"
+                     value="<?php echo $oldNewSessionData ? $oldNewSessionData['end_date'] : '' ?>"
                      data-fv-date
                      data-fv-date-format="DD-MM-YYYY"/>
 
