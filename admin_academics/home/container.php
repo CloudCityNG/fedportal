@@ -16,6 +16,7 @@ function getNavClass($currentPage, $section, $value)
       return $currentPage['link'] == $value ? 'selected current' : '';
   }
 }
+
 ?>
 
 <!doctype html>
@@ -23,14 +24,11 @@ function getNavClass($currentPage, $section, $value)
 <head>
   <?php include(__DIR__ . '/../../includes/header.php'); ?>
 
-  <link rel="stylesheet"
-        href="<?php echo STATIC_ROOT . 'admin_academics/home/css/home.min.css' ?>"/>
+  <link rel="stylesheet" href="<?php echo path_to_link(__DIR__ . '/css/home.min.css') ?>"/>
 
-  <link rel="stylesheet"
-        href="<?php echo STATIC_ROOT . 'admin_academics/semester/css/semester.css' ?>"/>
-
-  <link rel="stylesheet"
-        href="<?php echo STATIC_ROOT . 'admin_academics/academic_session/css/session.css' ?>"/>
+  <?php if (isset($pageCssPath)) {
+    echo "<link rel='stylesheet' href='{$pageCssPath}'/>";
+  } ?>
 </head>
 
 <body>
@@ -43,7 +41,7 @@ function getNavClass($currentPage, $section, $value)
         <div class="wrapper">
           <div class="top-info">
             <div class="legend">
-              <a href="<?php echo STATIC_ROOT . 'admin_academics/home/' ?>">Academics Administration</a>
+              <a href="<?php echo path_to_link(__DIR__ . '/') ?>">Academics Administration</a>
             </div>
 
             <div class="divider">
@@ -123,7 +121,7 @@ function getNavClass($currentPage, $section, $value)
 
 <?php include(__DIR__ . '/../../includes/js-footer.php'); ?>
 
-<script src="<?php echo STATIC_ROOT . 'admin_academics/home/js/home.js' ?>"></script>
+<script src="<?php echo path_to_link(__DIR__ . '/js/home.min.js') ?>"></script>
 
 <?php
 if (isset($pageJsPath) && $pageJsPath) {

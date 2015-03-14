@@ -32,10 +32,26 @@ function get_log_file()
 
 function get_photo_dir()
 {
-  $uploadsDirectory =  __DIR__ . '/../photo_files/' ;
+  $uploadsDirectory = __DIR__ . '/../photo_files/';
 
   if (!file_exists($uploadsDirectory)) {
     mkdir($uploadsDirectory);
   }
 
-  return $uploadsDirectory;}
+  return $uploadsDirectory;
+}
+
+function path_to_link($path)
+{
+  if (!file_exists($path)) {
+    return '';
+  }
+
+  $unix_path = str_replace('\\', '/', realpath($path));
+
+  $root_pos = strpos($unix_path, STATIC_ROOT);
+
+  return substr($unix_path, $root_pos);
+}
+
+//echo path_to_link(__DIR__ . '/../admin_academics/home/css/home.min.css');

@@ -28,7 +28,9 @@ class AcademicSessionController
 
     $link_template = __DIR__ . '/session-form.php';
 
-    $pageJsPath = STATIC_ROOT . 'admin_academics/academic_session/js/session.min.js';
+    $pageJsPath = path_to_link(__DIR__ . '/js/session.min.js');
+
+    $pageCssPath = path_to_link(__DIR__ . '/css/session.min.css');
 
     require(__DIR__ . '/../home/container.php');
 

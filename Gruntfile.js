@@ -29,7 +29,8 @@ module.exports = function (grunt) {
           sourceMap: true
         },
         files: {
-          'admin_academics/academic_session/js/session.min.js': 'admin_academics/academic_session/js/session.js'
+          'admin_academics/academic_session/js/session.min.js': 'admin_academics/academic_session/js/session.js',
+          'admin_academics/home/js/home.min.js': 'admin_academics/home/js/home.js'
         }
       }
     },
