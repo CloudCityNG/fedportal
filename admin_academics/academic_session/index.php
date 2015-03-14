@@ -70,12 +70,23 @@ class AcademicSessionController
 
       $newSessionData = $_POST['new_session'];
 
-      $postStatus = self::create_session($newSessionData);
+      $status = self::create_session($newSessionData);
 
-      $oldNewSessionData = $postStatus['posted'] ? null : $newSessionData;
+      $oldNewSessionData = $status['posted'] ? null : $newSessionData;
+
+      $postStatus['new_session'] = $status;
 
       $this->renderPage($oldNewSessionData, $postStatus);
       return;
+
+    } else if (isset($_POST['current-session-form-submit'])) {
+
+      $currentSessionData = $_POST['current_session'];
+
+      $status['current_session'] = self::update_session($currentSessionData);
+
+      $this->renderPage(null, $status);
+
     }
   }
 
@@ -115,7 +126,25 @@ class AcademicSessionController
 
   private static function update_session($data)
   {
+    $log = get_logger(self::$LOG_NAME);
 
+    try {
+      $session = AcademicSession::update_session($data);
+
+      if ($session) {
+        return [
+          'updated' => true
+        ];
+      }
+
+    } catch (PDOException $e) {
+
+      logPdoException($e, "Error while updating session", $log);
+    }
+
+    return [
+      'updated' => false
+    ];
   }
 }
 

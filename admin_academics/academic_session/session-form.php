@@ -5,6 +5,32 @@
     </div>
 
     <div class="panel-body">
+
+      <?php
+      if ($postStatus && isset($postStatus['current_session'])) {
+
+        $postStatus = $postStatus['current_session'];
+
+        if ($postStatus['updated']) {
+          $alertClass = 'alert-success';
+          $status = 'Academic session successfully updated';
+
+        } else {
+          $alertClass = 'alert-danger';
+          $status = 'Academic session failed to updated.';
+        }
+
+        echo "
+              <div class='alert alert-dismissible {$alertClass}' role='alert'>
+                <button type=button class=close data-dismiss=alert aria-label=Close>
+                  <span aria-hidden=true>&times;</span>
+                </button>
+
+                <h5>{$status}</h5>
+              </div> ";
+      }
+      ?>
+
       <form
         class="form-horizontal academic-session-form current-session-form <?php echo $current_session['current_session_not_found']; ?>"
         role="form" method="post"
@@ -84,7 +110,9 @@
   </div>
 
   <?php
-  if ($postStatus) {
+  if ($postStatus and isset($postStatus['new_session'])) {
+
+    $postStatus = $postStatus['new_session'];
 
     if ($postStatus['posted']) {
       $alertClass = 'alert-success';

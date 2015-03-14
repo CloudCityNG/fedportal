@@ -185,6 +185,8 @@ class AcademicSession
       return $data;
     }
 
+    $log->addWarning("Session could not be updated!");
+
     return null;
   }
 
