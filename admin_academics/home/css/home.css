@@ -71,6 +71,9 @@ form .has-feedback .form-control-feedback {
   font-weight: normal;
   font-size: 11px;
 }
+.content-area > .side-bar-navs .side-nav > .links.active {
+  display: block;
+}
 .content-area > .side-bar-navs .side-nav > .links > .link {
   cursor: pointer;
   display: block;

@@ -29,7 +29,7 @@ module.exports = function (grunt) {
           sourceMap: true
         },
         files: {
-          'admin_academics/home/js/home-bundle.min.js': 'admin_academics/home/js/home-bundle.js'
+          'admin_academics/academic_session/js/session.min.js': 'admin_academics/academic_session/js/session.js'
         }
       }
     },
@@ -86,36 +86,27 @@ module.exports = function (grunt) {
         files: [
           'admin_academics/home/js/home.js',
           'admin_academics/semester/js/*.js',
-          'admin_academics/academic_session/js/*.js',
+          'admin_academics/academic_session/js/session.js',
           'admin_academics/courses/*'
         ],
 
         tasks: [
-          'browserify:admin_academics',
+          //'browserify:admin_academics',
           'uglify:admin_academics'
         ]
       }
     },
 
     browserify: {
-      options: {
-        alias: [
-          './libs/date-time-picker.js:dateTimePicker'
-        ]
-      },
-
       admin_academics: { // jshint ignore: line
         options: {
           alias: [
-            './admin_academics/home/js/session-validation-callback.js:sessionValidationCb',
             './admin_academics/home/js/session-auto-complete-setting.js:sessionAutoCompleteSetting'
-          ].concat(projectBrowserifyAliases)
+          ]
         },
         files: {
-          'admin_academics/home/js/home-bundle.js': [
-            'admin_academics/home/js/home.js',
-            'admin_academics/semester/js/semester.js',
-            'admin_academics/academic_session/js/session.js'
+          'admin_academics/academic_session/js/new-session-brow.js': [
+            'admin_academics/academic_session/js/new-academic-session.js'
           ]
         }
       },

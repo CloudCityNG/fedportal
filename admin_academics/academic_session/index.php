@@ -13,32 +13,43 @@ class AcademicSessionController
 
   public function get()
   {
-    header("Content-Type: application/json");
-
-    $context = $this->get_context();
-
-    if (isset($_GET['initial']) && $_GET['initial']) {
-      echo json_encode([
-        'template' => file_get_contents(__DIR__ . '/session-form.mustache'),
-
-        'context' => $context
-      ]);
-
-    } else {
-      echo json_encode(['context' => $context]);
-    }
+    $this->renderPage();
   }
 
-  private function get_context()
+  private function renderPage($oldNewSessionData = null, $postStatus = null)
+  {
+    $currentPage = [
+      'title' => 'session',
+
+      'link' => 'new-session'
+    ];
+
+    $current_session = $this->get_current_session();
+
+    $link_template = __DIR__ . '/session-form.php';
+
+    $pageJsPath = STATIC_ROOT . 'admin_academics/academic_session/js/session.min.js';
+
+    require(__DIR__ . '/../home/container.php');
+
+  }
+
+  private function get_current_session()
   {
     $log = get_logger(self::$LOG_NAME);
 
-    $current_session = [];
+    $current_session = [
+      'id' => '',
+      'session' => '',
+      'start_date' => '',
+      'end_date' => ''
+    ];
 
     try {
       $current_session = AcademicSession::get_current_session();
 
       if (count($current_session)) {
+        $current_session['current_session_not_found'] = '';
         return $current_session;
 
       } else {
