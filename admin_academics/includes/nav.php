@@ -1,4 +1,5 @@
 <?php require_once(__DIR__ . '/../../helpers/app_settings.php') ?>
+
 <header class="header header-fixed navbar">
 
   <div class="brand">

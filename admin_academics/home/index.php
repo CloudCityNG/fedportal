@@ -7,9 +7,8 @@ Class AdminAcademicsHome
 {
   public function get()
   {
-    $today = date('l, F j, Y', time());
-
-    include(__DIR__ . '/home_view.php');
+    $currentPage = null;
+    include(__DIR__ . '/container.php');
   }
 
   public function post()
