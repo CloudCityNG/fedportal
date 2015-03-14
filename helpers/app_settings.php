@@ -51,7 +51,7 @@ function path_to_link($path)
 
   $root_pos = strpos($unix_path, STATIC_ROOT);
 
-  return substr($unix_path, $root_pos);
+  return substr($unix_path, $root_pos) . (is_dir($path) ? '/' : '');
 }
 
-//echo path_to_link(__DIR__ . '/../admin_academics/home/css/home.min.css');
+//echo path_to_link(__DIR__ . '/../admin_academics/home/css/');

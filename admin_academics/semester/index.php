@@ -12,7 +12,7 @@ class SemesterController
 {
   private static $LOG_NAME = 'ACADEMICS-ADMIN-SEMESTER-CONTROLLER';
 
-  public function renderPage()
+  public function renderPage($oldNewSemester = null)
   {
     $current_semester = self::get_current_semester();
 
@@ -35,10 +35,10 @@ class SemesterController
 
   public function post()
   {
-    header("Content-Type: application/json");
+    if (isset($_POST['new-semester-form-submit'])) {
+      $new_semester = $_POST['new_semester'];
 
-    if (isset($_POST['newSemester']) && $_POST['newSemester']) {
-      echo json_encode(self::create_new_semester($_POST['data']));
+      $this->renderPage($new_semester);
     }
   }
 
@@ -59,16 +59,6 @@ class SemesterController
   private function transform_date($val)
   {
     return implode('-', array_reverse(explode('-', $val)));
-  }
-
-  private function get_context()
-  {
-    return [
-      'current_semester' => self::get_current_semester(),
-
-      'sessions' => self::get_two_most_recent_session()
-    ];
-
   }
 
   private static function get_two_most_recent_session()
