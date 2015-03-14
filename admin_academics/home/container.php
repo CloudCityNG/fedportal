@@ -1,20 +1,20 @@
 <?php
 function getNavClass($currentPage, $section, $value)
 {
-  if (!$currentPage) {
-    return $section == 'nav' ? 'collapsed' : '';
+  if ($currentPage) {
+    switch ($section) {
+      case 'nav':
+        return $currentPage['title'] == $value ? 'expanded' : 'collapsed';
+
+      case 'links':
+        return $currentPage['title'] == $value ? 'active' : '';
+
+      case 'link':
+        return $currentPage['link'] == $value ? 'selected current' : '';
+    }
   }
 
-  switch ($section) {
-    case 'nav':
-      return $currentPage['title'] == $value ? 'expanded' : 'collapsed';
-
-    case 'links':
-      return $currentPage['title'] == $value ? 'active' : '';
-
-    case 'link':
-      return $currentPage['link'] == $value ? 'selected current' : '';
-  }
+  return $section == 'nav' ? 'collapsed' : '';
 }
 
 ?>
@@ -66,15 +66,13 @@ function getNavClass($currentPage, $section, $value)
               </div>
 
               <div
-                class="side-nav semester-side-bar-nav
-                       <?php echo $currentPage['title'] == 'semester' ? 'expanded' : 'collapsed' ?>">
+                class="side-nav semester-side-bar-nav <?php echo getNavClass($currentPage, 'nav', 'semester'); ?>">
 
-                <span class="title">Semester</span>
+                <span class="title">Manage Semester</span>
 
-                <div class="links">
-                  <span class="link" id="semester"
-                        data-template-url="<?php echo STATIC_ROOT . 'admin_academics/semester/' ?>">
-                    Change Semester
+                <div class="links <?php echo getNavClass($currentPage, 'links', 'semester') ?>">
+                  <span class="link <?php echo getNavClass($currentPage, 'link', 'new-semester') ?>">
+                    <a href="<?php echo path_to_link(__DIR__ . '/../semester/') ?>">Current and New Semester</a>
                   </span>
                 </div>
               </div>

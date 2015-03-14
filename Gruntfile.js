@@ -30,7 +30,8 @@ module.exports = function (grunt) {
         },
         files: {
           'admin_academics/academic_session/js/session.min.js': 'admin_academics/academic_session/js/session.js',
-          'admin_academics/home/js/home.min.js': 'admin_academics/home/js/home.js'
+          'admin_academics/home/js/home.min.js': 'admin_academics/home/js/home.js',
+          'admin_academics/semester/js/semester.min.js': 'admin_academics/semester/js/semester.js'
         }
       }
     },
@@ -86,7 +87,7 @@ module.exports = function (grunt) {
 
         files: [
           'admin_academics/home/js/home.js',
-          'admin_academics/semester/js/*.js',
+          'admin_academics/semester/js/semester.js',
           'admin_academics/academic_session/js/session.js',
           'admin_academics/courses/*'
         ],

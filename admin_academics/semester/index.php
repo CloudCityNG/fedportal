@@ -12,25 +12,25 @@ class SemesterController
 {
   private static $LOG_NAME = 'ACADEMICS-ADMIN-SEMESTER-CONTROLLER';
 
-  public function get()
+  public function renderPage()
   {
-    header("Content-Type: application/json");
+    $current_semester = self::get_current_semester();
 
-    $context = $this->get_context();
+    $two_most_recent_sessions = self::get_two_most_recent_session();
 
-    if (isset($_GET['initial']) && $_GET['initial']) {
-      echo json_encode([
-        'template' => file_get_contents(__DIR__ . '/semester-form.mustache'),
+    $currentPage = [
+      'title' => 'semester',
 
-        'context' => $context
-      ]);
+      'link' => 'new-semester'
+    ];
 
-    } elseif (isset($_GET['session-auto-complete']) && $_GET['session-auto-complete']) {
+    $link_template = __DIR__ . '/semester-form.php';
 
-    } else {
-      echo json_encode(['context' => $context]);
-    }
+    $pageJsPath = path_to_link(__DIR__ . '/js/semester.min.js');
 
+    $pageCssPath = path_to_link(__DIR__ . '/css/semester.min.css');
+
+    require(__DIR__ . '/../home/container.php');
   }
 
   public function post()
@@ -108,9 +108,8 @@ class SemesterController
     try {
       $semester = Semester::get_current_semester();
 
-      if (count($semester)) {
-        $selected = $semester['number'] == 1 ? 'semester1Selected' : 'semester2Selected';
-        $semester[$selected] = 'selected';
+      if ($semester) {
+        $semester['current_semester_not_found'] = '';
 
         return $semester;
       }
@@ -206,7 +205,7 @@ class SemesterController
 $semester = new SemesterController();
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-  $semester->get();
+  $semester->renderPage();
 
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $semester->post();
