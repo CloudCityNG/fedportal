@@ -50,16 +50,25 @@ class SemesterController
 
   private static function validatePost($post)
   {
-    $dateRe = "/^\d{2}-\d{2}-\d{4}$/";
+    $valid = Semester::validate_session_id_column($post);
 
-    return isset($post['number']) &&
-    isset($post['session_id']) &&
-    isset($post['start_date']) &&
-    isset($post['end_date']) &&
-    preg_match($dateRe, $post['start_date']) &&
-    preg_match($dateRe, $post['end_date']) &&
-    preg_match("/^\d+$/", $post['session_id']) &&
-    preg_match("/^[12]$/", $post['number']);
+    if (!$valid['valid']) {
+      return $valid['messages'];
+    }
+
+    $valid = Semester::validate_dates($post);
+
+    if (!$valid['valid']) {
+      return $valid['messages'];
+    }
+
+    $valid = Semester::validate_number_column($post);
+
+    if (!$valid['valid']) {
+      return $valid['messages'];
+    }
+
+    return true;
   }
 
   private function transform_date($val)
@@ -120,17 +129,17 @@ class SemesterController
 
   private static function create_new_semester($post)
   {
-    $log = get_logger(self::$LOG_NAME);
+    $valid = self::validatePost($post);
 
-    if (!self::validatePost($post)) {
-      $log->addWarning("Data for creating new semester invalid: ", $post);
-
+    if ($valid !== true) {
       return [
         'posted' => false,
 
-        'messages' => ['Invalid post data']
+        'messages' => $valid
       ];
     }
+
+    $log = get_logger(self::$LOG_NAME);
 
     if (isset($post['session'])) {
       unset($post['session']);

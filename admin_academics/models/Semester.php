@@ -27,11 +27,11 @@ Class Semester
 
     $log->addInfo("About to create a new semester using query: {$query} and params: ", $post);
 
-    $old_start_date = $post['start_date'];
-    $old_end_date = $post['end_date'];
+    $old_start_date = Carbon::createFromFormat('d-m-Y', $post['start_date']);
+    $old_end_date = Carbon::createFromFormat('d-m-Y', $post['end_date']);
 
-    $post['start_date'] = Carbon::createFromFormat('Y-m-d', $old_start_date);
-    $post['end_date'] = Carbon::createFromFormat('Y-m-d', $old_end_date);
+    $post['start_date'] = $old_start_date->format('Y-m-d');
+    $post['end_date'] = $old_end_date->format('Y-m-d');
 
     $stmt = $db->prepare($query);
 
@@ -39,8 +39,8 @@ Class Semester
       $post['id'] = $db->lastInsertId();
       $post['created_at'] = $now;
       $post['updated_at'] = $now;
-      $post['start_date'] = Carbon::createFromFormat('d-m-Y', $old_start_date);
-      $post['end_date'] = Carbon::createFromFormat('d-m-Y', $old_end_date);
+      $post['start_date'] = $old_start_date;
+      $post['end_date'] = $old_end_date;
       $post['session'] = AcademicSession::get_session_by_id($post['session_id']);
 
       $log->addInfo("Semester successfully created as: ", $post);
@@ -182,7 +182,20 @@ Class Semester
       return $returnedVal;
     }
 
+    if (self::semester_exists($number, $data['session_id'])) {
+      $returnedVal['messages'] = [
+        'The specified semester exists for the specified session: ' .
+        self::render_semester_number($number) . ' semester!'
+      ];
+      return $returnedVal;
+    }
+
     return ['valid' => true];
+  }
+
+  public static function render_semester_number($number)
+  {
+    return $number == 1 ? '1st' : '2nd';
   }
 
   public static function semester_exists($number, $session_id)
