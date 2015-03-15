@@ -12,7 +12,7 @@ class SemesterController
 {
   private static $LOG_NAME = 'ACADEMICS-ADMIN-SEMESTER-CONTROLLER';
 
-  public function renderPage($oldNewSemester = null)
+  public function renderPage($oldNewSemester = null, $postStatus = null)
   {
     $current_semester = self::get_current_semester();
 
@@ -38,7 +38,13 @@ class SemesterController
     if (isset($_POST['new-semester-form-submit'])) {
       $new_semester = $_POST['new_semester'];
 
-      $this->renderPage($new_semester);
+      $status = self::create_new_semester($new_semester);
+
+      $old_new_semester_data = $status['posted'] ? null : $new_semester;
+
+      $postStatus['new_semester'] = $status;
+
+      $this->renderPage($old_new_semester_data, $postStatus);
     }
   }
 
@@ -47,13 +53,13 @@ class SemesterController
     $dateRe = "/^\d{2}-\d{2}-\d{4}$/";
 
     return isset($post['number']) &&
-           isset($post['session_id']) &&
-           isset($post['start_date']) &&
-           isset($post['end_date']) &&
-           preg_match($dateRe, $post['start_date']) &&
-           preg_match($dateRe, $post['end_date']) &&
-           preg_match("/^\d+$/", $post['session_id']) &&
-           preg_match("/^[12]$/", $post['number']);
+    isset($post['session_id']) &&
+    isset($post['start_date']) &&
+    isset($post['end_date']) &&
+    preg_match($dateRe, $post['start_date']) &&
+    preg_match($dateRe, $post['end_date']) &&
+    preg_match("/^\d+$/", $post['session_id']) &&
+    preg_match("/^[12]$/", $post['number']);
   }
 
   private function transform_date($val)
@@ -70,7 +76,7 @@ class SemesterController
     try {
       $academic_sessions = AcademicSession::get_two_most_recent_sessions();
 
-      if (count($academic_sessions)) {
+      if ($academic_sessions) {
         $log->addInfo("Academic session successfully retrieved: ", $academic_sessions);
 
         $academic_sessions = array_map(function ($a_session) {
@@ -119,10 +125,12 @@ class SemesterController
     if (!self::validatePost($post)) {
       $log->addWarning("Data for creating new semester invalid: ", $post);
 
-      return ['invalidPostData' => true];
-    }
+      return [
+        'posted' => false,
 
-    $returnedVal = ['created' => false];
+        'messages' => ['Invalid post data']
+      ];
+    }
 
     if (isset($post['session'])) {
       unset($post['session']);
@@ -131,11 +139,20 @@ class SemesterController
     try {
       $semester = Semester::create($post);
 
-      $returnedVal = $semester;
+      if ($semester) {
+        $log->addInfo('New semester successfully created. Semester is: ', $semester);
 
-      $returnedVal['created'] = true;
+        $number = $semester['number'] == 1 ? '1st' : '2nd';
 
-      $log->addInfo('New semester successfully created. Semester is: ', $semester);
+        return [
+          'posted' => true,
+
+          'messages' => [
+            "{$number} semester for {$semester['session']['session']} session successfully created."
+          ]
+        ];
+      }
+
 
     } catch (PDOException $e) {
       logPdoException(
@@ -144,7 +161,11 @@ class SemesterController
         $log);
     }
 
-    return $returnedVal;
+    return [
+      'posted' => false,
+
+      'messages' => ['Database error. Unable to create semester']
+    ];
   }
 
   private static function update_semester($post)

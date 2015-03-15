@@ -102,9 +102,7 @@ class AcademicSession
 
     $stmt = $db->prepare($query);
 
-    $stmt->execute($query_param);
-
-    if ($stmt) {
+    if ($stmt->execute($query_param)) {
       $log->addInfo("query successfully ran");
       return $stmt->fetchColumn() ? true : false;
     }
@@ -154,7 +152,7 @@ class AcademicSession
       return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    return [];
+    return null;
   }
 
   public static function update_session($data)
@@ -186,6 +184,59 @@ class AcademicSession
     }
 
     $log->addWarning("Session could not be updated!");
+
+    return null;
+  }
+
+  public static function get_session_by_id($id)
+  {
+    $log = get_logger(self::$LOG_NAME);
+
+    $query = "SELECT * FROM session_table WHERE id = ?";
+
+    $param = [$id];
+
+    $log->addInfo("About to get session by executing query: {$query} and param: ", $param);
+
+    $db = get_db();
+
+    $stmt = $db->prepare($query);
+
+    if ($stmt->execute($param)) {
+      $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+      $log->addInfo("Query ran successfully, result is ", $result);
+
+      return $result;
+    }
+
+    $log->addError("Query failed to run.");
+
+    return null;
+  }
+
+  public static function session_exists_by_id($id)
+  {
+    $db = get_db();
+
+    $log = get_logger(self::$LOG_NAME);
+
+    $query = "SELECT COUNT(*) FROM session_table WHERE id = ?";
+
+    $query_param = [$id];
+
+    $log->addInfo("About to check if session exists with query: {$query} and param: ", $query_param);
+
+    $stmt = $db->prepare($query);
+
+    if ($stmt->execute($query_param)) {
+      $returnedVal = $stmt->fetchColumn() ? true : false;
+
+      $log->addInfo("query successfully ran. Result is: {$returnedVal}");
+      return $returnedVal;
+    }
+
+    $log->addWarning("Query did not run successfully");
 
     return null;
   }

@@ -11,12 +11,7 @@ class AcademicSessionController
 {
   private static $LOG_NAME = 'ACADEMICS-ADMIN-SESSION-CONTROLLER';
 
-  public function get()
-  {
-    $this->renderPage();
-  }
-
-  private function renderPage($oldNewSessionData = null, $postStatus = null)
+  public function renderPage($oldNewSessionData = null, $postStatus = null)
   {
     $currentPage = [
       'title' => 'session',
@@ -153,7 +148,7 @@ class AcademicSessionController
 $academic_session = new AcademicSessionController();
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-  $academic_session->get();
+  $academic_session->renderPage();
 
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $academic_session->post();

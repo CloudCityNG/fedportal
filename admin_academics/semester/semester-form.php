@@ -106,6 +106,42 @@
     </div>
   </div>
 
+  <?php
+  if ($postStatus and isset($postStatus['new_semester'])) {
+
+    $postStatus = $postStatus['new_semester'];
+
+    if ($postStatus['posted']) {
+      $alertClass = 'alert-success';
+      $status = $postStatus['messages'][0];
+      $messages = '';
+
+    } else {
+      $alertClass = 'alert-danger';
+      $status = "New semester not created for following reasons:";
+
+      $messages = '';
+
+      foreach ($postStatus['messages'] as $message) {
+        $messages .= "<li>{$message}</li>\n";
+      }
+    }
+
+    echo "
+      <div class='alert alert-dismissible {$alertClass}' role='alert'>
+        <button type=button class=close data-dismiss=alert aria-label=Close>
+          <span aria-hidden=true>&times;</span>
+        </button>
+
+        <h5>{$status}</h5>
+
+        <ol>
+          {$messages}
+        </ol>
+      </div> ";
+  }
+  ?>
+
   <div class="col-sm-8">
     <form class="form-horizontal semester-form new-semester-form" role="form"
           method="post" action="<?php echo path_to_link(__DIR__) ?>"
