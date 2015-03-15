@@ -14,13 +14,12 @@ include_once(__DIR__ . '/../../helpers/app_settings.php');
 
 include_once(__DIR__ . '/../../helpers/databases.php');
 
-include_once(__DIR__ . '/../../helpers/get_academic_sessions.php');
+require_once(__DIR__ . '/../../admin_academics/models/AcademicSession.php');
 
 include_once(__DIR__ . '/../../helpers/get_academic_levels.php');
 
 include_once(__DIR__ . '/../../helpers/get_academic_departments.php');
 
-$academic_sessions = get_academic_sessions();
 
 $academic_levels = get_academic_levels();
 

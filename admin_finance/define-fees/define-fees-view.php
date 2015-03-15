@@ -27,35 +27,21 @@
             <header class="panel-heading no-b"></header>
 
             <div class="panel-body">
-
-              <?php
-              if (isset($success_msg)) {
-                echo $success_msg;
-              }
-              ?>
-
+              <?php echo isset($success_msg) ? $success_msg : '' ?>
               <div class="row">
-
                 <div class="col-sm-4">
                   <form class="well" action="define-fees-post.php" role="form" method="post"
-                        id="define-fees-form"
-                    >
-
+                        id="define-fees-form">
                     <div class="form-group">
                       <label class="control-label" for="academic_year">Academic Year</label>
 
                       <select class="form-control" name="academic_year" id="academic_year" required>
+                        <option value="">-------</option>
                         <?php
-                        $counter = 0;
-
-                        foreach ($academic_sessions as $id => $years) {
-                          echo '
-                        <option value="' . $years[2] . '">' . $years[2] . '</option>
-                        ';
-
-                          if (++$counter === 2) {
-                            break;
-                          }
+                        foreach (AcademicSession::get_two_most_recent_sessions() as $academic_sessions) {
+                          echo "<option value='{$academic_sessions['session']}'>
+                                  {$academic_sessions['session']}
+                                </option>";
                         }
                         ?>
                       </select>
@@ -69,9 +55,7 @@
 
                         <?php
                         foreach ($departments as $dept_code => $desc) {
-                          echo '
-                        <option value="' . $dept_code . '">' . $desc . '</option>
-                        ';
+                          echo "<option value='{$dept_code}'>{$desc}</option>";
                         }
                         ?>
                       </select>
@@ -80,22 +64,19 @@
                     <div class="form-group">
                       <label class="control-label" for="level">Level</label>
 
-                      <select class="form-control" type="text" name="level" id="level" required>
+                      <select class="form-control" name="level" id="level" required>
                         <option value="">----</option>
 
                         <?php
                         foreach ($academic_levels as $id => $code) {
-                          echo '
-                        <option value="' . $code . '">' . $code . '</option>
-                        ';
+                          echo "<option value='{$code}'>{$code}</option>";
                         }
                         ?>
-
                       </select>
                     </div>
 
                     <div class="form-group">
-                      <label class="control-label" for="fee">School Fees total</label>
+                      <label class="control-label" for="fee-text">School Fees total</label>
 
                       <input class="form-control" type="text" name="fee-text" id="fee-text" required/>
                       <input type="hidden" name="fee" id="fee" required/>
@@ -112,51 +93,47 @@
 
                   <table class="table table-bordered table-striped table-condensed">
                     <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>Academic Year</th>
-                        <th>Level</th>
-                        <th>Department</th>
-                        <th>Amount Set (NGN)</th>
-                      </tr>
+                    <tr>
+                      <th>#</th>
+                      <th>Academic Year</th>
+                      <th>Level</th>
+                      <th>Department</th>
+                      <th>Amount Set (NGN)</th>
+                    </tr>
                     </thead>
 
                     <tbody>
-                      <?php
-                      $db = get_db();
-                      $stmt = $db->query(
-                        "SELECT academic_year, academic_level, department, fee FROM school_fees
+                    <?php
+                    $db = get_db();
+                    $stmt = $db->query(
+                      "SELECT academic_year, academic_level, department, fee FROM school_fees
                          ORDER BY id DESC LIMIT 6;"
-                      );
+                    );
 
-                      if ($stmt->rowCount()) {
-                        $fees_counter = 0;
+                    if ($stmt->rowCount()) {
+                      $fees_counter = 0;
 
-                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                          ++$fees_counter;
+                      while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                        ++$fees_counter;
 
-                          $session_for_table = $row['academic_year'];
+                        $session_for_table = $row['academic_year'];
 
-                          $level_for_table = $row['academic_level'];
+                        $level_for_table = $row['academic_level'];
 
-                          $dept_for_table = $departments[$row['department']];
+                        $dept_for_table = $departments[$row['department']];
 
-                          $fee_for_table = number_format($row['fee'], 2);
+                        $fee_for_table = number_format($row['fee'], 2);
 
-                          echo "<tr>" .
-                               "<td>$fees_counter</td>\n" .
-
-                               "<td>$session_for_table</td>\n" .
-
-                               "<td>$level_for_table</td>\n" .
-
-                               "<td>$dept_for_table</td>\n" .
-
-                               "<td align='right'>$fee_for_table</td>\n" .
-                               "</tr>";
-                        }
+                        echo "<tr>
+                                <td>{$fees_counter}</td>\n
+                                <td>{$session_for_table}</td>\n
+                                <td>{$level_for_table}</td>\n
+                                <td>{$dept_for_table}</td>\n
+                                <td align='right'>{$fee_for_table}</td>\n
+                              </tr>";
                       }
-                      ?>
+                    }
+                    ?>
                     </tbody>
                   </table>
                 </div>
@@ -165,13 +142,11 @@
           </section>
         </div>
       </div>
-
-      <a class="exit-offscreen"></a>
     </section>
   </section>
 </div>
 
-<?php echo include_once(__DIR__ . '/../../includes/js-footer.php'); ?>
+<?php include(__DIR__ . '/../../includes/js-footer.php'); ?>
 
 <script src="<?php echo STATIC_ROOT . 'admin_finance/define-fees/js/define-fees.js' ?>"></script>
 </body>
