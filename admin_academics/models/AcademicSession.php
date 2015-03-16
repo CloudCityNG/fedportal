@@ -43,17 +43,14 @@ class AcademicSession
     if ($session) {
       $log->addInfo("Query successfully ran. Session is: ", $session);
 
-      $session['start_date'] = self::transform_date($session['start_date']);
-      $session['end_date'] = self::transform_date($session['end_date']);
-
-      return $session;
+      return self::db_dates_to_carbon($session);
 
     } else {
       $log->addWarning("Current session not found!");
     }
 
 
-    return [];
+    return null;
   }
 
   public static function create_session($data)
@@ -67,8 +64,8 @@ class AcademicSession
     $query = "INSERT INTO session_table (session, start_date, end_date, created_at, updated_at)
               VALUES (:session, :start_date, :end_date, '$now', '$now')";
 
-    $data['start_date'] = self::transform_date($data['start_date']);
-    $data['end_date'] = self::transform_date($data['end_date']);
+    $data['start_date'] = Carbon::createFromFormat('d-m-Y', $data['start_date'])->format('Y-m-d');
+    $data['end_date'] = Carbon::createFromFormat('d-m-Y', $data['end_date'])->format('Y-m-d');
 
     $log->addInfo("About to create new session using query: {$query} and param: ", $data);
 
@@ -78,17 +75,18 @@ class AcademicSession
     if ($stmt->rowCount()) {
       $log->addInfo("Session successfully created!");
 
-      $data['start_date'] = self::transform_date($data['start_date']);
-      $data['end_date'] = self::transform_date($data['end_date']);
-      $data['created_at'] = $now->toDateTimeString();
+      $data['start_date'] = Carbon::parse($data['start_date']);
+      $data['end_date'] = Carbon::parse($data['end_date']);
+      $data['created_at'] = $now;
+      $data['updated_at'] = $now;
 
       return $data;
     }
 
-    return [];
+    return null;
   }
 
-  public static function session_exists($session)
+  public static function session_exists_by_session($session)
   {
     $db = get_db();
 
@@ -149,7 +147,14 @@ class AcademicSession
 
     if ($stmt && $stmt->rowCount()) {
       $log->addInfo("SQL statement ran successfully.");
-      return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+      $sessions = [];
+
+      while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $sessions[] = self::db_dates_to_carbon($row);
+      }
+
+      return $sessions;
     }
 
     return null;
@@ -167,15 +172,15 @@ class AcademicSession
               session = :session
               WHERE id = :id";
 
-    $data['start_date'] = self::transform_date($data['start_date']);
-    $data['end_date'] = self::transform_date($data['end_date']);
+    $db_data = self::user_dates_to_db_date($data);
 
     $log->addInfo(
-      "About to update academic session with query: {$query} and param: ", $data
+      "About to update academic session with query: {$query} and param: ",
+      ['user_data' => $data, 'db_data' => $db_data]
     );
 
     $stmt = $db->prepare($query);
-    $stmt->execute($data);
+    $stmt->execute($db_data);
 
     if ($stmt->rowCount()) {
       $log->addInfo("Session successfully updated!");
@@ -207,7 +212,7 @@ class AcademicSession
 
       $log->addInfo("Query ran successfully, result is ", $result);
 
-      return $result;
+      return self::db_dates_to_carbon($result);
     }
 
     $log->addError("Query failed to run.");
@@ -241,8 +246,23 @@ class AcademicSession
     return null;
   }
 
-  private static function transform_date($val)
+  private static function db_dates_to_carbon($data)
   {
-    return implode('-', array_reverse(explode('-', $val)));
+    foreach (['start_date', 'end_date', 'created_at', 'updated_at'] as $column) {
+      if (isset($data[$column])) {
+        $data[$column] = Carbon::parse($data[$column]);
+      }
+    }
+    return $data;
+  }
+
+  public static function user_dates_to_db_date(array $data)
+  {
+    foreach (['start_date', 'end_date'] as $column) {
+      if (isset($data[$column])) {
+        $data[$column] = Carbon::createFromFormat('d-m-Y', $data[$column])->format('Y-m-d');
+      }
+    }
+    return $data;
   }
 }

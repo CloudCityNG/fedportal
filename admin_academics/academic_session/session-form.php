@@ -60,7 +60,7 @@
                 <input disabled class="form-control" maxlength="10"
                        name="current_session[start_date]"
                        required id="start_date"
-                       value="<?php echo $current_session['start_date']; ?>"
+                       value="<?php echo $current_session['start_date']->format('d-m-Y'); ?>"
                        data-fv-date
                        data-fv-date-format="DD-MM-YYYY"
                   />
@@ -80,7 +80,7 @@
                 <input disabled class="form-control" maxlength="10"
                        name="current_session[end_date]"
                        required id="end_date"
-                       value="<?php echo $current_session['end_date']; ?>"
+                       value="<?php echo $current_session['end_date']->format('d-m-Y'); ?>"
                        data-fv-date
                        data-fv-date-format="DD-MM-YYYY"/>
 

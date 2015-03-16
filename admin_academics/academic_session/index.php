@@ -45,7 +45,7 @@ class AcademicSessionController
     try {
       $current_session = AcademicSession::get_current_session();
 
-      if (count($current_session)) {
+      if ($current_session) {
         $current_session['current_session_not_found'] = '';
         return $current_session;
 
@@ -94,7 +94,7 @@ class AcademicSessionController
     $session = $data['session'];
 
     try {
-      if (AcademicSession::session_exists($session)) {
+      if (AcademicSession::session_exists_by_session($session)) {
         return [
           'posted' => false,
 
@@ -105,13 +105,13 @@ class AcademicSessionController
 
       }
 
-      AcademicSession::create_session($data);
+      if (AcademicSession::create_session($data)) {
+        return [
+          'posted' => true,
 
-      return [
-        'posted' => true,
-
-        'messages' => [$session . ' session successfully created.']
-      ];
+          'messages' => [$session . ' session successfully created.']
+        ];
+      }
 
     } catch (PDOException $e) {
 
