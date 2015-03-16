@@ -44,8 +44,8 @@
     <option value="">---------------</option>
 
     <?php
-    foreach ($academic_sessions as $academic_session) {
-      echo "<option value='$academic_session[2]'>$academic_session[2]</option>";
+    foreach (AcademicSession::get_sessions(20) as $academic_session) {
+      echo "<option value='{$academic_session['session']}'>{$academic_session['session']}</option>";
     }
     ?>
   </select>
@@ -96,7 +96,7 @@
   <div class="input-group date input-append show-date-picker">
     <input type="text" class="form-control" name="student_bio[dateofbirth]" id="date_of_birth"
            required placeholder="dd-mm-yyyy" pattern="\d{1,2}-\d{1,2}-\d{4}">
-    
+
     <span class="input-group-addon add-on">
       <span class="glyphicon glyphicon-calendar"></span>
     </span>

@@ -13,7 +13,8 @@
 
   <input type="hidden" name="reg_no" value="<?php echo $reg_no; ?>"/>
   <input type="hidden" name="semester" value="<?php echo $semester; ?>"/>
-  <input type="hidden" name="academic_year" value="<?php echo $academic_year; ?>"/>
+  <input type="hidden" name="academic_year"
+         value="<?php echo $academic_year; ?>"/>
   <input type="hidden" name="dept" value="<?php echo $dept_code; ?>"/>
 
   <div class="row level">
@@ -48,34 +49,34 @@
         <caption>ND1</caption>
 
         <thead>
-          <tr>
-            <th>#</th>
-            <th>Course Code</th>
-            <th>Course Title</th>
-            <th>Credit Unit</th>
+        <tr>
+          <th>#</th>
+          <th>Course Code</th>
+          <th>Course Title</th>
+          <th>Credit Unit</th>
 
-            <th>
-              <label class="sr-only" for="ond1-check-all">OND 1 Check All Box</label>
-              <input type="checkbox" id="ond1-check-all"/>
-            </th>
-          </tr>
+          <th>
+            <label class="sr-only" for="ond1-check-all">OND 1 Check All Box</label>
+            <input type="checkbox" id="ond1-check-all"/>
+          </th>
+        </tr>
         </thead>
 
         <tbody>
-          <?php
-          $course_seq = 1;
+        <?php
+        $course_seq = 1;
 
-          foreach ($courses_for_semester['OND1'] as $courses) {
+        foreach ($courses_for_semester['OND1'] as $courses) {
 
-            $code = $courses['code'];
+          $code = $courses['code'];
 
-            $title = $courses['title'];
+          $title = $courses['title'];
 
-            $unit = sprintf('%.2f', $courses['unit']);
+          $unit = sprintf('%.2f', $courses['unit']);
 
-            $id = $courses['id'];
+          $id = $courses['id'];
 
-            echo "<tr>\n
+          echo "<tr>\n
 
                                <input type='hidden' name='course_reg[$id]' value='$id' disabled />
 
@@ -93,9 +94,9 @@
 
                                </tr>";
 
-            $course_seq++;
-          }
-          ?>
+          $course_seq++;
+        }
+        ?>
         </tbody>
       </table>
     </div>
@@ -105,33 +106,33 @@
         <caption>ND2</caption>
 
         <thead>
-          <tr>
-            <th>#</th>
-            <th>Course Code</th>
-            <th>Course Title</th>
-            <th>Credit Unit</th>
+        <tr>
+          <th>#</th>
+          <th>Course Code</th>
+          <th>Course Title</th>
+          <th>Credit Unit</th>
 
-            <th>
-              <input type="checkbox" id="ond2-check-all"/>
-            </th>
-          </tr>
+          <th>
+            <input type="checkbox" id="ond2-check-all"/>
+          </th>
+        </tr>
         </thead>
 
         <tbody>
-          <?php
-          $course_seq = 1;
+        <?php
+        $course_seq = 1;
 
-          foreach ($courses_for_semester['OND2'] as $courses) {
+        foreach ($courses_for_semester['OND2'] as $courses) {
 
-            $code = $courses['code'];
+          $code = $courses['code'];
 
-            $title = $courses['title'];
+          $title = $courses['title'];
 
-            $id = $courses['id'];
+          $id = $courses['id'];
 
-            $unit = sprintf('%.2f', $courses['unit']);
+          $unit = sprintf('%.2f', $courses['unit']);
 
-            echo "<tr>\n
+          echo "<tr>\n
 
                                <input type='hidden' name='course_reg[$id]' value='$id' disabled />
 
@@ -149,9 +150,9 @@
 
                                </tr>";
 
-            $course_seq++;
-          }
-          ?>
+          $course_seq++;
+        }
+        ?>
         </tbody>
       </table>
     </div>
@@ -163,34 +164,34 @@
         <caption>HND1</caption>
 
         <thead>
-          <tr>
-            <th>#</th>
-            <th>Course Code</th>
-            <th>Course Title</th>
-            <th>Credit Unit</th>
+        <tr>
+          <th>#</th>
+          <th>Course Code</th>
+          <th>Course Title</th>
+          <th>Credit Unit</th>
 
-            <th>
-              <input type="checkbox" id="hnd1-check-all"/>
-            </th>
-          </tr>
+          <th>
+            <input type="checkbox" id="hnd1-check-all"/>
+          </th>
+        </tr>
         </thead>
 
         <tbody>
-          <?php
+        <?php
 
-          $course_seq = 1;
+        $course_seq = 1;
 
-          foreach ($courses_for_semester['HND1'] as $courses) {
+        foreach ($courses_for_semester['HND1'] as $courses) {
 
-            $code = $courses['code'];
+          $code = $courses['code'];
 
-            $title = $courses['title'];
+          $title = $courses['title'];
 
-            $id = $courses['id'];
+          $id = $courses['id'];
 
-            $unit = sprintf('%.2f', $courses['unit']);
+          $unit = sprintf('%.2f', $courses['unit']);
 
-            echo "<tr>\n
+          echo "<tr>\n
 
                                 <input type='hidden' name='course_reg[$id]' value='$id' disabled />
 
@@ -208,9 +209,9 @@
 
                                 </tr>";
 
-            $course_seq++;
-          }
-          ?>
+          $course_seq++;
+        }
+        ?>
         </tbody>
       </table>
     </div>
@@ -220,34 +221,34 @@
         <caption>HND2</caption>
 
         <thead>
-          <tr>
-            <th>#</th>
-            <th>Course Code</th>
-            <th>Course Title</th>
-            <th>Credit Unit</th>
+        <tr>
+          <th>#</th>
+          <th>Course Code</th>
+          <th>Course Title</th>
+          <th>Credit Unit</th>
 
-            <th>
-              <label class="sr-only" for="hnd2-check-all"></label>
-              <input type="checkbox" id="hnd2-check-all"/>
-            </th>
-          </tr>
+          <th>
+            <label class="sr-only" for="hnd2-check-all"></label>
+            <input type="checkbox" id="hnd2-check-all"/>
+          </th>
+        </tr>
         </thead>
 
         <tbody>
-          <?php
-          $course_seq = 1;
+        <?php
+        $course_seq = 1;
 
-          foreach ($courses_for_semester['HND2'] as $courses) {
+        foreach ($courses_for_semester['HND2'] as $courses) {
 
-            $code = $courses['code'];
+          $code = $courses['code'];
 
-            $title = $courses['title'];
+          $title = $courses['title'];
 
-            $id = $courses['id'];
+          $id = $courses['id'];
 
-            $unit = sprintf('%.2f', $courses['unit']);
+          $unit = sprintf('%.2f', $courses['unit']);
 
-            echo "<tr>
+          echo "<tr>
 
                                <input type='hidden' name='course_reg[$id]' value='$id' disabled />
 
@@ -263,9 +264,9 @@
 
                                </tr>";
 
-            $course_seq++;
-          }
-          ?>
+          $course_seq++;
+        }
+        ?>
         </tbody>
       </table>
     </div>

@@ -8,8 +8,10 @@
 
 include_once('Models.php');
 
-class Courses extends Models {
+require_once(__DIR__ . '/../databases.php');
 
+class Courses extends Models
+{
   protected $table = 'student_courses';
 
   protected $db_attributes = [
@@ -28,10 +30,10 @@ class Courses extends Models {
 
   public function exists($reg_no)
   {
-    global $db;
+    $db = get_db();
 
     $stmt = $db->prepare(
-      "select * from student_courses where reg_no = ? limit 1"
+      "SELECT * FROM student_courses WHERE reg_no = ? LIMIT 1"
     );
 
     $stmt->execute([$reg_no]);

@@ -13,6 +13,39 @@ class AcademicSession
 {
   private static $LOG_NAME = 'academic-session';
 
+  public static function get_sessions($how_many = null)
+  {
+    $query = "SELECT * FROM session_table ORDER BY session DESC";
+
+    if ($how_many) {
+      $query .= " LIMIT {$how_many}";
+    }
+
+    $log = get_logger(self::$LOG_NAME);
+
+    $log->addInfo("About to get sessions with query: {$query}");
+
+    $db = get_db();
+
+    $stmt = $db->query($query);
+
+    if ($stmt) {
+      $sessions = [];
+
+      while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $sessions[] = self::db_dates_to_carbon($row);
+      }
+
+      $log->addInfo("Statement executed successfully. Session is: ", $sessions);
+
+      return $sessions;
+    }
+
+    $log->addWarning("Statement did not execute.");
+
+    return null;
+  }
+
   public static function get_current_session()
   {
     $db = get_db();

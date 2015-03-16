@@ -11,6 +11,8 @@ include_once(__DIR__ . '/../../helpers/get_academic_sessions.php');
 
 require_once(__DIR__ . '/../../helpers/models/StudentProfile.php');
 
+require_once(__DIR__ . '/../../admin_academics/models/AcademicSession.php');
+
 use Carbon\Carbon;
 
 class FreshmanRegController1

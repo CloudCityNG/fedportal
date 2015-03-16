@@ -1,5 +1,3 @@
-<?php include_once(__DIR__ . '/../../helpers/app_settings.php'); ?>
-
 <!doctype html>
 <html class="no-js" lang="">
 <head>
