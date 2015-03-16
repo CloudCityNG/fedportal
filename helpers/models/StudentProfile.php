@@ -12,7 +12,7 @@ include_once(__DIR__ . '/../app_settings.php');
 
 include_once(__DIR__ . '/../get_photos.php');
 
-include_once(__DIR__ . '/AcademicYear.php');
+include_once(__DIR__ . '/../../admin_academics/models/AcademicSession.php');
 
 
 /**
@@ -95,9 +95,7 @@ class StudentProfile
     //if academic year is not given, it defaults to current academic year
     if (!$academic_year) {
 
-      $academic_years = new AcademicYear();
-
-      $academic_year = $academic_years->get_current_year();
+      $academic_year = AcademicSession::get_current_session()['session'];
     }
 
     $db = get_db();
@@ -238,7 +236,7 @@ class StudentProfile
       }
 
     }
-    
+
     return false;
 
   }

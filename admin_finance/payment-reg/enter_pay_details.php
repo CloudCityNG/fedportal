@@ -59,44 +59,44 @@ $receive_payment = new ReceivePaymentFromStudent($_POST);
                   <div class="pay-details">
                     <table class="img-and-name">
                       <tbody>
-                        <tr>
-                          <td>
-                            <img src="<?php echo $receive_payment->student->photo ?>"
-                                 alt="<?php echo $receive_payment->student->names ?>"/>
-                          </td>
+                      <tr>
+                        <td>
+                          <img src="<?php echo $receive_payment->student->photo ?>"
+                               alt="<?php echo $receive_payment->student->names ?>"/>
+                        </td>
 
-                          <td class="names">
-                            <?php
-                            $student = $receive_payment->student;
+                        <td class="names">
+                          <?php
+                          $student = $receive_payment->student;
 
-                            $currents = $receive_payment->student->get_current_level_dept();
+                          $currents = $receive_payment->student->get_current_level_dept();
 
-                            $dept_name = $currents['dept_name'];
+                          $dept_name = $currents['dept_name'];
 
-                            $dept_code = $currents['dept_code'];
+                          $dept_code = $currents['dept_code'];
 
-                            $level = $currents['level'];
-                            ?>
+                          $level = $currents['level'];
+                          ?>
+
+                          <div>
+                            <div><strong>NAMES:</strong> <?php echo strtoupper($student->names); ?></div>
+
+                            <div><strong>MATRIC NO:</strong> <?php echo $receive_payment->reg_no ?> </div>
+
+                            <div><strong>DEPARTMENT:</strong> <?php echo $dept_name; ?></div>
+
+                            <div><strong>LEVEL:</strong> <?php echo $level; ?></div>
 
                             <div>
-                              <div><strong>NAMES:</strong> <?php echo strtoupper($student->names); ?></div>
+                              <strong>TOTAL OWING:</strong>
+                              <?php echo 'NGN  ' . number_format($student->get_owing(), 2); ?>
 
-                              <div><strong>MATRIC NO:</strong> <?php echo $receive_payment->reg_no ?> </div>
-
-                              <div><strong>DEPARTMENT:</strong> <?php echo $dept_name; ?></div>
-
-                              <div><strong>LEVEL:</strong> <?php echo $level; ?></div>
-
-                              <div>
-                                <strong>TOTAL OWING:</strong>
-                                <?php echo 'NGN  ' . number_format($student->get_owing(), 2); ?>
-
-                                <span id="amount-owing"
-                                      style="display: none"><?php echo $student->get_owing(); ?></span>
-                              </div>
+                              <span id="amount-owing"
+                                    style="display: none"><?php echo $student->get_owing(); ?></span>
                             </div>
-                          </td>
-                        </tr>
+                          </div>
+                        </td>
+                      </tr>
                       </tbody>
                     </table>
 
@@ -168,7 +168,6 @@ $receive_payment = new ReceivePaymentFromStudent($_POST);
 
                               <?php
                               foreach ($receive_payment->past_academic_years as $past_year) {
-
                                 echo "<option value='$past_year'>$past_year</option>";
                               }
                               ?>

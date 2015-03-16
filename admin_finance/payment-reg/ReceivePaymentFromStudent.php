@@ -5,7 +5,7 @@
 
 include_once(__DIR__ . '/../../helpers/models/StudentProfile.php');
 
-include_once(__DIR__ . '/../../helpers/models/AcademicYear.php');
+include_once(__DIR__ . '/../../admin_academics/models/AcademicSession.php');
 
 include_once(__DIR__ . '/../../helpers/app_settings.php');
 
@@ -34,13 +34,11 @@ class ReceivePaymentFromStudent
       return;
     }
 
-    $academic_years = new AcademicYear();
+    $this->academic_year = AcademicSession::get_current_session()['session'];
 
-    $eight_academic_years = $academic_years->get_years(8);
-
-    $this->academic_year = $eight_academic_years[0];
-
-    $this->past_academic_years = array_slice($eight_academic_years, 1);
+    $this->past_academic_years = array_map(function ($session) {
+      return $session['session'];
+    }, AcademicSession::get_sessions(4));
 
   }
 

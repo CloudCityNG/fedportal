@@ -10,8 +10,6 @@ require_once(__DIR__ . '/../databases.php');
 
 require_once(__DIR__ . '/../app_settings.php');
 
-require_once(__DIR__ . '/AcademicYear.php');
-
 require_once(__DIR__ . '/StudentProfile.php');
 
 
