@@ -55,6 +55,8 @@ class MigrationManager
 
       }
     }
+
+    echo "<h1>Forward migrations completed!</h1>";
   }
 }
 
