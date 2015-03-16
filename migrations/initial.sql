@@ -1,3 +1,389 @@
+CREATE TABLE IF NOT EXISTS `academic_departments` (
+  `code`        VARCHAR(20)  NOT NULL,
+  `description` VARCHAR(200) NOT NULL,
+  UNIQUE KEY `code` (`code`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `academic_levels` (
+  `id`          INT(11)                 NOT NULL AUTO_INCREMENT,
+  `code`        VARCHAR(5)
+                COLLATE utf8_unicode_ci NOT NULL,
+  `description` VARCHAR(255)
+                COLLATE utf8_unicode_ci          DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `code` (`code`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
+
+
+CREATE TABLE IF NOT EXISTS `academic_sessions` (
+  `id`         INT(11)          NOT NULL        AUTO_INCREMENT,
+  `code`       VARCHAR(9)
+               COLLATE utf8_unicode_ci          DEFAULT NULL,
+  `start_year` INT(10) UNSIGNED NOT NULL,
+  `end_year`   INT(10) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `start_year` (`start_year`, `end_year`),
+  UNIQUE KEY `code` (`code`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
+
+
+CREATE TABLE IF NOT EXISTS `admin_fin_table` (
+  `pass` VARCHAR(20) NOT NULL,
+  PRIMARY KEY (`pass`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = latin1;
+
+
+CREATE TABLE IF NOT EXISTS `admin_table` (
+  `pass` VARCHAR(20) NOT NULL,
+  PRIMARY KEY (`pass`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = latin1;
+
+
+CREATE TABLE IF NOT EXISTS `course_reg` (
+  `session`    VARCHAR(20) NOT NULL,
+  `personalno` VARCHAR(20) NOT NULL,
+  `class`      VARCHAR(20) NOT NULL,
+  `courses`    TEXT        NOT NULL,
+  `department` VARCHAR(20) NOT NULL,
+  `units`      TEXT        NOT NULL,
+  `codes`      TEXT        NOT NULL,
+  `totalunits` TINYINT(4)  NOT NULL,
+  UNIQUE KEY `session` (`session`, `personalno`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = latin1;
+
+
+CREATE TABLE IF NOT EXISTS `course_table` (
+  `id`         INT(11)          NOT NULL AUTO_INCREMENT,
+  `title`      VARCHAR(50)      NOT NULL,
+  `code`       VARCHAR(20)      NOT NULL,
+  `unit`       INT(10) UNSIGNED NOT NULL,
+  `department` VARCHAR(20)      NOT NULL,
+  `semester`   INT(11)          NOT NULL,
+  `class`      VARCHAR(4)       NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `course_table_code_department_semester` (`code`, `department`, `semester`, `class`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = latin1;
+
+
+CREATE TABLE IF NOT EXISTS `edu_history` (
+  `id`             INT(11)                 NOT NULL AUTO_INCREMENT,
+  `reg_no`         VARCHAR(25)
+                   COLLATE utf8_unicode_ci NOT NULL,
+  `pry_edu`        TEXT
+                   COLLATE utf8_unicode_ci NOT NULL,
+  `secondary_edu`  TEXT
+                   COLLATE utf8_unicode_ci NOT NULL,
+  `o_level_scores` TEXT
+                   COLLATE utf8_unicode_ci NOT NULL,
+  `post_secondary` TEXT
+                   COLLATE utf8_unicode_ci,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `reg_no` (`reg_no`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
+
+
+CREATE TABLE IF NOT EXISTS `freshman_olevels` (
+  `personalno`   VARCHAR(50) NOT NULL DEFAULT '',
+  `nameofexam1`  VARCHAR(40) NOT NULL DEFAULT '',
+  `examno1`      VARCHAR(40) NOT NULL DEFAULT '',
+  `nameofexam2`  VARCHAR(40)          DEFAULT NULL,
+  `examno2`      VARCHAR(40)          DEFAULT NULL,
+  `institution1` VARCHAR(50) NOT NULL DEFAULT '',
+  `institution2` VARCHAR(50)          DEFAULT NULL,
+  `duration1`    VARCHAR(50) NOT NULL DEFAULT '',
+  `duration2`    VARCHAR(50)          DEFAULT NULL,
+  `certificate1` VARCHAR(50) NOT NULL DEFAULT '',
+  `certificate2` VARCHAR(50)          DEFAULT NULL,
+  `grades1`      TEXT        NOT NULL,
+  `grades2`      TEXT        NOT NULL,
+  PRIMARY KEY (`personalno`)
+)
+  ENGINE = MyISAM
+  DEFAULT CHARSET = latin1;
+
+
+CREATE TABLE IF NOT EXISTS `freshman_profile` (
+  `first_name`       VARCHAR(200)         DEFAULT NULL,
+  `personalno`       VARCHAR(40) NOT NULL DEFAULT '',
+  `surname`          VARCHAR(50) NOT NULL DEFAULT '',
+  `other_names`      VARCHAR(200)         DEFAULT NULL,
+  `previousname`     VARCHAR(50)          DEFAULT NULL,
+  `sex`              VARCHAR(20) NOT NULL DEFAULT '',
+  `dateofbirth`      VARCHAR(30) NOT NULL DEFAULT '',
+  `email`            VARCHAR(30) NOT NULL DEFAULT '',
+  `phone`            VARCHAR(30) NOT NULL DEFAULT '',
+  `permanentaddress` VARCHAR(50) NOT NULL DEFAULT '',
+  `nationality`      VARCHAR(30)          DEFAULT NULL,
+  `state`            VARCHAR(30) NOT NULL DEFAULT '',
+  `lga`              VARCHAR(40) NOT NULL DEFAULT '',
+  `course`           VARCHAR(40) NOT NULL DEFAULT '',
+  `parentname`       VARCHAR(50)          DEFAULT NULL,
+  `contactperson`    VARCHAR(100)         DEFAULT NULL,
+  `activities`       VARCHAR(100)         DEFAULT NULL,
+  `currentsession`   VARCHAR(10) NOT NULL DEFAULT '',
+  `created_at`       TIMESTAMP   NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at`       TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at`       TIMESTAMP   NULL     DEFAULT NULL,
+  PRIMARY KEY (`personalno`)
+)
+  ENGINE = MyISAM
+  DEFAULT CHARSET = latin1;
+
+
+CREATE TABLE IF NOT EXISTS `medical_info` (
+  `id`                  INT(11)                 NOT NULL AUTO_INCREMENT,
+  `reg_no`              VARCHAR(20)
+                        COLLATE utf8_unicode_ci NOT NULL,
+  `blood_group`         VARCHAR(5)
+                        COLLATE utf8_unicode_ci NOT NULL,
+  `genotype`            VARCHAR(5)
+                        COLLATE utf8_unicode_ci NOT NULL,
+  `allergies`           VARCHAR(300)
+                        COLLATE utf8_unicode_ci          DEFAULT NULL,
+  `medical_conditions`  VARCHAR(300)
+                        COLLATE utf8_unicode_ci          DEFAULT NULL,
+  `doctor_name`         VARCHAR(300)
+                        COLLATE utf8_unicode_ci          DEFAULT NULL,
+  `doctor_mobile_phone` VARCHAR(20)
+                        COLLATE utf8_unicode_ci          DEFAULT NULL,
+  `doctor_address`      VARCHAR(300)
+                        COLLATE utf8_unicode_ci          DEFAULT NULL,
+  `created_at`          TIMESTAMP               NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at`          TIMESTAMP               NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `reg_no` (`reg_no`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
+
+
+CREATE TABLE IF NOT EXISTS `pics` (
+  `personalno` VARCHAR(40)  NOT NULL DEFAULT '',
+  `nameofpic`  VARCHAR(100) NOT NULL DEFAULT '',
+  PRIMARY KEY (`personalno`)
+)
+  ENGINE = MyISAM
+  DEFAULT CHARSET = latin1;
+
+
+CREATE TABLE IF NOT EXISTS `pin_table` (
+  `number`     VARCHAR(20) NOT NULL,
+  `pass`       VARCHAR(30)          DEFAULT NULL,
+  `email`      VARCHAR(50) NOT NULL,
+  `created_at` TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`number`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = latin1;
+
+
+CREATE TABLE IF NOT EXISTS `pin_table_new` (
+  `number` VARCHAR(20) NOT NULL,
+  `pass`   VARCHAR(30) NOT NULL,
+  `email`  VARCHAR(50) NOT NULL,
+  PRIMARY KEY (`number`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = latin1;
+
+
+CREATE TABLE IF NOT EXISTS `school_fees` (
+  `id`             INT(11)                 NOT NULL AUTO_INCREMENT,
+  `academic_year`  VARCHAR(9)
+                   COLLATE utf8_unicode_ci NOT NULL,
+  `academic_level` VARCHAR(4)
+                   COLLATE utf8_unicode_ci NOT NULL,
+  `fee`            DECIMAL(13, 2)          NOT NULL,
+  `department`     VARCHAR(20)
+                   COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `school_fees_academic_level_academic_year_department` (`academic_level`, `academic_year`, `department`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
+
+
+CREATE TABLE IF NOT EXISTS `semester` (
+  `number` INT(10) UNSIGNED NOT NULL,
+  UNIQUE KEY `number` (`number`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
+
+
+CREATE TABLE IF NOT EXISTS `session_table` (
+  `session` VARCHAR(20) NOT NULL,
+  PRIMARY KEY (`session`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = latin1;
+
+
+CREATE TABLE IF NOT EXISTS `student_billing` (
+  `id`              INT(11)                 NOT NULL AUTO_INCREMENT,
+  `reg_no`          VARCHAR(100)
+                    COLLATE utf8_unicode_ci NOT NULL,
+  `academic_year`   VARCHAR(10)
+                    COLLATE utf8_unicode_ci NOT NULL,
+  `level`           VARCHAR(4)
+                    COLLATE utf8_unicode_ci NOT NULL,
+  `department_code` VARCHAR(20)
+                    COLLATE utf8_unicode_ci NOT NULL,
+  `amount`          DECIMAL(13, 2)                   DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `reg_no` (`reg_no`, `academic_year`, `level`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
+
+
+CREATE TABLE IF NOT EXISTS `student_courses` (
+  `id`                 INT(11)                 NOT NULL AUTO_INCREMENT,
+  `academic_year_code` VARCHAR(10)
+                       COLLATE utf8_unicode_ci NOT NULL,
+  `reg_no`             VARCHAR(20)
+                       COLLATE utf8_unicode_ci NOT NULL,
+  `semester`           INT(11)                 NOT NULL,
+  `course_id`          INT(11)                 NOT NULL,
+  `level`              VARCHAR(4)
+                       COLLATE utf8_unicode_ci          DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `reg_no_academic_year_code_semester_course_id` (`reg_no`, `academic_year_code`, `semester`, `course_id`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
+
+
+CREATE TABLE IF NOT EXISTS `student_currents` (
+  `id`            INT(11)                 NOT NULL AUTO_INCREMENT,
+  `reg_no`        VARCHAR(20)
+                  COLLATE utf8_unicode_ci NOT NULL,
+  `academic_year` VARCHAR(9)
+                  COLLATE utf8_unicode_ci NOT NULL,
+  `level`         VARCHAR(4)
+                  COLLATE utf8_unicode_ci NOT NULL,
+  `dept_code`     VARCHAR(30)
+                  COLLATE utf8_unicode_ci NOT NULL,
+  `dept_name`     VARCHAR(150)
+                  COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `student_currents_reg_no_academic_year` (`reg_no`, `academic_year`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
+
+
+CREATE TABLE IF NOT EXISTS `student_payment` (
+  `id`            INT(11)                 NOT NULL AUTO_INCREMENT,
+  `reg_no`        VARCHAR(30)
+                  COLLATE utf8_unicode_ci NOT NULL,
+  `academic_year` VARCHAR(9)
+                  COLLATE utf8_unicode_ci          DEFAULT NULL,
+  `level`         VARCHAR(4)
+                  COLLATE utf8_unicode_ci NOT NULL,
+  `dept_code`     VARCHAR(30)
+                  COLLATE utf8_unicode_ci NOT NULL,
+  `amount`        DECIMAL(15, 2)          NOT NULL,
+  `remark`        VARCHAR(300)
+                  COLLATE utf8_unicode_ci NOT NULL,
+  `receipt_no`    VARCHAR(30)
+                  COLLATE utf8_unicode_ci NOT NULL,
+  `created_at`    DATETIME                NOT NULL,
+  PRIMARY KEY (`id`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
+
+ALTER TABLE `session_table` CHANGE `session` `session` VARCHAR(9) NOT NULL;
+
+ALTER TABLE `session_table` DROP PRIMARY KEY;
+
+ALTER TABLE `session_table` ADD `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY
+FIRST;
+
+ALTER TABLE `session_table`
+ADD `start_date` DATE NOT NULL,
+ADD `end_date` DATE NOT NULL,
+ADD `created_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
+ADD `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD `current` VARCHAR(10) NULL DEFAULT NULL;
+
+ALTER TABLE `semester`
+ADD `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY
+FIRST,
+ADD `start_date` DATE NOT NULL,
+ADD `end_date` DATE NOT NULL,
+ADD `created_at` TIMESTAMP NULL,
+ADD `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD `current` VARCHAR(10) NULL DEFAULT NULL;
+
+ALTER TABLE `semester` CHANGE `created_at`
+`created_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00';
+
+ALTER TABLE `semester` ADD UNIQUE (`start_date`, `end_date`);
+
+ALTER TABLE `semester` DROP `current`;
+
+ALTER TABLE `semester` ADD `semester_id` INT(11) NOT NULL DEFAULT '0';
+
+ALTER TABLE `semester` ADD CONSTRAINT `fk_semester_id` FOREIGN KEY (`semester_id`) REFERENCES `session_table` (`id`);
+
+ALTER TABLE `session_table` DROP `current`;
+
+ALTER TABLE `session_table`
+ADD UNIQUE `session` (`session`),
+ADD UNIQUE `start_date_end_date` (`start_date`, `end_date`);
+
+ALTER TABLE semester DROP FOREIGN KEY `fk_semester_id`;
+
+ALTER TABLE semester CHANGE semester_id session_id INT(11) NOT NULL;
+
+ALTER TABLE `semester`
+ADD CONSTRAINT `fk_session_id` FOREIGN KEY (`session_id`) REFERENCES `session_table` (`id`);
+
+ALTER TABLE semester DROP KEY `number`;
+ALTER TABLE semester ADD UNIQUE KEY `number_session_id` (number, session_id);
+
+ALTER TABLE semester
+DROP KEY `start_date`,
+ADD UNIQUE KEY `start_date1` (`start_date`),
+ADD UNIQUE KEY `end_date` (`end_date`);
+
+ALTER TABLE course_table CHANGE `title` `title` VARCHAR(300) NOT NULL;
+
+ALTER TABLE semester
+ADD UNIQUE INDEX `semester_number_semester_id` (`number`, `session_id`);
+
+ALTER TABLE semester DROP INDEX `number_session_id`;
+
+
 INSERT INTO `academic_departments` (`code`, `description`) VALUES
   ('dental_technology', 'DENTAL TECHNOLOGY'),
   ('dental_therapy', 'DENTAL THERAPY');
@@ -19,11 +405,11 @@ INSERT INTO `academic_sessions` (`id`, `code`, `start_year`, `end_year`) VALUES
 
 
 INSERT INTO `admin_fin_table` (`pass`) VALUES
-  ('finance_fedsdtten');
+  ('finance');
 
 
 INSERT INTO `admin_table` (`pass`) VALUES
-  ('fedsdtten');
+  ('academics');
 
 
 INSERT INTO `course_table` (`id`, `title`, `code`, `unit`, `department`, `semester`, `class`) VALUES
@@ -202,11 +588,3 @@ INSERT INTO `course_table` (`id`, `title`, `code`, `unit`, `department`, `semest
   (439, 'Microbiological Technique I', 'STM.312', 2, 'dental_therapy', 2, 'HND2'),
   (440, 'Entrepreneurship Development Programme', 'BAM.413', 2, 'dental_therapy', 2, 'HND2'),
   (441, 'Computer Programming', 'COM.311', 2, 'dental_therapy', 2, 'HND2');
-
-
-INSERT INTO `session_table` (`session`) VALUES
-  ('2014/2015');
-
-INSERT INTO semester (number, start_date, end_date, created_at, session_id) VALUES (
-    1, '2015-01-01', '2015-04-30', NOW(), 1
-);

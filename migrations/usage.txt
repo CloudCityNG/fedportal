@@ -1,0 +1,10 @@
+1. generate migration script
+cd to migrations directory, run:
+`php make.php short_script_summary`
+
+Ensure `short_script_summary` is less than 50 characters or it will be truncated.
+
+2. Create your migration by editing the up and down public functions.
+
+3. Run migrations via
+`php do.php`

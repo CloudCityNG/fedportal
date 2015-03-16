@@ -1,1 +1,0 @@
-ALTER TABLE `session_table` CHANGE `session` `session` VARCHAR(9) NOT NULL;

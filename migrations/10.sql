@@ -1,1 +1,0 @@
-ALTER TABLE `semester` ADD CONSTRAINT `fk_semester_id` FOREIGN KEY (`semester_id`) references `session_table`(`id`);
