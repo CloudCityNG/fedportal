@@ -1,12 +1,12 @@
-.semester-view .current_semester_not_found {
+.current_semester_not_found {
   display: none;
 }
-.semester-view .new-semester-form legend > span {
+.new-semester-form legend > span {
   display: block;
 }
-.semester-view .current-semester-form-btn {
+.current-semester-form-btn {
   display: none;
 }
-.semester-view .current-semester-edit-trigger {
+.current-semester-edit-trigger {
   cursor: pointer;
 }

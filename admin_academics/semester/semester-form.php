@@ -1,4 +1,4 @@
-<div class="row semester-view">
+<div class="semester-view">
 
   <span id="two-most-recent-sessions" style="display: none;">
     <?php echo json_encode($two_most_recent_sessions) ?>
@@ -23,9 +23,9 @@
 
         <fieldset>
           <div class="form-group">
-            <label class="control-label col-sm-3" for="number">Semester Number</label>
+            <label class="control-label col-sm-4" for="number">Semester Number</label>
 
-            <div class="col-sm-4">
+            <div class="col-sm-5">
               <select disabled class="form-control" name="current_semester[number]" id="number" required>
                 <option <?php echo $current_semester['number'] == 1 ? 'selected' : '' ?> value="1">
                   1st
@@ -39,9 +39,9 @@
           </div>
 
           <div class="form-group">
-            <label class="control-label col-sm-3" for=start_date>Start Date</label>
+            <label class="control-label col-sm-4" for=start_date>Start Date</label>
 
-            <div class="col-sm-4">
+            <div class="col-sm-5">
               <div class="input-group date show-date-picker input-append">
                 <input disabled class="form-control" name="current_semester[start_date]"
                        required id="start_date"
@@ -57,9 +57,9 @@
           </div>
 
           <div class="form-group">
-            <label class="control-label col-sm-3" for=end_date>End Date</label>
+            <label class="control-label col-sm-4" for=end_date>End Date</label>
 
-            <div class="col-sm-4">
+            <div class="col-sm-5">
               <div class="input-group date show-date-picker input-append">
                 <input disabled class="form-control date-picker" name="current_semester[end_date]"
                        required id="end_date"
@@ -75,9 +75,9 @@
           </div>
 
           <div class="form-group">
-            <label class="control-label col-sm-3" for="current-semester-session">Session</label>
+            <label class="control-label col-sm-4" for="current-semester-session">Session</label>
 
-            <div class="col-sm-4">
+            <div class="col-sm-5">
               <input disabled class="form-control semester-session" required
                      name="current_semester[session][session]" maxlength="9"
                      id="current-semester-session" data-related-input-id="#current_semester-id"
@@ -89,8 +89,8 @@
           </div>
         </fieldset>
 
-        <div class="row">
-          <div class="current-semester-form-btn col-sm-4 col-sm-offset-3">
+        <div class="form-group">
+          <div class="current-semester-form-btn col-sm-5 col-sm-offset-4">
             <button class="btn btn-default" type="submit" name="current-semester-form-submit">
               Edit Current Semester
             </button>
@@ -142,7 +142,7 @@
   }
   ?>
 
-  <div class="col-sm-8">
+  <div>
     <form class="form-horizontal semester-form new-semester-form" role="form"
           method="post" action="<?php echo path_to_link(__DIR__) ?>"
           data-fv-framework="bootstrap"
@@ -231,7 +231,7 @@
       </fieldset>
 
       <div class="row">
-        <div class="semester-form-btn col-sm-4 col-sm-offset-4">
+        <div class="semester-form-btn col-sm-5 col-sm-offset-4">
           <button class="btn btn-default" type="submit" name="new-semester-form-submit">
             Create New Semester
           </button>

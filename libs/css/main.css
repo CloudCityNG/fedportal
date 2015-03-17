@@ -5894,7 +5894,7 @@ html[dir="rtl"] .select2-container .select2-choice .select2-arrow {
 
 /*
 *   Data tables
-*   
+*
 */
 .sorting:after,
 .sorting_asc:after,
@@ -5949,7 +5949,7 @@ table.dataTable {
 
 /*
 *   Stepy Wizard
-*   
+*
 */
 .stepy {
     width: 100%;
@@ -6040,7 +6040,7 @@ table.dataTable {
 
 /*
 *   Jstree
-*   
+*
 */
 .jstree-default .jstree-clicked,
 .jstree-default .jstree-hovered {
@@ -6072,7 +6072,7 @@ table.dataTable {
 
 /*
 *   IonSLider
-*   
+*
 */
 .irs-line-mid,
 .irs-line-left,
@@ -6109,7 +6109,7 @@ table.dataTable {
 }
 
 /*
-*   Owl Carousel Owl Demo Theme 
+*   Owl Carousel Owl Demo Theme
 *   v1.3.3
 */
 .owl-theme .owl-controls .owl-page span {

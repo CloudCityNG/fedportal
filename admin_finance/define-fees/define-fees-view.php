@@ -2,7 +2,7 @@
 <html lang="en" class="no-js">
 <head>
   <?php include(__DIR__ . '/../../includes/header.php'); ?>
-
+  <link rel="stylesheet" href="<?php echo STATIC_ROOT . 'libs/css/main.min.css' ?>">
   <style>
     .panel-body {
       margin-left: 10px;

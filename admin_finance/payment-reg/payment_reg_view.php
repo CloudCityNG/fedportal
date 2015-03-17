@@ -20,6 +20,7 @@ if (isset($_SESSION[$session_key]) && $_SESSION[$session_key]) {
 <html class="no-js" lang="">
 <head>
   <?php include_once(__DIR__ . '/../../includes/header.php'); ?>
+  <link rel="stylesheet" href="<?php echo STATIC_ROOT . 'libs/css/main.min.css' ?>">
 </head>
 
 <style>

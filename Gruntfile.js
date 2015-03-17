@@ -13,9 +13,8 @@ module.exports = function (grunt) {
   ];
 
   grunt.initConfig({
-
     uglify: {
-      deploy: {
+      initial: {
         options: {
           sourceMap: true
         },
@@ -37,7 +36,7 @@ module.exports = function (grunt) {
     },
 
     concat: {
-      deploy: {
+      initial: {
         options: {separator: ';\n'},
         files: {
           'libs/compiled-temp.js': [
@@ -53,7 +52,6 @@ module.exports = function (grunt) {
             'libs/formValidation/js/formValidation.js',
             'libs/formValidation/js/framework/bootstrap.js',
             'libs/ajax-alert/dist/js/ajax-alert.min.js',
-            'libs/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',
             'libs/bootstrap-datepicker/dist/js/bootstrap-datepicker.js',
             'libs/appear/jquery.appear.js',
             'libs/jquery.placeholder.js',
@@ -142,14 +140,12 @@ module.exports = function (grunt) {
             'libs/css/animate.min.css',
             'libs/css/jquery-ui-autocomplete.min.css',
             'libs/formValidation/css/formValidation.min.css',
-            'libs/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css',
             'libs/bootstrap-datepicker/dist/css/bootstrap-datepicker.css',
-            'libs/css/skins/palette.css',
-            'libs/css/main.css'
+            'libs/css/skins/palette.css'
           ]
         }
       },
-      deploy: {
+      initial: {
         options: {
           sourceMap: true, s0: true
         },
@@ -159,18 +155,9 @@ module.exports = function (grunt) {
           ext: '.min.css'
         }]
       }
-    },
-
-    less: {
-      deploy: {
-        files: {
-          "libs/css/compiled.min.css": "libs/css/compiled.css"
-        }
-      }
     }
-
   });
 
   grunt.registerTask('dist-js', 'uglify');
-  grunt.registerTask('deploy', ['cssmin:combine', 'cssmin:deploy', 'concat:deploy', 'uglify:deploy']);
+  grunt.registerTask('initial', ['cssmin:combine', 'cssmin:initial', 'concat:initial', 'uglify:initial']);
 };

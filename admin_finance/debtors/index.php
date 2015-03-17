@@ -6,7 +6,7 @@ require_once(__DIR__ . '/../login/auth.php');
 <html lang="en" class="no-js">
 <head>
   <?php include_once(__DIR__ . '/../../includes/header.php'); ?>
-
+  <link rel="stylesheet" href="<?php echo STATIC_ROOT . 'libs/css/main.min.css' ?>">
   <style>
     .panel-body {
       margin-left: 15px;

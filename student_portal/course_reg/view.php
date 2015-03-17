@@ -2,7 +2,7 @@
 <html class="no-js" lang="">
 <head>
   <?php include(__DIR__ . '/../../includes/header.php'); ?>
-
+  <link rel="stylesheet" href="<?php echo STATIC_ROOT . 'libs/css/main.min.css' ?>">
   <link rel="stylesheet" href="<?php echo STATIC_ROOT . 'student_portal/course_reg/css/course-reg.min.css' ?>"/>
 </head>
 

@@ -14,7 +14,7 @@ class AdminFinanceLogin
 
   public function get()
   {
-    include(__DIR__ . '/login_view.php');
+    include(__DIR__ . '/view.php');
   }
 
   public function post()

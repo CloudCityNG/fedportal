@@ -2,18 +2,29 @@ form .has-feedback .form-control-feedback {
   top: 0;
   right: -15px;
 }
-.content-wrap {
-  position: static;
+.container-admin-acada {
+  margin: 50px auto;
 }
-.app > .layout > section,
-.app > .layout > aside {
-  position: static;
+@media screen and (min-width: 768px) and (max-width: 959px) {
+  .container-admin-acada {
+    width: 768px;
+  }
 }
-.main-content {
-  background-color: #ffffff;
+@media screen and (width: 768px) {
+  .container-admin-acada {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
 }
-.main-content > .content-wrap > .wrapper {
-  margin: 55px auto 0;
+@media screen and (min-width: 960px) and (max-width: 1239px) {
+  .container-admin-acada {
+    width: 960px;
+  }
+}
+@media screen and (min-width: 1240px) {
+  .container-admin-acada {
+    width: 1000px;
+  }
 }
 .top-info > .legend {
   font-size: 25px;

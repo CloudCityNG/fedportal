@@ -2,6 +2,7 @@
 <html class="signin no-js" lang="">
 <head>
   <?php include_once(__DIR__ . '/../../includes/header.php'); ?>
+  <link rel="stylesheet" href="<?php echo STATIC_ROOT . 'libs/css/main.min.css' ?>">
 
   <style>
     .panel {

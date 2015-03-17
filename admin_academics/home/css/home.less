@@ -3,23 +3,24 @@ form .has-feedback .form-control-feedback {
   right: -15px;
 }
 
-.content-wrap {
-  position: static;
-}
+.container-admin-acada {
+  margin: 50px auto;
 
-.app > .layout > section, .app > .layout > aside {
-  position: static;
-}
+  @media screen and (min-width: 768px) and (max-width: 959px) {
+    width: 768px;
+  }
 
-.main-content {
-  background-color: #ffffff;
+  @media screen and (width: 768px) {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
 
-  & > .content-wrap {
-    & > .wrapper {
-      //      min-height: 500px;
-      //      max-width: 1025px;
-      margin: 55px auto 0;
-    }
+  @media screen and (min-width: 960px) and (max-width: 1239px) {
+    width: 960px;
+  }
+
+  @media screen and (min-width: 1240px) {
+    width: 1000px;
   }
 }
 

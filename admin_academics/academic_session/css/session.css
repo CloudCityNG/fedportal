@@ -1,12 +1,12 @@
-.academic-session-view .current_session_not_found {
+.current_session_not_found {
   display: none;
 }
-.academic-session-view .new-session-form legend > span {
+.new-session-form legend > span {
   display: block;
 }
-.academic-session-view .current-session-form-btn {
+.current-session-form-btn {
   display: none;
 }
-.academic-session-view .current-session-edit-trigger {
+.current-session-edit-trigger {
   cursor: pointer;
 }
