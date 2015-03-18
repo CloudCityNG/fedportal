@@ -1,4 +1,4 @@
-<?php require(__DIR__ . '/getNavClass.php');?>
+<?php require(__DIR__ . '/getNavClass.php'); ?>
 
 <!doctype html>
 <html class="no-js" lang="">
@@ -14,8 +14,16 @@
 <body>
 <div class="container-admin-acada">
   <div class="top-info">
-    <div class="legend">
-      <a href="<?php echo path_to_link(__DIR__ . '/') ?>">Academics Administration</a>
+    <div class="legend clearfix">
+      <div class="pull-left">
+        <a href="<?php echo path_to_link(__DIR__ . '/') ?>">Academics Administration</a>
+      </div>
+
+      <div class="pull-right">
+        <a href="<?php echo path_to_link(__DIR__ . '/../login/logout.php'); ?>">
+          Log Off <img src="<?php echo path_to_link(__DIR__ . '/../../img/exit.png') ?>" alt="log off"/>
+        </a>
+      </div>
     </div>
 
     <div class="divider">
@@ -23,7 +31,7 @@
     </div>
   </div>
 
-  <?php require(__DIR__ . '/current_session_semester_info.php');?>
+  <?php require(__DIR__ . '/current_session_semester_info.php'); ?>
 
   <div class="row content-area">
     <div class="col-sm-3 side-bar-navs">

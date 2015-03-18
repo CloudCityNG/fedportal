@@ -22,20 +22,22 @@
     width: 1000px;
   }
 }
-.top-info a {
+.legend > .pull-left > a {
   font-size: 25px;
+}
+.legend a {
   font-family: monospace;
   color: #6A6A6A;
 }
-.top-info a:hover {
+.legend a:hover {
   text-decoration: none;
 }
-.top-info > .divider {
+.divider {
   border: 1px solid #D0D0D0;
   background-color: #EAEAEA;
   min-height: 38px;
 }
-.top-info > .divider > .date-time {
+.divider > .date-time {
   background-color: #156779;
   border-color: #156779;
   color: #ffffff;
