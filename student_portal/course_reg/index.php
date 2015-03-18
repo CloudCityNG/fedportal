@@ -1,12 +1,12 @@
 <?php
 
 require_once(__DIR__ . '/../login/auth.php');
-include_once(__DIR__ . '/../../helpers/databases.php');
 include_once(__DIR__ . '/../../admin_academics/models/AcademicSession.php');
 include_once(__DIR__ . '/../../admin_academics/models/Semester.php');
 include_once(__DIR__ . '/../../admin_academics/models/StudentCourses.php');
 include_once(__DIR__ . '/../../admin_academics/models/AcademicDepartment.php');
 include_once(__DIR__ . '/../../admin_academics/models/Courses.php');
+include_once(__DIR__ . '/../../admin_academics/models/StudentCurrent.php');
 include_once(__DIR__ . '/../../helpers/get_student_profile_from_reg_no.php');
 include_once(__DIR__ . '/../../helpers/get_photos.php');
 include_once(__DIR__ . '/../../helpers/get_academic_levels.php');
@@ -90,7 +90,7 @@ class CourseRegController
   }
 }
 
-class CourseRegistration
+class CourseRegistrationPostController
 {
   private $academic_year;
 
@@ -104,7 +104,7 @@ class CourseRegistration
 
   private $dept_code;
 
-  private static $LOG_NAME = "course-registration-handler";
+  private static $LOG_NAME = "CourseRegistrationPostController";
 
   function __construct()
   {
@@ -200,69 +200,19 @@ class CourseRegistration
     return;
   }
 
-  private function get_dept_name_from_code()
-  {
-    $db = get_db();
-
-    $log = get_logger(self::$LOG_NAME);
-
-    $dept_name_query = "SELECT description FROM academic_departments WHERE  code = ?";
-
-    $log->addInfo("About to retrieve department description for code
-                   {$this->dept_code} with query: {$dept_name_query}");
-
-    $name = '';
-
-    try {
-
-      $dept_name_stmt = $db->prepare($dept_name_query);
-
-      $dept_name_stmt->execute([$this->dept_code]);
-
-      $name = $dept_name_stmt->fetch(PDO::FETCH_NUM)[0];
-
-      $log->addInfo("Department description successfully retrieved as {$name}");
-
-    } catch (PDOException $e) {
-
-      logPdoException($e, "An error occurred while retrieving department description.", $log);
-    }
-
-    return $name;
-
-  }
-
   private function set_current_level_dept()
   {
-    $name = $this->get_dept_name_from_code();
-
-    $db = get_db();
-
-    $log = get_logger(self::$LOG_NAME);
-
-    $query = "INSERT INTO student_currents(reg_no, academic_year, level, dept_code, dept_name)
-              VALUES (?, ?, ?, ?, ?)";
-
-    $input_parameters = [
-      $this->reg_no,
-      $this->academic_year,
-      $this->level,
-      $this->dept_code,
-      $name
-    ];
-
     try {
-      $log->addInfo("About to insert student current academic
-                   parameters with query {$query} and params: ", $input_parameters);
-
-      $stmt = $db->prepare($query);
-
-      $stmt->execute($input_parameters);
-
-      $log->addInfo("Current academic parameters successfully inserted.");
+      StudentCurrent::create([
+        'reg_no' => $this->reg_no,
+        'academic_year' => $this->academic_year,
+        'level' => $this->level,
+        'dept_code' => $this->dept_code,
+        'dept_name' => AcademicDepartment::get_dept_name_from_code($this->dept_code)
+      ]);
 
     } catch (PDOException $e) {
-      logPdoException($e, "An error occurred while saving current academic parameters.", $log);
+      logPdoException($e, "An error occurred while saving current academic parameters.", get_logger(self::$LOG_NAME));
     }
   }
 
@@ -274,7 +224,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
   $course_reg_controller->get();
 
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $course_reg = new CourseRegistration;
+  $course_reg = new CourseRegistrationPostController;
 
   $course_reg->insert_courses();
 }
