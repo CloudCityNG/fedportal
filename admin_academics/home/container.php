@@ -1,4 +1,5 @@
-<?php require(__DIR__ . '/getNavClass.php'); ?>
+<?php require(__DIR__ . '/getNavClass.php');
+require_once(__DIR__ . '/../login/auth.php'); ?>
 
 <!doctype html>
 <html class="no-js" lang="">
