@@ -138,9 +138,9 @@ module.exports = function (grunt) {
             'libs/bootstrap/dist/css/bootstrap.css',
             'libs/css/themify-icons.css',
             'libs/css/animate.min.css',
-            'libs/css/jquery-ui-autocomplete.min.css',
             'libs/formValidation/css/formValidation.min.css',
             'libs/bootstrap-datepicker/dist/css/bootstrap-datepicker.css',
+            'libs/css/jquery-ui-autocomplete.min.css',
             'libs/css/skins/palette.css'
           ]
         }
