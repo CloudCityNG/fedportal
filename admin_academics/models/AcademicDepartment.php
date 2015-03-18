@@ -1,0 +1,64 @@
+<?php
+/**
+ * Created by IntelliJ IDEA.
+ * User: maneptha
+ * Date: 18-Mar-15
+ * Time: 10:24 PM
+ */
+
+require_once(__DIR__ . '/../../helpers/databases.php');
+require_once(__DIR__ . '/../../helpers/app_settings.php');
+
+Class AcademicDepartment
+{
+  private static $LOG_NAME = 'AcademicDepartmentModel';
+
+  public static function get_academic_departments()
+  {
+    $query = 'SELECT * FROM academic_departments';
+
+    $log = get_logger(self::$LOG_NAME);
+
+    $log->addInfo("About to get all departments with query: {$query}");
+
+    $stmt = get_db()->prepare($query);
+
+    if ($stmt->execute()) {
+      $returnedVal = [];
+
+      while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $row[$row['code']] = $row['description'];
+        $returnedVal[] = $row;
+      }
+
+      $log->addInfo("Statement executed successfully, result is: ", $returnedVal);
+      return $returnedVal;
+    }
+
+    $log->addWarning("Statement did not execute successfully.");
+    return null;
+  }
+
+  public static function get_dept_name_from_code($code)
+  {
+    $query = 'SELECT description FROM academic_departments WHERE code = ?';
+
+    $params = [$code];
+
+    $log = get_logger(self::$LOG_NAME);
+
+    $log->addInfo("About to get department name from its code with query: {$query} and params: ", $params);
+
+    $stmt = get_db()->prepare($query);
+
+    if ($stmt->execute($params)) {
+      $returnedVal = $stmt->fetch(PDO::FETCH_NUM)[0];
+
+      $log->addInfo("Statement executed successfully, result is: {$returnedVal}");
+      return $returnedVal;
+    }
+
+    $log->addWarning("Statement did not execute successfully.");
+    return null;
+  }
+}

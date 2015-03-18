@@ -18,12 +18,12 @@ require_once(__DIR__ . '/../../admin_academics/models/AcademicSession.php');
 
 include_once(__DIR__ . '/../../helpers/get_academic_levels.php');
 
-include_once(__DIR__ . '/../../helpers/get_academic_departments.php');
+include_once(__DIR__ . '/../../admin_academics/models/AcademicDepartment.php');
 
 
 $academic_levels = get_academic_levels();
 
-$departments = get_academic_departments();
+$departments = AcademicDepartment::get_academic_departments();
 
 $fees_info = '';
 

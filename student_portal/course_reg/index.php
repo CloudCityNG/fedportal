@@ -5,8 +5,8 @@ include_once(__DIR__ . '/../../helpers/databases.php');
 include_once(__DIR__ . '/../../admin_academics/models/AcademicSession.php');
 include_once(__DIR__ . '/../../admin_academics/models/Semester.php');
 include_once(__DIR__ . '/../../admin_academics/models/StudentCourses.php');
+include_once(__DIR__ . '/../../admin_academics/models/AcademicDepartment.php');
 include_once(__DIR__ . '/../../admin_academics/models/Courses.php');
-include_once(__DIR__ . '/../../helpers/get_academic_departments.php');
 include_once(__DIR__ . '/../../helpers/get_student_profile_from_reg_no.php');
 include_once(__DIR__ . '/../../helpers/get_photos.php');
 include_once(__DIR__ . '/../../helpers/get_academic_levels.php');
@@ -37,7 +37,7 @@ class CourseRegController
 
     $dept_code = $profile->dept_code;
 
-    $dept_name = get_academic_departments()[$dept_code];
+    $dept_name = AcademicDepartment::get_dept_name_from_code($dept_code);
 
     $semester = Semester::get_current_semester()['number'];
 
