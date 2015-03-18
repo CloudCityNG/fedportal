@@ -38,16 +38,14 @@
     </div>
   </div>
 
-  <?php $courses_for_semester = get_courses($semester, $dept_code) ?>
-
   <div class="row courses-tables-ond">
-    <?php require(__DIR__ . '/ond1_courses.php');?>
-    <?php require(__DIR__ . '/ond2_courses.php');?>
+    <?php require(__DIR__ . '/ond1_courses.php'); ?>
+    <?php require(__DIR__ . '/ond2_courses.php'); ?>
   </div>
 
   <div class="row courses-tables-hnd">
-    <?php require(__DIR__ . '/hnd1_courses.php');?>
-    <?php require(__DIR__ . '/hnd2_courses.php');?>
+    <?php require(__DIR__ . '/hnd1_courses.php'); ?>
+    <?php require(__DIR__ . '/hnd2_courses.php'); ?>
   </div>
 
   <div class="text-center">

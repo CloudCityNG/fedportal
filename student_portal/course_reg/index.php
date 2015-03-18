@@ -2,10 +2,10 @@
 
 require_once(__DIR__ . '/../login/auth.php');
 include_once(__DIR__ . '/../../helpers/databases.php');
-include_once(__DIR__ . '/../../helpers/get_courses.php');
 include_once(__DIR__ . '/../../admin_academics/models/AcademicSession.php');
 include_once(__DIR__ . '/../../admin_academics/models/Semester.php');
 include_once(__DIR__ . '/../../admin_academics/models/StudentCourses.php');
+include_once(__DIR__ . '/../../admin_academics/models/Courses.php');
 include_once(__DIR__ . '/../../helpers/get_academic_departments.php');
 include_once(__DIR__ . '/../../helpers/get_student_profile_from_reg_no.php');
 include_once(__DIR__ . '/../../helpers/get_photos.php');
@@ -49,20 +49,44 @@ class CourseRegController
       'reg_no' => $reg_no, 'semester' => $semester, 'session' => $academic_year
     ]);
 
-    $already_registered = !empty($course_data);
+    if (!empty($course_data)) {
+      $student = get_student_profile_from_reg_no($reg_no);
+      $view = __DIR__ . '/view_print.php';
 
-    $student = get_student_profile_from_reg_no($reg_no);
-
-    $course_reg_post = STATIC_ROOT . 'student_portal/course_reg/course_reg_post';
-
-    $view = $already_registered ? __DIR__ . '/view_print.php' : __DIR__ . '/form.php';
+    } else {
+      $courses_for_semester = $this->get_courses_for_semester_dept($dept_code, $semester);
+      $view = __DIR__ . '/form.php';
+    }
 
     require(__DIR__ . '/view.php');
   }
 
-  public function post()
+  private function get_courses_for_semester_dept($dept_code, $semester)
   {
+    $data = Courses1::get_courses_for_semester_and_dept([
+      'department' => $dept_code, 'semester' => $semester
+    ]);
 
+    $result = [];
+
+    foreach ($data as $row) {
+      $data['code'] = $row['code'];
+      $data['title'] = $row['title'];
+      $data['unit'] = $row['unit'];
+      $data['id'] = $row['id'];
+
+      $class = $row['class'];
+
+      if (array_key_exists($class, $result)) {
+        $result[$class][] = $data;
+
+      } else {
+        $result[$class] = [$data];
+      }
+
+    }
+
+    return $result;
   }
 }
 

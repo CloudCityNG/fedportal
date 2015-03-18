@@ -31,9 +31,12 @@ class StudentCourses
     $stmt = $db->prepare($query);
 
     if ($stmt->execute($data)) {
-      return $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $log->addInfo("Statement executed successfully. Current courses are: ", $result);
+      return $result;
     }
 
+    $log->addWarning("Statement did not execute successfully");
     return null;
   }
 
