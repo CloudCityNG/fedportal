@@ -1,12 +1,13 @@
 <?php
 require_once(__DIR__ . '/../login/auth.php');
+require_once(__DIR__ . '/../../helpers/databases.php');
 
 Class AdminAcademicsHome
 {
   public function get()
   {
     $currentPage = null;
-    include(__DIR__ . '/container.php');
+    require_once(__DIR__ . '/container.php');
   }
 
   public function post()

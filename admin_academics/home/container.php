@@ -1,22 +1,6 @@
 <?php
-function getNavClass($currentPage, $section, $value)
-{
-  if ($currentPage) {
-    switch ($section) {
-      case 'nav':
-        return $currentPage['title'] == $value ? 'expanded' : 'collapsed';
-
-      case 'links':
-        return $currentPage['title'] == $value ? 'active' : '';
-
-      case 'link':
-        return $currentPage['link'] == $value ? 'selected current' : '';
-    }
-  }
-
-  return $section == 'nav' ? 'collapsed' : '';
-}
-
+require_once(__DIR__ . '/current_session_semester_info.php');
+require_once(__DIR__ . '/getNavClass.php');
 ?>
 
 <!doctype html>
@@ -31,8 +15,6 @@ function getNavClass($currentPage, $section, $value)
 </head>
 
 <body>
-
-<!--  --><?php //include(__DIR__ . '/../includes/nav.php'); ?>
 <div class="container-admin-acada">
   <div class="top-info">
     <div class="legend">
@@ -44,6 +26,48 @@ function getNavClass($currentPage, $section, $value)
     </div>
   </div>
 
+  <div class="session-semester-info row">
+    <div class="col-sm-6">
+      <div class="panel <?php echo $currentSemesterInfo['panel-class'] ?>">
+        <div class="panel-heading">
+          <h3 class="panel-title"> <?php echo $currentSemesterInfo['semester'] ?> Semester</h3>
+        </div>
+
+        <div class="panel-body">
+          <div><strong>Started:&nbsp;&nbsp;&nbsp;</strong> <?php echo $currentSemesterInfo['start'] ?> </div>
+          <div><strong>Ends:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <?php echo $currentSemesterInfo['end'] ?>
+          </div>
+        </div>
+
+        <div class="panel-footer">
+          Ends in: <span class="h3"><?php echo $currentSemesterInfo['diff'] ?> Days</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h2 class="panel-title"> <?php echo $currentSessionInfo['session']?> Session</h2>
+        </div>
+
+        <div class="panel-body">
+          <div><strong>Started:&nbsp;&nbsp;&nbsp;</strong>
+            <?php echo $currentSessionInfo['start'] ?>
+          </div>
+
+          <div>
+            <strong>Ends:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <?php echo $currentSessionInfo['end'] ?>
+          </div>
+        </div>
+
+        <div class="panel-footer">
+          Ends in: <span class="h3"><?php echo $currentSessionInfo['diff'] ?> Days</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="row content-area">
     <div class="col-sm-3 side-bar-navs">
       <div class="side-nav session-side-bar-nav <?php echo getNavClass($currentPage, 'nav', 'session') ?>">
@@ -51,24 +75,33 @@ function getNavClass($currentPage, $section, $value)
         <span class="title session-title">Manage Academic Sessions</span>
 
         <div class="links <?php echo getNavClass($currentPage, 'links', 'session') ?>">
-                  <span
-                    class="link <?php echo getNavClass($currentPage, 'link', 'new-session') ?>">
-                    <a href="<?php echo STATIC_ROOT . 'admin_academics/academic_session/' ?>">
-                      Current and New Academic Session
-                    </a>
-                  </span>
+          <a class="link <?php echo getNavClass($currentPage, 'link', 'new-session') ?>"
+             href="<?php echo STATIC_ROOT . 'admin_academics/academic_session/' ?>">
+            Current and New Academic Session
+          </a>
         </div>
       </div>
 
-      <div
-        class="side-nav semester-side-bar-nav <?php echo getNavClass($currentPage, 'nav', 'semester'); ?>">
+      <div class="side-nav semester-side-bar-nav <?php echo getNavClass($currentPage, 'nav', 'semester'); ?>">
 
         <span class="title">Manage Semester</span>
 
         <div class="links <?php echo getNavClass($currentPage, 'links', 'semester') ?>">
-                  <span class="link <?php echo getNavClass($currentPage, 'link', 'new-semester') ?>">
-                    <a href="<?php echo path_to_link(__DIR__ . '/../semester/') ?>">Current and New Semester</a>
-                  </span>
+          <a class="link <?php echo getNavClass($currentPage, 'link', 'new-semester') ?>"
+             href="<?php echo path_to_link(__DIR__ . '/../semester/') ?>">
+            Current and New Semester
+          </a>
+        </div>
+      </div>
+
+      <div class="side-nav <?php echo getNavClass($currentPage, 'nav', 'assessment'); ?>">
+        <span class="title">Exams And Assessments</span>
+
+        <div class="links <?php echo getNavClass($currentPage, 'links', 'assessment') ?>">
+          <a class="link <?php echo getNavClass($currentPage, 'link', 'enter-grades') ?>"
+             href="<?php echo path_to_link(__DIR__ . '/../assessment/') ?>">
+            Grade Students
+          </a>
         </div>
       </div>
 
@@ -83,14 +116,6 @@ function getNavClass($currentPage, $section, $value)
             Add Course
           </div>
         </div>
-      </div>
-
-      <div class="side-nav collapsed">
-        <span class="title">xxx</span>
-      </div>
-
-      <div class="side-nav collapsed">
-        <span class="title">xxx</span>
       </div>
     </div>
 

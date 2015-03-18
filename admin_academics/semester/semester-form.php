@@ -45,7 +45,7 @@
               <div class="input-group date show-date-picker input-append">
                 <input disabled class="form-control" name="current_semester[start_date]"
                        required id="start_date"
-                       value="<?php echo $current_semester['start_date'] ?>"
+                       value="<?php echo $current_semester['start_date']->format('d-m-Y') ?>"
                        data-fv-date
                        data-fv-date-format="DD-MM-YYYY"/>
 
@@ -63,7 +63,7 @@
               <div class="input-group date show-date-picker input-append">
                 <input disabled class="form-control date-picker" name="current_semester[end_date]"
                        required id="end_date"
-                       value="<?php echo $current_semester['end_date'] ?>"
+                       value="<?php echo $current_semester['end_date']->format('d-m-Y') ?>"
                        data-fv-date
                        data-fv-date-format="DD-MM-YYYY"/>
 

@@ -55,8 +55,6 @@ Class Semester
 
   public static function get_current_semester()
   {
-    $db = get_db();
-
     $log = get_logger(self::$LOG_NAME);
 
     $today = date('Y-m-d', time());
@@ -74,6 +72,8 @@ Class Semester
 
     $log->addInfo("About to get current semester with query: {$query} and params: ", $query_param);
 
+    $db = get_db();
+
     $stmt = $db->prepare($query);
 
     $stmt->execute($query_param);
@@ -83,8 +83,7 @@ Class Semester
     if ($semester) {
       $log->addInfo("Query successfully ran. semester is: ", $semester);
 
-      $semester['start_date'] = self::transform_date($semester['start_date']);
-      $semester['end_date'] = self::transform_date($semester['end_date']);
+      $semester = self::db_dates_to_carbon($semester);
 
       $semester['session'] = AcademicSession::get_current_session();
 
@@ -283,5 +282,15 @@ Class Semester
     }
 
     return null;
+  }
+
+  private static function db_dates_to_carbon($data)
+  {
+    foreach (['start_date', 'end_date', 'created_at', 'updated_at'] as $column) {
+      if (isset($data[$column])) {
+        $data[$column] = Carbon::parse($data[$column]);
+      }
+    }
+    return $data;
   }
 }
