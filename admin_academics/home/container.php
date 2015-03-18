@@ -1,7 +1,4 @@
-<?php
-require_once(__DIR__ . '/current_session_semester_info.php');
-require_once(__DIR__ . '/getNavClass.php');
-?>
+<?php require(__DIR__ . '/getNavClass.php');?>
 
 <!doctype html>
 <html class="no-js" lang="">
@@ -26,47 +23,7 @@ require_once(__DIR__ . '/getNavClass.php');
     </div>
   </div>
 
-  <div class="session-semester-info row">
-    <div class="col-sm-6">
-      <div class="panel <?php echo $currentSemesterInfo['panel-class'] ?>">
-        <div class="panel-heading">
-          <h3 class="panel-title"> <?php echo $currentSemesterInfo['semester'] ?> Semester</h3>
-        </div>
-
-        <div class="panel-body">
-          <div><strong>Started:&nbsp;&nbsp;&nbsp;</strong> <?php echo $currentSemesterInfo['start'] ?> </div>
-          <div><strong>Ends:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <?php echo $currentSemesterInfo['end'] ?>
-          </div>
-        </div>
-
-        <div class="panel-footer">
-          Ends in: <span class="h3"><?php echo $currentSemesterInfo['diff'] ?> Days</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-sm-6">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h2 class="panel-title"> <?php echo $currentSessionInfo['session']?> Session</h2>
-        </div>
-
-        <div class="panel-body">
-          <div><strong>Started:&nbsp;&nbsp;&nbsp;</strong>
-            <?php echo $currentSessionInfo['start'] ?>
-          </div>
-
-          <div>
-            <strong>Ends:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <?php echo $currentSessionInfo['end'] ?>
-          </div>
-        </div>
-
-        <div class="panel-footer">
-          Ends in: <span class="h3"><?php echo $currentSessionInfo['diff'] ?> Days</span>
-        </div>
-      </div>
-    </div>
-  </div>
+  <?php require(__DIR__ . '/current_session_semester_info.php');?>
 
   <div class="row content-area">
     <div class="col-sm-3 side-bar-navs">
