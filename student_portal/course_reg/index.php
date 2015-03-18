@@ -3,7 +3,6 @@
 require_once(__DIR__ . '/../login/auth.php');
 include_once(__DIR__ . '/../../helpers/databases.php');
 include_once(__DIR__ . '/../../helpers/get_courses.php');
-include_once(__DIR__ . '/../../helpers/course_exists.php');
 include_once(__DIR__ . '/../../admin_academics/models/AcademicSession.php');
 include_once(__DIR__ . '/../../admin_academics/models/Semester.php');
 include_once(__DIR__ . '/../../admin_academics/models/StudentCourses.php');
@@ -46,7 +45,9 @@ class CourseRegController
 
     $academic_year = AcademicSession::get_current_session()['session'];
 
-    $course_data = course_exists($academic_year, $reg_no, $semester);
+    $course_data = StudentCourses::get_student_current_courses([
+      'reg_no' => $reg_no, 'semester' => $semester, 'session' => $academic_year
+    ]);
 
     $already_registered = !empty($course_data);
 
@@ -237,7 +238,6 @@ class CourseRegistration
       $log->addInfo("Current academic parameters successfully inserted.");
 
     } catch (PDOException $e) {
-
       logPdoException($e, "An error occurred while saving current academic parameters.", $log);
     }
   }

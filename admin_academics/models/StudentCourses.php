@@ -14,9 +14,27 @@ class StudentCourses
 
   private static $LOG_NAME = 'StudentCourses';
 
-  public static function get_courses($reg, $semester)
+  public static function get_student_current_courses(array $data)
   {
+    $query = "SELECT title, code, unit
+              FROM student_courses JOIN course_table ON (course_id = course_table.id)
+              WHERE reg_no = :reg_no
+              AND academic_year_code = :session
+              AND student_courses.semester = :semester";
 
+    $log = get_logger(self::$LOG_NAME);
+
+    $log->addInfo("About to get student courses with query: {$query} and params: ", $data);
+
+    $db = get_db();
+
+    $stmt = $db->prepare($query);
+
+    if ($stmt->execute($data)) {
+      return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    return null;
   }
 
   public static function bulk_create(array $data)
