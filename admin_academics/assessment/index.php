@@ -25,7 +25,13 @@ class AssessmentController
 
   public static function post()
   {
+    if (isset($_POST['reg-no-submit'])) {
+      $reg_no = trim($_POST['reg-no']);
 
+      if ($reg_no) {
+        print_r($_POST);
+      }
+    }
   }
 }
 

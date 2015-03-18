@@ -86,8 +86,6 @@ require_once(__DIR__ . '/../login/auth.php'); ?>
     </div>
 
     <div class="col-sm-9 content-area-main">
-      <div class="alert-container"></div>
-
       <div class="content-area-main-insert-template">
         <?php
         if (isset($link_template) && $link_template) {

@@ -1,6 +1,12 @@
-<div class="view-print-courses"
-  <?php echo !$already_registered ? 'style="display: none;"' : ''; ?>
-  >
+<div class="already-registered">
+  <h4>
+    You are signed up for courses for <?php echo $semester_text ?> semester
+    Please print course form if you have not done so.
+  </h4>
+  <span class='printer-friendly'>Click here for printer friendly view.</span>
+</div>
+
+<div class="view-print-courses">
 
   <h4 class="text-center college-name">THE FEDERAL COLLEGE OF DENTAL TECHNOLOGY &amp; THERAPY ENUGU</h4>
 
@@ -10,18 +16,18 @@
 
   <table class="img-and-name">
     <tbody>
-      <tr>
-        <td>
-          <img src="<?php echo get_photo($reg_no, true); ?>" alt="<?php echo $student['names']; ?>"/>
-        </td>
+    <tr>
+      <td>
+        <img src="<?php echo get_photo($reg_no, true); ?>" alt="<?php echo $student['names']; ?>"/>
+      </td>
 
-        <td class="names">
-                        <span>
-                          <strong>NAMES:</strong> <?php echo strtoupper($student['names']); ?>
-                          <p><strong>MATRIC NO:</strong> <?php echo $reg_no; ?> </p>
-                        </span>
-        </td>
-      </tr>
+      <td class="names">
+        <span>
+          <strong>NAMES:</strong> <?php echo strtoupper($student['names']); ?>
+          <p><strong>MATRIC NO:</strong> <?php echo $reg_no; ?> </p>
+        </span>
+      </td>
+    </tr>
     </tbody>
   </table>
 
@@ -29,60 +35,61 @@
     <table class="table table-striped table-condensed table-bordered view-print-course-table">
 
       <thead>
-        <tr>
-          <th>#</th>
-          <th>Course Code</th>
-          <th>Course Title</th>
-          <th>Credit Unit</th>
-          <th>Lecturer Sign</th>
-        </tr>
+      <tr>
+        <th>#</th>
+        <th>Course Code</th>
+        <th>Course Title</th>
+        <th>Credit Unit</th>
+        <th>Lecturer Sign</th>
+      </tr>
       </thead>
 
       <tbody>
-        <?php
-        $course_seq = 1;
+      <?php
+      $course_seq = 1;
 
-        foreach ($course_data as $courses) {
-          $code = $courses['code'];
-          $title = $courses['title'];
-          $unit = sprintf('%.2f', $courses['unit']);
+      foreach ($course_data as $courses) {
+        $code = $courses['code'];
+        $title = $courses['title'];
+        $unit = sprintf('%.2f', $courses['unit']);
 
-          echo "<tr>\n" .
+        echo "<tr>\n" .
 
-               "<td>$course_seq</td>\n" .
+          "<td>$course_seq</td>\n" .
 
-               "<td>$code</td>\n" .
+          "<td>$code</td>\n" .
 
-               "<td>$title</td>\n" .
+          "<td>$title</td>\n" .
 
-               "<td class='text-center'>$unit</td>\n" .
+          "<td class='text-center'>$unit</td>\n" .
 
-               '<td></td>' .
+          '<td></td>' .
 
-               "</tr>";
+          "</tr>";
 
-          $course_seq++;
-        }
-        ?>
+        $course_seq++;
+      }
+      ?>
       </tbody>
     </table>
 
     <table class="table table-bordered signature-table">
       <tbody>
-        <tr>
-          <th>HOD'S CONFIRMATION</th>
+      <tr>
+        <th>HOD'S CONFIRMATION</th>
 
-          <td></td>
+        <td></td>
 
-          <th>ACADEMIC ADVISER</th>
+        <th>ACADEMIC ADVISER</th>
 
-          <td></td>
+        <td></td>
 
-          <th>DEPUTY RECTOR</th>
+        <th>DEPUTY RECTOR</th>
 
-          <td></td>
-        </tr>
+        <td></td>
+      </tr>
       </tbody>
     </table>
   </div>
 </div>
+<p class="back-to-main" style="display: none;">Back to main</p>
