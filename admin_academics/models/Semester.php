@@ -12,7 +12,7 @@ use Carbon\Carbon;
 
 Class Semester
 {
-  private static $LOG_NAME = 'semester-model';
+  private static $LOG_NAME = 'SemesterModel';
 
   public static function create($post)
   {
@@ -97,9 +97,30 @@ Class Semester
     return null;
   }
 
-  private static function transform_date($val)
+  public static function get_semester_by_number_and_session($number, $session)
   {
-    return implode('-', array_reverse(explode('-', $val)));
+    $query1 = "SELECT id FROM session_table WHERE session = ?";
+
+    $query2 = "SELECT * FROM semester
+              WHERE number = ?
+              AND session_id = ({$query1})";
+
+    $params = [$number, $session];
+
+    $log = get_logger(self::$LOG_NAME);
+
+    $log->addInfo("About to get semester using query: {$query2} and params: ", $params);
+
+    $stmt = get_db()->prepare($query2);
+
+    if ($stmt->execute($params)) {
+      $result = $stmt->fetch(PDO::FETCH_ASSOC);
+      $log->addInfo("Statement executed successfully, result is: ", $result);
+      return $result;
+    }
+
+    $log->addWarning("Statement did not execute successfully");
+    return null;
   }
 
   public static function validate_dates($data)

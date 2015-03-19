@@ -6,6 +6,7 @@
 require_once(__DIR__ . '/../../helpers/databases.php');
 require_once(__DIR__ . '/../../helpers/app_settings.php');
 require_once(__DIR__ . '/../../vendor/autoload.php');
+require_once(__DIR__ . '/Semester.php');
 
 use Carbon\Carbon;
 
@@ -14,24 +15,32 @@ class StudentCourses
 
   private static $LOG_NAME = 'StudentCourses';
 
+  /**
+   * Get the courses that a student has registered for a particular semester
+   *
+   * @param array $data
+   * @return array|null
+   */
   public static function get_student_current_courses(array $data)
   {
+    $semester = Semester::get_semester_by_number_and_session($data['semester'], $data['session']);
+
     $query = "SELECT title, code, unit
               FROM student_courses JOIN course_table ON (course_id = course_table.id)
-              WHERE reg_no = :reg_no
-              AND academic_year_code = :session
-              AND student_courses.semester = :semester";
+              WHERE reg_no = ?
+              AND semester_id = ?";
+
+    $params = [$data['reg_no'], $semester['id']];
 
     $log = get_logger(self::$LOG_NAME);
 
-    $log->addInfo("About to get student courses with query: {$query} and params: ", $data);
+    $log->addInfo("About to get student courses with query: {$query} and params: ", $params);
 
-    $db = get_db();
+    $stmt = get_db()->prepare($query);
 
-    $stmt = $db->prepare($query);
-
-    if ($stmt->execute($data)) {
+    if ($stmt->execute($params)) {
       $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
       $log->addInfo("Statement executed successfully. Current courses are: ", $result);
       return $result;
     }
@@ -40,58 +49,62 @@ class StudentCourses
     return null;
   }
 
-  public static function bulk_create(array $data)
+  /**
+   * Given a student, her level and semester details, create several courses for her
+   *
+   * @param array $course_ids
+   * @param array $student_details
+   * @return array
+   */
+  public static function bulk_create_for_student_for_semester(array $course_ids, array $student_details)
   {
-    $query = "INSERT INTO student_courses(academic_year_code, reg_no, semester,
+    $semester = Semester::get_semester_by_number_and_session(
+      $student_details['semester'],
+      $student_details['academic_year_code']
+    );
+
+    $query = "INSERT INTO student_courses(reg_no, semester_id,
                                           course_id, level, created_at, updated_at)
-              VALUES (:academic_year_code, :reg_no, :semester,
+              VALUES (:reg_no, :semester_id,
                       :course_id, :level, :created_at, :updated_at)";
 
     $log = get_logger(self::$LOG_NAME);
 
-    $log->addInfo("About to create student courses with query: {$query} and params: ", $data);
+    $log->addInfo(
+      "About to create several courses for one student in one semester with query: {$query} and params: ",
+      [$course_ids, $student_details]
+    );
 
-    $db = get_db();
-
-    $stmt = $db->prepare($query);
-
-    $academic_year_code = '';
-    $reg_no = '';
-    $semester = '';
-    $course_id = '';
-    $level = '';
+    $stmt = get_db()->prepare($query);
 
     $now = Carbon::now();
-//    $created_at = $updated_at = $now->toDateTimeString();
 
-    $stmt->bindParam('academic_year_code', $academic_year_code);
-    $stmt->bindParam('reg_no', $reg_no);
-    $stmt->bindParam('semester', $semester);
-    $stmt->bindParam('course_id', $course_id);
-    $stmt->bindParam('level', $level);
+    $stmt->bindValue('reg_no', $student_details['reg_no']);
+    $stmt->bindValue('semester_id', $semester['id']);
+    $stmt->bindValue('level', $student_details['level']);
     $stmt->bindValue('created_at', $now->toDateTimeString());
     $stmt->bindValue('updated_at', $now->toDateTimeString());
 
+    $course_id = '';
+    $stmt->bindParam('course_id', $course_id);
+
     $returnedVal = [];
 
-    foreach ($data as $course_array) {
-      $academic_year_code = $course_array['academic_year_code'];
-      $reg_no = $course_array['reg_no'];
-      $semester = $course_array['semester'];
-      $course_id = $course_array['course_id'];
-      $level = $course_array['level'];
-
+    foreach ($course_ids as $course_id) {
       $stmt->execute();
 
-      $course_array['created_at'] = $now;
-      $course_array['updated_at'] = $now;
-      $course_array['deleted_at'] = null;
-
-      $returnedVal[] = $course_array;
+      $returnedVal[] = array_merge(
+        $student_details,
+        [
+          'created_at' => $now,
+          'updated_at' => $now,
+          'deleted_at' => null,
+          'course_id' => $course_id
+        ]
+      );
     }
 
     $log->addInfo("Student courses successfully created, the courses are: ", $returnedVal);
-
     return $returnedVal;
   }
 }

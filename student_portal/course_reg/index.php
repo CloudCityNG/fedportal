@@ -136,33 +136,24 @@ class CourseRegistrationPostController
 
   public function insert_courses()
   {
-
-    $log = get_logger(self::$LOG_NAME);
-
     $count = count($this->courses_chosen);
 
-    $data = [];
-
-    foreach ($this->courses_chosen as $course_id) {
-      $data[] = [
-        'academic_year_code' => $this->academic_year,
-        'reg_no' => $this->reg_no,
-        'semester' => $this->semester,
-        'course_id' => $course_id,
-        'level' => $this->level
-      ];
-    }
-
     try {
-      StudentCourses::bulk_create($data);
-
-      $log->addInfo("$count courses successfully inserted into the database for student $this->reg_no.");
+      StudentCourses::bulk_create_for_student_for_semester(
+        $this->courses_chosen,
+        [
+          'academic_year_code' => $this->academic_year,
+          'reg_no' => $this->reg_no,
+          'semester' => $this->semester,
+          'level' => $this->level
+        ]
+      );
 
     } catch (PDOException $e) {
       logPdoException(
         $e,
         "An error occurred while inserting courses for student $this->reg_no",
-        $log
+        get_logger(self::$LOG_NAME)
       );
 
       set_student_reg_form_completion_session1(

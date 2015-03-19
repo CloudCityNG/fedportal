@@ -27,7 +27,7 @@ function test_bulk_create()
     ]
   ];
 
-  print_r(StudentCourses::bulk_create($data));
+//  print_r(StudentCourses::bulk_create_for_student_for_semester($data));
 }
 
 //test_bulk_create();

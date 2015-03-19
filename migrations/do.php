@@ -42,11 +42,15 @@ class MigrationManager
     foreach (scandir($scripts_dir) as $script) {
       if (preg_match($script_pattern, $script, $matches)) {
 
-        if (!$db->query("SELECT COUNT(*) FROM migrations WHERE number = '{$script}'")->fetchColumn()) {
+        $query = "SELECT COUNT(*) FROM migrations WHERE number = '{$script}'";
+
+        if (!$db->query($query)->fetchColumn()) {
           require_once($scripts_dir . $script);
 
           $class = "A{$matches[1]}";
           $obj = new $class();
+
+          echo "<p>About to do migration for <strong>{$script}</strong></p>";
 
           $obj->up($db);
 
