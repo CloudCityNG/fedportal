@@ -48,7 +48,6 @@ module.exports = function (grunt) {
             'libs/jquery.easing.min.js',
             'libs/underscore.min.js',
             'libs/mustache.min.js',
-            'libs/mutation-summary/mutation-summary.js',
             'libs/formValidation/js/formValidation.js',
             'libs/formValidation/js/framework/bootstrap.js',
             'libs/ajax-alert/dist/js/ajax-alert.min.js',
@@ -91,7 +90,6 @@ module.exports = function (grunt) {
         ],
 
         tasks: [
-          //'browserify:admin_academics',
           'uglify:admin_academics'
         ]
       }
