@@ -59,8 +59,7 @@ Class Semester
 
     $today = date('Y-m-d', time());
 
-    $query = "SELECT id, number, start_date, end_date
-              FROM semester
+    $query = "SELECT * FROM semester
               WHERE :today1 >= start_date
               AND :today2 <= end_date
               ORDER BY start_date LIMIT 1";

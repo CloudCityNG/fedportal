@@ -13,7 +13,7 @@ use Carbon\Carbon;
 class StudentCourses
 {
 
-  private static $LOG_NAME = 'StudentCourses';
+  private static $LOG_NAME = 'StudentCoursesModel';
 
   /**
    * Get the courses that a student has registered for a particular semester
@@ -106,5 +106,32 @@ class StudentCourses
 
     $log->addInfo("Student courses successfully created, the courses are: ", $returnedVal);
     return $returnedVal;
+  }
+
+  /**
+   * Given a student registration number, check if such student has signed up for courses
+   * for the given semester
+   * @param array $data - array ['reg_no' =>, 'semester_id' =>]
+   * @return bool
+   */
+  public static function student_signed_up_for_semester(array $data)
+  {
+    $query = "SELECT COUNT(*) FROM student_courses
+              WHERE semester_id = :semester_id AND reg_no = :reg_no";
+
+    $log = get_logger(self::$LOG_NAME);
+
+    $log->addInfo(
+      "About to find out if student has signed up courses for given semester with query: {$query} and params: ",
+      $data
+    );
+
+    $stmt = get_db()->prepare($query);
+    $stmt->execute($data);
+
+    $result = $stmt->fetchColumn();
+    $log->addInfo("Result is: {$result}");
+
+    return $result;
   }
 }

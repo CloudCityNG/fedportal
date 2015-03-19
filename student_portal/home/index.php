@@ -2,11 +2,11 @@
 
 include_once(__DIR__ . '/../login/auth.php');
 
-include_once(__DIR__ . '/StudentRegistration1.php');
+include_once(__DIR__ . '/StudentRegistration.php');
 
 include_once(__DIR__ . '/../../helpers/app_settings.php');
 
-$student = new StudentRegistration1;
+$student = new StudentRegistration;
 ?>
 
 <!doctype html>

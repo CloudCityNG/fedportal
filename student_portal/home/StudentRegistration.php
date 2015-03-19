@@ -13,12 +13,12 @@ require_once(__DIR__ . '/../../helpers/models/Photo.php');
 
 require_once(__DIR__ . '/../../helpers/models/Medicals.php');
 
-require_once(__DIR__ . '/../../helpers/models/Courses.php');
-
 require_once(__DIR__ . '/../../helpers/databases.php');
+require_once(__DIR__ . '/../../admin_academics/models/Semester.php');
+require_once(__DIR__ . '/../../admin_academics/models/StudentCourses.php');
 
 
-class StudentRegistration1
+class StudentRegistration
 {
 
   public $reg_no;
@@ -33,6 +33,8 @@ class StudentRegistration1
 
   public $form_completion_message;
 
+  public $semester;
+
   private static $FORM_COMPLETION_SESSION_KEY = 'STUDENT-REG-FORM-REGISTRATION';
 
 
@@ -43,6 +45,8 @@ class StudentRegistration1
     }
 
     $this->reg_no = $reg_no ? $reg_no : $_SESSION['REG_NO'];
+
+    $this->semester = Semester::get_current_semester();
 
     $this->init_statuses();
 
@@ -93,7 +97,10 @@ class StudentRegistration1
 
     $edu_history = $this->edu_history_completed();
 
-    $courses = (new Courses())->exists($this->reg_no);
+    $courses = StudentCourses::student_signed_up_for_semester([
+      'reg_no' => $this->reg_no,
+      'semester_id' => $this->semester['id']
+    ]);
 
     $this->html_status_classes = [
 
@@ -108,6 +115,8 @@ class StudentRegistration1
       'courses' => $courses ? 'alert-success text-success' : 'alert-warning',
     ];
 
+    $semester_text = Semester::render_semester_number($this->semester['number']);
+
     $this->html_status_texts = [
 
       'bio_data' => $profile ? 'Completed' : 'Not Started',
@@ -118,7 +127,7 @@ class StudentRegistration1
 
       'medicals' => $medicals ? 'Completed' : 'Not Started',
 
-      'courses' => $courses ? 'Completed' : 'Not Started',
+      'courses' => $courses ? "Completed for {$semester_text} semester" : "Not Started  for {$semester_text} semester",
     ];
   }
 

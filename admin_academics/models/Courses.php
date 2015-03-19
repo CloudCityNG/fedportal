@@ -42,16 +42,4 @@ class Courses1
 
     return null;
   }
-
-  /**
-   * Given a student registration number, check if such student has signed up for courses
-   * for the given semester
-   * @param array $data - array []
-   * @return bool
-   */
-  public static function student_signed_up_for_semester(array $data)
-  {
-    $query = "SELECT COUNT(*) FROM student_courses WHERE semester = :semester and reg_no = :reg_no";
-    return true;
-  }
 }
