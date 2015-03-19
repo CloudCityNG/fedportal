@@ -10,20 +10,13 @@
 
 use Monolog\Logger;
 
-$db_name = 'fedportal';
-
-$username = 'fedportal';
-
-$passwd = 'fedportal';
-
-
 function get_db()
 {
-  global $db_name;
+  $db_name = 'fedportal';
 
-  global $username;
+  $username = 'fedportal';
 
-  global $passwd;
+  $passwd = 'fedportal';
 
   return new PDO(
     "mysql:host=localhost;dbname=$db_name;charset=utf8", $username, $passwd,
@@ -31,6 +24,7 @@ function get_db()
       PDO::ATTR_EMULATE_PREPARES => false,
       PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
       PDO::ATTR_PERSISTENT => true,
+      PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     ]);
 }
 

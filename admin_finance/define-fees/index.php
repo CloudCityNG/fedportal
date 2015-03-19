@@ -10,18 +10,18 @@ if (session_status() === PHP_SESSION_NONE) {
   session_start();
 }
 
-include_once(__DIR__ . '/../../helpers/app_settings.php');
-
-include_once(__DIR__ . '/../../helpers/databases.php');
-
+require_once(__DIR__ . '/../../helpers/app_settings.php');
 require_once(__DIR__ . '/../../admin_academics/models/AcademicSession.php');
-
-include_once(__DIR__ . '/../../helpers/get_academic_levels.php');
-
+require_once(__DIR__ . '/../../admin_academics/models/AcademicLevels.php');
 include_once(__DIR__ . '/../../admin_academics/models/AcademicDepartment.php');
 
 
-$academic_levels = get_academic_levels();
+$academic_levels = [];
+
+foreach (AcademicLevels::get_all_levels() as $academic_level) {
+  $academic_levels[$academic_level['id']] = $academic_level['code'];
+}
+
 
 $departments = [];
 
@@ -40,13 +40,13 @@ if (isset($_SESSION['fees-info'])) {
     if (isset($fees_array->error)) {
       $success_msg = '<div class="alert alert-danger alert-dismissible">' .
 
-                     ' <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        ' <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                           <span aria-hidden="true">&times;</span>
                        </button>' .
 
-                     $fees_array->error .
+        $fees_array->error .
 
-                     '</div>';
+        '</div>';
 
     } else {
 
@@ -58,12 +58,12 @@ if (isset($_SESSION['fees-info'])) {
 
       $success_msg = '<div class="alert alert-success">Fees successfully set for: ' .
 
-                     '   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        '   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>' .
 
-                     $academic_years . '  |  ' . $academic_level . '  |  ' . $dept .
-                     '</div>';
+        $academic_years . '  |  ' . $academic_level . '  |  ' . $dept .
+        '</div>';
     }
 
     unset($_SESSION['fees-info']);
