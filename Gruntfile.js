@@ -43,7 +43,7 @@ module.exports = function (grunt) {
             'libs/jquery/dist/jquery.js',
             'libs/moment/min/moment.min.js',
             'libs/bootstrap/dist/js/bootstrap.js',
-            'libs/jquery-ui-autocomplete.min.js',
+            'libs/jquery-ui.js',
             'libs/jquery.slimscroll.min.js',
             'libs/jquery.easing.min.js',
             'libs/underscore.min.js',
@@ -139,8 +139,8 @@ module.exports = function (grunt) {
             'libs/css/themify-icons.css',
             'libs/css/animate.min.css',
             'libs/formValidation/css/formValidation.min.css',
-            'libs/bootstrap-datepicker/dist/css/bootstrap-datepicker.css',
-            'libs/css/jquery-ui-autocomplete.min.css',
+            'libs/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
+            'libs/css/jquery-ui.css',
             'libs/css/skins/palette.css'
           ]
         }
