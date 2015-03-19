@@ -9,6 +9,7 @@
 /**
  * @param array $currentPage An associative array containing strings that defines current page - used for css styling
  * of navs
+ *
  * @param String $section
  * @param String $value
  * @return string - A css class that will be used to style navs and links to show which page is currently been viewed.

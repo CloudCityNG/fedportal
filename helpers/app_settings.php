@@ -7,8 +7,6 @@
  */
 define('STATIC_ROOT', '/fedportal/');
 
-define('DASHBOARD_HOME', '/fedportal/student_dashboard.php');
-
 include_once(__DIR__ . '/../vendor/autoload.php');
 
 use Monolog\Logger;

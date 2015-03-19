@@ -6,17 +6,12 @@ Class A201503181426688064
   {
     $db->query(
       "ALTER TABLE student_courses
-       ADD COLUMN `created_at` DATETIME NULL,
-       ADD COLUMN `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-       ADD COLUMN `deleted_at` DATETIME NULL"
+       ADD COLUMN `created_at` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
+       ADD COLUMN `updated_at` TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+       ADD COLUMN `deleted_at` TIMESTAMP NULL DEFAULT NULL"
     );
 
     $db->query("UPDATE student_courses SET `created_at` = NOW()");
-
-    $db->query(
-      "ALTER TABLE student_courses
-       CHANGE COLUMN `created_at` `created_at` DATETIME NOT NULL"
-    );
   }
 
   public function down(PDO $db)

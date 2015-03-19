@@ -24,12 +24,7 @@ Class AcademicDepartment
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute()) {
-      $returnedVal = [];
-
-      while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $row[$row['code']] = $row['description'];
-        $returnedVal[] = $row;
-      }
+      $returnedVal = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
       $log->addInfo("Statement executed successfully, result is: ", $returnedVal);
       return $returnedVal;

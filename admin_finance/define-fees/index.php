@@ -23,7 +23,11 @@ include_once(__DIR__ . '/../../admin_academics/models/AcademicDepartment.php');
 
 $academic_levels = get_academic_levels();
 
-$departments = AcademicDepartment::get_academic_departments();
+$departments = [];
+
+foreach (AcademicDepartment::get_academic_departments() as $entry) {
+  $departments[$entry['code']] = $entry['description'];
+}
 
 $fees_info = '';
 
