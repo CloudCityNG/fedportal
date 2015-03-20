@@ -37,7 +37,7 @@ Class A201503201426839462
     $stmt3->bindParam('dept_code', $dept_code);
     $stmt3->bindParam('dept_name', $dept_name);
 
-    while ($row = $stmt1->fetch()) {
+    foreach ($stmt1->fetchAll() as $row) {
       $reg_no = $row['reg_no'];
       $stmt2->execute();
 
