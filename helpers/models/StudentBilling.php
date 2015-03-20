@@ -11,89 +11,13 @@ require_once(__DIR__ . '/../databases.php');
 require_once(__DIR__ . '/../app_settings.php');
 
 require_once(__DIR__ . '/StudentProfile.php');
+require_once(__DIR__ . '/StudentPayment.php');
 
 
 class StudentBilling
 {
 
-  private static $LOG_NAME = 'StudentBilling';
-
-  private function bill_exists($reg_no, $academic_year, $level, $dept_code)
-  {
-    $db = get_db();
-
-    $stmt = $db->prepare(
-      "SELECT COUNT(*) FROM student_billing
-       WHERE reg_no = ? AND
-       academic_year = ? AND
-       level = ? AND
-       department_code = ?"
-    );
-
-    $stmt->execute([$reg_no, $academic_year, $level, $dept_code]);
-
-    return $stmt->fetchColumn();
-
-  }
-
-  public function update_bill($reg_no, $academic_year, $level, $amount, $dept_code)
-  {
-    $db = get_db();
-
-    $log = get_logger(self::$LOG_NAME);
-
-    try {
-      $stmt = $db->prepare(
-        "UPDATE student_billing SET amount = :new_amount
-         WHERE amount IS NULL AND
-         reg_no = :reg_no AND
-         academic_year = :year AND
-         level = :level AND
-         department_code = :dept"
-      );
-
-      $stmt->bindValue(':new_amount', $amount);
-
-      $stmt->bindValue(':reg_no', $reg_no);
-
-      $stmt->bindValue(':year', $academic_year);
-
-      $stmt->bindValue(':level', $level);
-
-      $stmt->bindValue(':dept', $dept_code);
-
-      $stmt->execute();
-
-      $rowCount = $stmt->rowCount();
-
-      if ($rowCount) {
-
-        $log->addInfo(
-          "Student billing successfully updated for registration number = $reg_no, $academic_year
-          $level, $dept_code and amount = $amount."
-        );
-
-      } else {
-
-        $log->addInfo(
-          "Student billing could not be updated for registration number $reg_no, $academic_year
-          $level, $dept_code and amount = $amount."
-        );
-
-      }
-
-      return $rowCount;
-
-    } catch (PDOException $e) {
-
-      logPdoException(
-        $e,
-        "Error while trying to update bill amount for student with registration
-         number $reg_no, amount $amount, $level, $dept_code and $academic_year",
-        $log
-      );
-    }
-  }
+  private static $LOG_NAME = 'StudentBillingModel';
 
   public function insert_bill($reg_no, $academic_year, $level, $dept_code)
   {
@@ -101,90 +25,37 @@ class StudentBilling
      * We create a billing record for student. This is usually done at the beginning of the session/academic year
      * when students choose their level and sign up for courses.
      */
-
-    $db = get_db();
+    $amount = StudentPayment::get_fee_for_dept_level_session([
+      'department' => $dept_code,
+      'academic_year' => $academic_year,
+      'academic_level' => $level,
+    ]);
 
     $log = get_logger(self::$LOG_NAME);
 
-    try {
+    $query = "UPDATE student_currents SET amount = :new_amount
+              WHERE amount IS NULL AND
+              reg_no = :reg_no AND
+              academic_year = :year AND
+              level = :level AND
+              dept_code = :dept";
 
-      //we first retrieve the amount that has been set for the student's department, level and academic year
+    $stmt = get_db()->prepare($query);
 
-      $stmt_fee = $db->prepare(
-        "SELECT fee FROM school_fees " .
-        "WHERE department = ? AND " .
-        "academic_year = ? AND " .
-        "academic_level = ?"
-      );
+    $stmt->bindValue('new_amount', $amount, $amount ? PDO::PARAM_STR : PDO::PARAM_NULL);
+    $stmt->bindValue('reg_no', $reg_no);
+    $stmt->bindValue('year', $academic_year);
+    $stmt->bindValue('level', $level);
+    $stmt->bindValue('dept', $dept_code);
 
-      $stmt_fee->execute([$dept_code, $academic_year, $level]);
+    if ($stmt->execute()) {
+      $result = $stmt->rowCount();
 
-      $amount = $stmt_fee->rowCount() ? $stmt_fee->fetch(PDO::FETCH_ASSOC)['fee'] : null;
-
-      if ($amount) {
-
-        $log->info(
-          "school fee $amount successfully retrieved for department code '$dept_code', " .
-          "academic year '$academic_year', academic level '$level'\n"
-        );
-
-      } else {
-
-        $log->addInfo(
-          "School fee amount not found for $dept_code, $academic_year, and $level. May be finance admin has not
-          set fee for the 3 parameters. In any case, we will go ahead and insert NULL as amount for student $reg_no.
-          When finance admin sets fee eventually, we will update amount from NULL to the fee set by finance admin."
-        );
-      }
-
-      if ($this->bill_exists($reg_no, $academic_year, $level, $dept_code) && $amount) {
-
-        return $this->update_bill($reg_no, $academic_year, $level, $amount, $dept_code);
-
-      }
-
-      $amount_type = $amount ? PDO::PARAM_STR : PDO::PARAM_NULL;
-
-      $stmt_billing = $db->prepare(
-        "INSERT INTO
-         student_billing(reg_no, academic_year, level, amount, department_code)
-         VALUES (?, ?, ?, ?, ?)"
-      );
-
-      $stmt_billing->bindValue(1, $reg_no);
-      $stmt_billing->bindValue(2, $academic_year);
-      $stmt_billing->bindValue(3, $level);
-      $stmt_billing->bindValue(4, $amount, $amount_type);
-      $stmt_billing->bindValue(5, $dept_code);
-
-      $stmt_billing->execute();
-
-      $rowCount = $stmt_billing->rowCount();
-
-      if ($rowCount) {
-
-        $log->info(
-          "Student billing successfully inserted for student $reg_no, amount = $amount, $academic_year, $level."
-        );
-
-      } else {
-
-        $log->info(
-          "Student billing failed to insert for amount = $amount, $reg_no, $academic_year, $level."
-        );
-
-      }
-
-      return $rowCount;
-
-    } catch (PDOException $e) {
-      $log->addError("Error occurred while attempting to insert student bill");
-
-      $log->addError($e->getMessage());
-
-      return null;
-
+      $log->addInfo("Statement executed successfully, result is: {$result}");
+      return $result;
     }
+
+    return null;
 
   }
 
@@ -203,7 +74,7 @@ class StudentBilling
      *
      * Note that the 3 parameters/variables are (1) academic session/year (2) level (3) department.
      */
-    $log = get_logger('StudentBilling');
+    $log = get_logger(self::$LOG_NAME);
 
     $db = get_db();
 
@@ -212,19 +83,16 @@ class StudentBilling
 
     try {
       $stmt = $db->prepare(
-        "UPDATE student_billing SET amount = :AMOUNT
+        "UPDATE student_currents SET amount = :AMOUNT
          WHERE amount IS NULL AND
          level = :LEVEL AND
          academic_year = :YEAR AND
-         department_code = :DEPT ");
+         dept_code = :DEPT ");
 
       $stmt->execute([
         ':AMOUNT' => $amount,
-
         ':LEVEL' => $level,
-
         ':YEAR' => $academic_year,
-
         ':DEPT' => $dept_code
       ]);
 
@@ -254,7 +122,7 @@ class StudentBilling
       $log->addError($e->getMessage());
 
     }
-
+    return null;
   }
 
   public function get_owing($reg_no)
@@ -285,7 +153,7 @@ class StudentBilling
 
     try {
 
-      $stmt_bills = $db->query("SELECT sum(amount) FROM student_billing WHERE reg_no = '$reg_no' ");
+      $stmt_bills = $db->query("SELECT sum(amount) FROM student_currents WHERE reg_no = '$reg_no' ");
 
       $retrieved_owing = $stmt_bills->fetch(PDO::FETCH_NUM)[0];
 

@@ -14,7 +14,8 @@ include_once(__DIR__ . '/../app_settings.php');
 class StudentPayment
 {
 
-  private $log_name = "student-payment";
+  private $log_name = "StudentPaymentModel";
+  private static  $LOG_NAME = "StudentPaymentModel";
 
   public function save_payment(Array $pay_details)
   {
@@ -100,6 +101,36 @@ class StudentPayment
       return null;
     }
 
+  }
+
+  /**
+   * @param array $data
+   * @return null|array
+   */
+  public static function get_fee_for_dept_level_session(array $data)
+  {
+    $query = "SELECT fee FROM school_fees
+              WHERE department = :department
+              AND academic_year = :academic_year
+              AND academic_level = :academic_level";
+
+    $log = get_logger(self::$LOG_NAME);
+
+    $log->addInfo("About to get fee with query: {$query} and params: ", $data);
+
+    $stmt = get_db()->prepare($query);
+
+    if ($stmt->execute($data)) {
+      $fee = $stmt->fetch();
+
+      $fee = $fee ? $fee['fee'] : null;
+
+      $log->addInfo("Statement executed successfully, fee is {$fee}");
+      return $fee;
+    }
+
+    $log->addWarning("Statement did not execute successfully.");
+    return null;
   }
 
 }
