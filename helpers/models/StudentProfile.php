@@ -117,19 +117,25 @@ class StudentProfile
               WHERE reg_no = ? AND
               academic_year = ? ";
 
+    $params = [$this->reg_no, $academic_year];
+
+    $log->addInfo(
+      "About to get student current academic parameters with query: {$query} and params: ",
+      $params
+    );
+
     try {
       $stmt = $db->prepare($query);
 
-      $stmt->execute([$this->reg_no, $academic_year]);
+      if ($stmt->execute($params)) {
+        $returned_data = $stmt->fetch();
+        $log->addInfo("Statement executed successfully, result is: ", [$returned_data]);
+        $stmt->closeCursor();
 
-      $log->addInfo("Query \"$query\" ran successfully.");
-
-
-      if ($stmt->rowCount()) {
-        $returned_data = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $returned_data;
       }
 
-      $stmt->closeCursor();
+      $log->addWarning("Statement did not execute correctly.");
 
     } catch (PDOException $e) {
 

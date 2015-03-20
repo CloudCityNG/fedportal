@@ -8,6 +8,9 @@ Class A201503161426497347
 {
   public function up(PDO $db = null)
   {
+    $db->query("DELETE FROM semester");
+    $db->query("DELETE FROM session_table");
+
     $session = '';
     $start_date = '';
     $end_date = '';
