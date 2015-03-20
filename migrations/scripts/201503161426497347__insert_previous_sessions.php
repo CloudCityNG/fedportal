@@ -28,6 +28,10 @@ Class A201503161426497347
     $stmt->bindParam('created_at', $created_at);
     $stmt->bindParam('updated_at', $updated_at);
 
+    $query2 = "SELECT COUNT(*) FROM session_table WHERE  session = :session";
+    $stmt2 = $db->prepare($query2);
+    $stmt2->bindParam('session', $session);
+
     $start_time = Carbon::createFromDate(Carbon::now()->year - 20, 12, 5);
 
     for ($year = 1; $year < 21; $year++) {

@@ -14,7 +14,7 @@ Class A201503201426839462
 
     $stmt1 = $db->query($query1);
 
-    $query2 = "SELECT course AS dept_code, description AS dept_name
+    $query2 = "SELECT DISTINCT course AS dept_code, description AS dept_name
            FROM freshman_profile JOIN academic_departments ON (course = code)
            WHERE personalno = :reg_no";
 
@@ -41,7 +41,7 @@ Class A201503201426839462
       $reg_no = $row['reg_no'];
       $stmt2->execute();
 
-      $dept = $stmt2->fetch();
+      $dept = $stmt2->fetchAll()[0];
 
       $level = $row['level'];
       $dept_code = $dept['dept_code'];
