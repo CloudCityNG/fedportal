@@ -395,15 +395,6 @@ INSERT INTO `academic_levels` (`id`, `code`, `description`) VALUES
   (14, 'HND2', NULL);
 
 
-INSERT INTO `academic_sessions` (`id`, `code`, `start_year`, `end_year`) VALUES
-  (1, '2009/2010', 2009, 2010),
-  (2, '2010/2011', 2010, 2011),
-  (3, '2011/2012', 2011, 2012),
-  (4, '2012/2013', 2012, 2013),
-  (5, '2013/2014', 2013, 2014),
-  (6, '2014/2015', 2014, 2015);
-
-
 INSERT INTO `admin_fin_table` (`pass`) VALUES
   ('finance');
 

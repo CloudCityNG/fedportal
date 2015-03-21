@@ -44,6 +44,7 @@ Class A201503161426497347
       $updated_at = $created_at;
 
       $stmt->execute();
+//      $stmt->closeCursor();
 
       $start_time = $start_time->addYear();
     }

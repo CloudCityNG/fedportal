@@ -13,13 +13,11 @@ use Monolog\Logger;
 function get_db()
 {
   $db_name = 'fedportal';
-
   $username = 'fedportal';
-
-  $passwd = 'fedportal';
+  $password = 'fedportal';
 
   return new PDO(
-    "mysql:host=localhost;dbname=$db_name;charset=utf8", $username, $passwd,
+    "mysql:host=localhost;dbname={$db_name};charset=utf8", $username, $password,
     [
       PDO::ATTR_EMULATE_PREPARES => false,
       PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

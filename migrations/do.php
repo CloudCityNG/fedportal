@@ -39,12 +39,21 @@ class MigrationManager
 
     $script_pattern = "=^(\d{10,})__.+\.php$=";
 
+    $script = '';
+    $stmt1 = $db->prepare("INSERT INTO migrations(number) VALUES(:script)");
+    $stmt1->bindParam('script', $script);
+
+    $stmt2 = $db->prepare("SELECT COUNT(*) FROM migrations WHERE number = :script");
+    $stmt2->bindParam('script', $script);
+
     foreach (scandir($scripts_dir) as $script) {
       if (preg_match($script_pattern, $script, $matches)) {
 
-        $query = "SELECT COUNT(*) FROM migrations WHERE number = '{$script}'";
+        $stmt2->execute();
+        $migrated = $stmt2->fetchColumn();
+        $stmt2->closeCursor();
 
-        if (!$db->query($query)->fetchColumn()) {
+        if (!$migrated) {
           require_once($scripts_dir . $script);
 
           $class = "A{$matches[1]}";
@@ -54,7 +63,8 @@ class MigrationManager
 
           $obj->up($db);
 
-          $db->query("INSERT INTO migrations(number) VALUES('{$script}')");
+          $stmt1->execute();
+          $stmt1->closeCursor();
         }
 
       }

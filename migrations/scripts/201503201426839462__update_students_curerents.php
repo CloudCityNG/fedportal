@@ -13,6 +13,8 @@ Class A201503201426839462
                                   AND `academic_year` = '{$academic_year}')";
 
     $stmt1 = $db->query($query1);
+    $stmt1_results = $stmt1->fetchAll();
+    $stmt1->closeCursor();
 
     $query2 = "SELECT DISTINCT course AS dept_code, description AS dept_name
            FROM freshman_profile JOIN academic_departments ON (course = code)
@@ -37,7 +39,7 @@ Class A201503201426839462
     $stmt3->bindParam('dept_code', $dept_code);
     $stmt3->bindParam('dept_name', $dept_name);
 
-    foreach ($stmt1->fetchAll() as $row) {
+    foreach ($stmt1_results as $row) {
       $reg_no = $row['reg_no'];
       $stmt2->execute();
 

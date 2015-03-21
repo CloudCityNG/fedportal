@@ -13,10 +13,11 @@ Class A201503161426521332
        WHERE session = (SELECT MAX(session) FROM session_table)"
     );
 
-    $current_session = $current_session->fetch(PDO::FETCH_ASSOC);
+    $current_session1 = $current_session->fetch(PDO::FETCH_ASSOC);
+    $current_session->closeCursor();
 
-    $session_id = $current_session['id'];
-    $start_date = $current_session['start_date'];
+    $session_id = $current_session1['id'];
+    $start_date = $current_session1['start_date'];
 
     $created_at = Carbon::createFromFormat('Y-m-d', $start_date);
 
@@ -35,6 +36,8 @@ Class A201503161426521332
       'updated_at' => $created_at->toDateTimeString(),
       'session_id' => $session_id,
     ]);
+
+    $stmt->closeCursor();
   }
 
   public function down(PDO $db)

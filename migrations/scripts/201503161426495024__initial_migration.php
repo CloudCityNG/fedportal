@@ -9,7 +9,9 @@ Class A201503161426495024
 
     foreach (explode(';', $sql_text) as $sql) {
       if (trim($sql)) {
-        $db->query($sql);
+        echo "<h3>Executing initial sql:</h3><br/>{$sql}<br/><br/>";
+        $stmt = $db->query($sql);
+        $stmt->closeCursor();
       }
 
     }
