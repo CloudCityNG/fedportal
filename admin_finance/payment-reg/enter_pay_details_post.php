@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: maneptha
- * Date: 12-Feb-15
- * Time: 1:29 PM
- */
+
 include_once(__DIR__ . '/../../helpers/models/StudentPayment.php');
 include_once(__DIR__ . '/../../helpers/app_settings.php');
 

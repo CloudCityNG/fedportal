@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: maneptha
- * Date: 05-Feb-15
- * Time: 9:21 PM
- */
 
 /**
  * Set a session which will be read to determine if registration action (bio data, courses) succeeds or fails

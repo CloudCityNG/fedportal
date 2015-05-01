@@ -1,8 +1,5 @@
 <?php
 
-/**
- * Created by maneptha on 24-Feb-15.
- */
 require_once(__DIR__ . '/../../helpers/databases.php');
 require_once(__DIR__ . '/../../helpers/app_settings.php');
 require_once(__DIR__ . '/../models/Semester.php');

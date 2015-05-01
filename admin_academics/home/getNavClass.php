@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: maneptha
- * Date: 17-Mar-15
- * Time: 3:46 PM
- */
 
 /**
  * @param array $currentPage An associative array containing strings that defines current page - used for css styling

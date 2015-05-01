@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by IntelliJ IDEA.
- * User: maneptha
- * Date: 12-Feb-15
- * Time: 12:24 AM
- */
-
 include_once(__DIR__ . '/../databases.php');
 
 include_once(__DIR__ . '/../app_settings.php');

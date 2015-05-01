@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: maneptha
- * Date: 31-Jan-15
- * Time: 7:52 PM
- */
 
 if (session_status() === PHP_SESSION_NONE) {
   session_start();

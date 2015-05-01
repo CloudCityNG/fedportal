@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by IntelliJ IDEA.
- * User: maneptha
- * Date: 17-Mar-15
- * Time: 5:35 PM
- */
-
 require_once(__DIR__ . '/../models/AcademicSession.php');
 require_once(__DIR__ . '/../models/Semester.php');
 require_once(__DIR__ . '/../../vendor/autoload.php');

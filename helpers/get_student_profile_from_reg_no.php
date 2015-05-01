@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: maneptha
- * Date: 01-Feb-15
- * Time: 8:59 PM
- */
 
 require_once(__DIR__ . '/databases.php');
 

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: maneptha
- * Date: 05-Feb-15
- * Time: 7:28 PM
- */
 
 include_once('Models.php');
 

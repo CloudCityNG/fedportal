@@ -1,7 +1,5 @@
 <?php
-/**
- * Created by maneptha on 15-Feb-15.
- */
+
 if (session_status() === PHP_SESSION_NONE) {
   session_start();
 }

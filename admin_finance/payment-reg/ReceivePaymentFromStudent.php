@@ -1,7 +1,4 @@
 <?php
-/**
- * User: maneptha Date: 11-Feb-15
- */
 
 include_once(__DIR__ . '/../../helpers/models/StudentProfile.php');
 

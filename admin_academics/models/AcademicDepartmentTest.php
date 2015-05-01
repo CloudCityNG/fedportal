@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: maneptha
- * Date: 18-Mar-15
- * Time: 10:24 PM
- */
 
 require_once(__DIR__ . '/AcademicDepartment.php');
 

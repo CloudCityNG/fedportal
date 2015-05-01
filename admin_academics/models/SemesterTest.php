@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: maneptha
- * Date: 15-Mar-15
- * Time: 1:19 PM
- */
+
 require_once(__DIR__ . '/Semester.php');
 
 function test_get_latest_semester_end_date()

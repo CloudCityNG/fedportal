@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: maneptha
- * Date: 05-Feb-15
- * Time: 6:06 PM
- */
-
 //include_once(__DIR__ . '/../vendor/autoload.php');
 
 use Monolog\Logger;

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: maneptha
- * Date: 12-Feb-15
- * Time: 10:28 AM
- */
 
 include_once(__DIR__ . '/StudentPayment.php');
 

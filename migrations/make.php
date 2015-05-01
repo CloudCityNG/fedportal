@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: maneptha
- * Date: 16-Mar-15
- * Time: 6:19 AM
- */
 
 if (count($argv) < 2) {
   throw new Exception('You must supply a name for your migration');

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: maneptha
- * Date: 11-Feb-15
- * Time: 11:09 AM
- */
+
 include_once(__DIR__ . '/StudentBilling.php');
 
 function test_get_owing_with_existing_reg_no()

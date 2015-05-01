@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: maneptha
- * Date: 11-Feb-15
- * Time: 5:52 PM
- */
+
 include_once(__DIR__ . '/StudentProfile.php');
 
 class StudentProfileTest

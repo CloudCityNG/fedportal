@@ -1,7 +1,3 @@
-/**
- * Created by maneptha on 13-Feb-15.
- */
-
 "use strict";
 
 function numberFormat(string) {

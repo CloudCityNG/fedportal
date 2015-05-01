@@ -1,7 +1,3 @@
-/**
- * Created by maneptha on 24-Feb-15.
- */
-
 module.exports = function (grunt) {
   "use strict";
 

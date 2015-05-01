@@ -1,8 +1,4 @@
 <?php
-/**
- * Created by maneptha on 14-Feb-15.
- */
-
 include_once(__DIR__ . '/../../helpers/databases.php');
 
 include_once(__DIR__ . '/../../helpers/app_settings.php');

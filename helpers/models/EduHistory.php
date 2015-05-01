@@ -1,7 +1,4 @@
 <?php
-/**
- * Created by maneptha on 20-Feb-15.
- */
 
 require_once(__DIR__ . '/../databases.php');
 

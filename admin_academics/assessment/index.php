@@ -1,11 +1,5 @@
 <?php
 
-/**
- * Created by IntelliJ IDEA.
- * User: maneptha
- * Date: 17-Mar-15
- * Time: 4:00 PM
- */
 require_once(__DIR__ . '/../../helpers/databases.php');
 
 class AssessmentController

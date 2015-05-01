@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: maneptha
- * Date: 18-Mar-15
- * Time: 3:51 PM
- */
+
 require(__DIR__ . '/StudentCourses.php');
 
 function test_bulk_create()

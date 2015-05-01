@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: maneptha
- * Date: 05-Feb-15
- * Time: 1:04 AM
- */
+
 define('STATIC_ROOT', '/fedportal/');
 
 include_once(__DIR__ . '/../vendor/autoload.php');

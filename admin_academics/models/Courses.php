@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by IntelliJ IDEA.
- * User: maneptha
- * Date: 18-Mar-15
- * Time: 6:46 PM
- */
-
 require_once(__DIR__ . '/../../helpers/databases.php');
 require_once(__DIR__ . '/../../helpers/app_settings.php');
 
