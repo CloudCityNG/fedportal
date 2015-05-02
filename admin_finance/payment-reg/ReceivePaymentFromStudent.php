@@ -31,7 +31,7 @@ class ReceivePaymentFromStudent
       return;
     }
 
-    $this->academic_year = AcademicSession::get_current_session()['session'];
+    $this->academic_year = AcademicSession::getCurrentSession()['session'];
 
     $this->past_academic_years = array_map(function ($session) {
       return $session['session'];

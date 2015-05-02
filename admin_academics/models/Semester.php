@@ -11,18 +11,64 @@ Class Semester
 {
   private static $LOG_NAME = 'SemesterModel';
 
-  public static function create($post)
+
+  /**
+   * @param array $post
+   * @return array|null
+   */
+  public static function update(array $post)
+  {
+    $query = "UPDATE semester SET
+                number = :number,
+                start_date = :start_date,
+                end_date = :end_date
+                WHERE id = :_id";
+
+    self::logger()->addInfo("About to update semester using query: {$query} and params: ", $post);
+
+    $old_start_date = Carbon::createFromFormat('d-m-Y', $post['start_date']);
+    $old_end_date = Carbon::createFromFormat('d-m-Y', $post['end_date']);
+
+    $post['start_date'] = $old_start_date->format('Y-m-d');
+    $post['end_date'] = $old_end_date->format('Y-m-d');
+
+    $stmt = get_db()->prepare($query);
+
+    if ($stmt->execute($post)) {
+      $post['start_date'] = $old_start_date;
+      $post['end_date'] = $old_end_date;
+
+      self::logger()->addInfo("Semester successfully updated.");
+
+      return $post;
+    }
+
+    self::logger()->addWarning('Could not update semester');
+    return null;
+  }
+
+  /**
+   * @return \Monolog\Logger
+   */
+  private static function logger()
+  {
+    return get_logger('SemesterModel');
+  }
+
+  /**
+   * @param array $post
+   * @return array|null
+   */
+  public static function create(array $post)
   {
     $db = get_db();
-
-    $log = get_logger(self::$LOG_NAME);
 
     $now = Carbon::now();
 
     $query = "INSERT INTO semester(number, start_date, end_date, created_at, updated_at, session_id)
               VALUES (:number, :start_date, :end_date, '$now', '$now', :session_id)";
 
-    $log->addInfo("About to create a new semester using query: {$query} and params: ", $post);
+    self::logger()->addInfo("About to create a new semester using query: {$query} and params: ", $post);
 
     $old_start_date = Carbon::createFromFormat('d-m-Y', $post['start_date']);
     $old_end_date = Carbon::createFromFormat('d-m-Y', $post['end_date']);
@@ -40,20 +86,68 @@ Class Semester
       $post['end_date'] = $old_end_date;
       $post['session'] = AcademicSession::get_session_by_id($post['session_id']);
 
-      $log->addInfo("Semester successfully created as: ", $post);
+      self::logger()->addInfo("Semester successfully created as: ", $post);
 
       return $post;
     }
 
-    $log->addError("Query to create semester failed to execute");
+    self::logger()->addError("Query to create semester failed to execute");
 
     return null;
   }
 
-  public static function get_current_semester()
+  public static function getImmediatePastSemester()
   {
-    $log = get_logger(self::$LOG_NAME);
+    $query1 = "SELECT * FROM semester WHERE end_date < ? ORDER BY end_date DESC LIMIT 1";
 
+    $param = [Carbon::now()->format('Y-m-d')];
+
+    self::logger()->addInfo(
+      "About to get immediate past semester with query {$query1}, and param: ", $param
+    );
+
+    $stmt = get_db()->prepare($query1);
+
+    if ($stmt->execute($param)) {
+      $semester = $stmt->fetch();
+
+      if ($semester) {
+        self::logger()->addInfo(
+          "Query executed successfully. Immediate past semester is: ", $semester
+        );
+
+        $semester = self::dbDatesToCarbon($semester);
+
+        $semester['session'] = AcademicSession::getCurrentSession();
+
+        return $semester;
+      }
+    }
+
+    self::logger()->addWarning("Immediate past semester not found.");
+    return null;
+  }
+
+  /**
+   * @param array $data
+   * @return array
+   */
+  private static function dbDatesToCarbon(array $data)
+  {
+    foreach (['start_date', 'end_date', 'created_at', 'updated_at'] as $column) {
+      if (isset($data[$column])) {
+        $data[$column] = Carbon::parse($data[$column]);
+      }
+    }
+    return $data;
+  }
+
+
+  /**
+   * @return array|mixed|null
+   */
+  public static function getCurrentSemester()
+  {
     $today = date('Y-m-d', time());
 
     $query = "SELECT * FROM semester
@@ -66,60 +160,63 @@ Class Semester
       'today2' => $today
     ];
 
-    $log->addInfo("About to get current semester with query: {$query} and params: ", $query_param);
+    self::logger()->addInfo(
+      "About to get current semester with query: {$query} and params: ", $query_param
+    );
 
-    $db = get_db();
+    $stmt = get_db()->prepare($query);
 
-    $stmt = $db->prepare($query);
+    if ($stmt->execute($query_param)) {
+      $semester = $stmt->fetch();
 
-    $stmt->execute($query_param);
+      if ($semester) {
+        self::logger()->addInfo("Query successfully ran. semester is: ", $semester);
 
-    $semester = $stmt->fetch(PDO::FETCH_ASSOC);
+        $semester = self::dbDatesToCarbon($semester);
 
-    if ($semester) {
-      $log->addInfo("Query successfully ran. semester is: ", $semester);
+        $semester['session'] = AcademicSession::getCurrentSession();
 
-      $semester = self::db_dates_to_carbon($semester);
-
-      $semester['session'] = AcademicSession::get_current_session();
-
-      return $semester;
-
-    } else {
-      $log->addWarning("Current semester not found!");
+        return $semester;
+      }
     }
 
-
+    self::logger()->addWarning("Current semester not found!");
     return null;
   }
 
-  public static function get_semester_by_number_and_session($number, $session)
+  /**
+   * @param string|int $number
+   * @param string|int $session
+   * @return array|null
+   */
+  public static function getSemesterByNumberAndSession($number, $session)
   {
     $query1 = "SELECT id FROM session_table WHERE session = ?";
 
     $query2 = "SELECT * FROM semester
-              WHERE number = ?
-              AND session_id = ({$query1})";
+               WHERE number = ?
+               AND session_id = ({$query1})";
 
     $params = [$number, $session];
 
-    $log = get_logger(self::$LOG_NAME);
-
-    $log->addInfo("About to get semester using query: {$query2} and params: ", $params);
+    self::logger()->addInfo("About to get semester using query: {$query2} and params: ", $params);
 
     $stmt = get_db()->prepare($query2);
 
     if ($stmt->execute($params)) {
-      $result = $stmt->fetch(PDO::FETCH_ASSOC);
-      $log->addInfo("Statement executed successfully, result is: ", $result);
-      return $result;
+      $result = $stmt->fetch();
+
+      if ($result) {
+        self::logger()->addInfo("Statement executed successfully, result is: ", $result);
+        return $result;
+      }
     }
 
-    $log->addWarning("Statement did not execute successfully");
+    self::logger()->addWarning("Can not get semester.");
     return null;
   }
 
-  public static function validate_dates($data)
+  public static function validateDates($data)
   {
     $returnedVal['valid'] = false;
 
@@ -151,7 +248,7 @@ Class Semester
         return $returnedVal;
       }
 
-      $latest_end_date = self::get_latest_semester_end_date();
+      $latest_end_date = self::getLatestSemesterEndDate();
 
       if ($latest_end_date && $latest_end_date > $dt_start) {
         $returnedVal['messages'] = [
@@ -176,7 +273,38 @@ Class Semester
     return ['valid' => true];
   }
 
-  public static function validate_number_column($data)
+  /**
+   * @return null|\Carbon\Carbon
+   */
+  public static function getLatestSemesterEndDate()
+  {
+    $query = "SELECT MAX(end_date) FROM semester";
+
+    self::logger()->addInfo("About to get latest semester end date with query: {$query}");
+
+    $stmt = get_db()->query($query);
+
+    if ($stmt) {
+      $result = $stmt->fetch(PDO::FETCH_NUM);
+
+      if ($result && $result[0]) {
+        $dt = Carbon::createFromFormat('Y-m-d', $result[0]);
+        self::logger()->addInfo(
+          "query executed successfully. Latest semester end date is {$dt}"
+        );
+        return $dt;
+      }
+    }
+
+    self::logger()->addInfo("Latest semester date not found may be no semester set yet.");
+    return null;
+  }
+
+  /**
+   * @param array $data
+   * @return array
+   */
+  public static function validateNumberColumn(array $data)
   {
 
     $returnedVal['valid'] = false;
@@ -198,10 +326,10 @@ Class Semester
       return $returnedVal;
     }
 
-    if (self::semester_exists($number, $data['session_id'])) {
+    if (self::semesterExists($number, $data['session_id'])) {
       $returnedVal['messages'] = [
         'The specified semester exists for the specified session: ' .
-        self::render_semester_number($number) . ' semester!'
+        self::renderSemesterNumber($number) . ' semester!'
       ];
       return $returnedVal;
     }
@@ -209,41 +337,50 @@ Class Semester
     return ['valid' => true];
   }
 
-  public static function render_semester_number($number)
-  {
-    return $number == 1 ? '1st' : '2nd';
-  }
-
-  public static function semester_exists($number, $session_id)
+  /**
+   * @param string|int $number
+   * @param string|int $sessionId
+   * @return bool|null
+   */
+  public static function semesterExists($number, $sessionId)
   {
     $query = "SELECT COUNT(*) FROM semester
               WHERE number = ?
               AND session_id = ?";
 
-    $param = [$number, $session_id];
+    $param = [$number, $sessionId];
 
-    $log = get_logger(self::$LOG_NAME);
+    self::logger()->addInfo("About to confirm is semester exists with query: {$query} and params: ", $param);
 
-    $log->addInfo("About to confirm is semester exists with query: {$query} and params: ", $param);
-
-    $db = get_db();
-
-    $stmt = $db->prepare($query);
+    $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($param)) {
       $returnedVal = $stmt->fetchColumn() ? true : false;
 
-      $log->addInfo("Query ran successfully. Result is: {$returnedVal}");
+      self::logger()->addInfo("Query ran successfully. Result is: {$returnedVal}");
 
       return $returnedVal;
     }
 
-    $log->addWarning("Query failed to run.");
+    self::logger()->addWarning("Query failed to run or empty result.");
 
     return null;
   }
 
-  public static function validate_session_id_column($data)
+  /**
+   * @param int|string $number
+   * @return string
+   */
+  public static function renderSemesterNumber($number)
+  {
+    return $number == 1 ? '1st' : '2nd';
+  }
+
+  /**
+   * @param array $data
+   * @return array
+   */
+  public static function validateSessionIdColumn(array $data)
   {
     $returnedVal['valid'] = false;
 
@@ -270,44 +407,5 @@ Class Semester
     }
 
     return ['valid' => true];
-  }
-
-  public static function get_latest_semester_end_date()
-  {
-    $query = "SELECT MAX(end_date) FROM semester";
-
-    $log = get_logger(self::$LOG_NAME);
-
-    $log->addInfo("About to get latest semester end date with query: {$query}");
-
-    $db = get_db();
-
-    $stmt = $db->query($query);
-
-    if ($stmt) {
-      $log->addInfo("query executed successfully.");
-
-      $result = $stmt->fetch(PDO::FETCH_NUM);
-
-      if ($result && $result[0]) {
-        $dt = Carbon::createFromFormat('Y-m-d', $result[0]);
-        $log->addInfo("Latest semester end date is {$dt}");
-        return $dt;
-      }
-
-      $log->addInfo("Latest semester date not found may be no semester set yet.");
-    }
-
-    return null;
-  }
-
-  private static function db_dates_to_carbon($data)
-  {
-    foreach (['start_date', 'end_date', 'created_at', 'updated_at'] as $column) {
-      if (isset($data[$column])) {
-        $data[$column] = Carbon::parse($data[$column]);
-      }
-    }
-    return $data;
   }
 }

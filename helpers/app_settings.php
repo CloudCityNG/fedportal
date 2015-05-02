@@ -8,6 +8,10 @@ use Monolog\Logger;
 
 use Monolog\Handler\StreamHandler;
 
+/**
+ * @param string $name
+ * @return Logger
+ */
 function get_logger($name)
 {
 

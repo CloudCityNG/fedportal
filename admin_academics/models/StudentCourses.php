@@ -20,7 +20,7 @@ class StudentCourses
    */
   public static function get_student_current_courses(array $data)
   {
-    $semester = Semester::get_semester_by_number_and_session($data['semester'], $data['session']);
+    $semester = Semester::getSemesterByNumberAndSession($data['semester'], $data['session']);
 
     $query = "SELECT title, code, unit
               FROM student_courses JOIN course_table ON (course_id = course_table.id)
@@ -55,7 +55,7 @@ class StudentCourses
    */
   public static function bulk_create_for_student_for_semester(array $course_ids, array $student_details)
   {
-    $semester = Semester::get_semester_by_number_and_session(
+    $semester = Semester::getSemesterByNumberAndSession(
       $student_details['semester'],
       $student_details['academic_year_code']
     );

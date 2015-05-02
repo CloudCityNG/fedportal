@@ -43,7 +43,7 @@ class AcademicSession
     return null;
   }
 
-  public static function get_current_session()
+  public static function getCurrentSession()
   {
     $db = get_db();
 

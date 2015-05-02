@@ -89,7 +89,7 @@ class StudentProfile
     //if academic year is not given, it defaults to current academic year
     if (!$academic_year) {
 
-      $academic_year = AcademicSession::get_current_session()['session'];
+      $academic_year = AcademicSession::getCurrentSession()['session'];
     }
 
     $db = get_db();

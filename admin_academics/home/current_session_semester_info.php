@@ -9,40 +9,59 @@ use Carbon\Carbon;
 class CurrentSessionSemesterInfo
 {
 
-  public static function get_current_session()
+  public static function getCurrentSession()
   {
-    $session = AcademicSession::get_current_session();
+    $session = AcademicSession::getCurrentSession();
 
-    $end = $session['end_date'];
+    $diff = 'unknown';
+    $startDate = 'unknown';
+    $endDate = 'unknown';
 
-    $returnedVal['diff'] = $end->diff(Carbon::now())->days;
-    $returnedVal['start'] = $start = $session['start_date']->format('l, F j, Y');
-    $returnedVal['end'] = $end->format('l, F j, Y');
+    if ($session) {
+      $end = $session['end_date'];
+      $diff = $end->diff(Carbon::now())->days;
+
+      $startDate = $session['start_date']->format('l, F j, Y');
+      $endDate = $end->format('l, F j, Y');
+    }
+
+    $returnedVal['diff'] = $diff;
+    $returnedVal['start'] = $startDate;
+    $returnedVal['end'] = $endDate;
     $returnedVal['session'] = $session['session'];
 
     return $returnedVal;
   }
 
-  public static function get_current_semester()
+  public static function getCurrentSemester()
   {
-    $semester = Semester::get_current_semester();
+    $semester = Semester::getCurrentSemester();
 
-    $end = $semester['end_date'];
+    $diff = 'unknown';
+    $startDate = 'unknown';
+    $endDate = 'unknown';
 
-    $diff = $end->diff(Carbon::now())->days;
+    if ($semester) {
+      $end = $semester['end_date'];
+
+      $diff = $end->diff(Carbon::now())->days;
+
+      $startDate = $semester['start_date']->format('l, F j, Y');
+      $endDate = $end->format('l, F j, Y');
+    }
 
     $returnedVal['diff'] = $diff;
-    $returnedVal['start'] = $semester['start_date']->format('l, F j, Y');
-    $returnedVal['end'] = $end->format('l, F j, Y');
-    $returnedVal['semester'] = Semester::render_semester_number($semester['number']);
-    $returnedVal['panel-class'] = $diff <= 30 ? 'panel-danger' : 'panel-default' ;
+    $returnedVal['start'] = $startDate;
+    $returnedVal['end'] = $endDate;
+    $returnedVal['semester'] = Semester::renderSemesterNumber($semester['number']);
+    $returnedVal['panel-class'] = $diff <= 30 ? 'panel-danger' : 'panel-default';
 
     return $returnedVal;
   }
 }
 
-$currentSemesterInfo = CurrentSessionSemesterInfo::get_current_semester();
-$currentSessionInfo = CurrentSessionSemesterInfo::get_current_session();
+$currentSemesterInfo = CurrentSessionSemesterInfo::getCurrentSemester();
+$currentSessionInfo = CurrentSessionSemesterInfo::getCurrentSession();
 ?>
 
 <div class="session-semester-info row">
@@ -67,7 +86,7 @@ $currentSessionInfo = CurrentSessionSemesterInfo::get_current_session();
   <div class="col-sm-6">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h2 class="panel-title"> <?php echo $currentSessionInfo['session']?> Session</h2>
+        <h2 class="panel-title"> <?php echo $currentSessionInfo['session'] ?> Session</h2>
       </div>
 
       <div class="panel-body">

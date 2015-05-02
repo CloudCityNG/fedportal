@@ -39,7 +39,7 @@ class AcademicSessionController
     ];
 
     try {
-      $current_session = AcademicSession::get_current_session();
+      $current_session = AcademicSession::getCurrentSession();
 
       if ($current_session) {
         $current_session['current_session_not_found'] = '';

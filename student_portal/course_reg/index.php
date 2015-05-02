@@ -24,13 +24,7 @@ class CourseRegController
     $reg_no = $_SESSION['REG_NO'];
 
     if (!StudentProfile::student_exists($reg_no)) {
-
-      set_student_reg_form_completion_session1(
-        'error',
-        'You have not selected your department! Please complete bio data.');
-
-      $home = STATIC_ROOT . 'student_portal/home/';
-      header("Location: {$home}");
+      self::exitOnError('You have not selected your department! Please complete bio data.');
     }
 
     $profile = new StudentProfile($reg_no);
@@ -39,11 +33,17 @@ class CourseRegController
 
     $dept_name = AcademicDepartment::get_dept_name_from_code($dept_code);
 
-    $semester = Semester::get_current_semester()['number'];
+    $semester = Semester::getCurrentSemester();
 
-    $semester_text = Semester::render_semester_number($semester);
+    if (!$semester) {
+      self::exitOnError('Current semester not set. Please inform admin about this error.');
+    }
 
-    $academic_year = AcademicSession::get_current_session()['session'];
+    $semester = $semester['number'];
+
+    $semester_text = Semester::renderSemesterNumber($semester);
+
+    $academic_year = AcademicSession::getCurrentSession()['session'];
 
     $course_data = StudentCourses::get_student_current_courses([
       'reg_no' => $reg_no, 'semester' => $semester, 'session' => $academic_year
@@ -59,6 +59,18 @@ class CourseRegController
     }
 
     require(__DIR__ . '/view.php');
+  }
+
+  /**
+   * @param string $message
+   */
+  private static function exitOnError($message)
+  {
+    set_student_reg_form_completion_session1(
+      'error', $message);
+
+    $home = STATIC_ROOT . 'student_portal/home/';
+    header("Location: {$home}");
   }
 
   private function get_courses_for_semester_dept($dept_code, $semester)
@@ -92,19 +104,13 @@ class CourseRegController
 
 class CourseRegistrationPostController
 {
-  private $academic_year;
-
-  private $reg_no;
-
-  private $level;
-
-  private $semester;
-
-  private $courses_chosen;
-
-  private $dept_code;
-
   private static $LOG_NAME = "CourseRegistrationPostController";
+  private $academic_year;
+  private $reg_no;
+  private $level;
+  private $semester;
+  private $courses_chosen;
+  private $dept_code;
 
   function __construct()
   {
@@ -132,6 +138,14 @@ class CourseRegistrationPostController
       return;
 
     }
+  }
+
+  private function redirect_to_dashboard()
+  {
+    $home = STATIC_ROOT . 'student_portal/home/';
+    header("Location: {$home}");
+
+    return;
   }
 
   public function insert_courses()
@@ -181,14 +195,6 @@ class CourseRegistrationPostController
     $this->redirect_to_dashboard();
     return;
 
-  }
-
-  private function redirect_to_dashboard()
-  {
-    $home = STATIC_ROOT . 'student_portal/home/';
-    header("Location: {$home}");
-
-    return;
   }
 
   private function set_current_level_dept()

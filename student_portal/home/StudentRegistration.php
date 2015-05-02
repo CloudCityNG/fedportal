@@ -39,7 +39,7 @@ class StudentRegistration
 
     $this->reg_no = $reg_no ? $reg_no : $_SESSION['REG_NO'];
 
-    $this->semester = Semester::get_current_semester();
+    $this->semester = Semester::getCurrentSemester();
 
     $this->init_statuses();
 
@@ -108,7 +108,7 @@ class StudentRegistration
       'courses' => $courses ? 'alert-success text-success' : 'alert-warning',
     ];
 
-    $semester_text = Semester::render_semester_number($this->semester['number']);
+    $semester_text = Semester::renderSemesterNumber($this->semester['number']);
 
     $this->html_status_texts = [
 
