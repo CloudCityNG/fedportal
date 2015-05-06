@@ -7,55 +7,6 @@ require_once(__DIR__ . '/../models/AcademicSession.php');
 
 class SemesterController
 {
-  private static $LOG_NAME = 'ACADEMICS-ADMIN-SEMESTER-CONTROLLER';
-
-  private static function updateSemester(array $post)
-  {
-    $returnedVal = ['success' => false];
-
-    if (self::validatePost($post)) {
-
-      $log = get_logger(self::$LOG_NAME);
-
-      try {
-
-        if (Semester::update($post)) {
-          $returnedVal = ['success' => true];
-        }
-
-      } catch (PDOException $e) {
-
-        logPdoException($e, "DB error occurred while updating semester", $log);
-      }
-
-    }
-
-    return $returnedVal;
-  }
-
-  private static function validatePost($post)
-  {
-    $valid = Semester::validateSessionIdColumn($post);
-
-    if (!$valid['valid']) {
-      return $valid['messages'];
-    }
-
-    $valid = Semester::validateDates($post);
-
-    if (!$valid['valid']) {
-      return $valid['messages'];
-    }
-
-    $valid = Semester::validateNumberColumn($post);
-
-    if (!$valid['valid']) {
-      return $valid['messages'];
-    }
-
-    return true;
-  }
-
   public function post()
   {
     if (isset($_POST['new-semester-form-submit'])) {
@@ -67,13 +18,25 @@ class SemesterController
 
       $postStatus['new_semester'] = $status;
 
-      $this->renderPage($oldNewSemesterData, $postStatus);
+      $this->renderPage(null, $oldNewSemesterData, $postStatus);
+
+    } else if (isset($_POST['current-semester-form-submit'])) {
+      $currentSemester = $_POST['current_semester'];
+
+      $status = self::updateSemester($currentSemester);
+
+      $oldCurrentSemesterData = $status['posted'] ? null : $currentSemester;
+
+      $postStatus['current_semester'] = $status;
+
+      $this->renderPage($oldCurrentSemesterData, null, $postStatus);
+
     }
   }
 
   private static function createNewSemester($post)
   {
-    $valid = self::validatePost($post);
+    $valid = self::validatePost($post, true);
 
     if ($valid !== true) {
       return [
@@ -83,8 +46,6 @@ class SemesterController
       ];
     }
 
-    $log = get_logger(self::$LOG_NAME);
-
     if (isset($post['session'])) {
       unset($post['session']);
     }
@@ -93,9 +54,7 @@ class SemesterController
       $semester = Semester::create($post);
 
       if ($semester) {
-        $log->addInfo('New semester successfully created. Semester is: ', $semester);
-
-        $number = $semester['number'] == 1 ? '1st' : '2nd';
+        $number = Semester::renderSemesterNumber($semester['number']);
 
         return [
           'posted' => true,
@@ -108,10 +67,7 @@ class SemesterController
 
 
     } catch (PDOException $e) {
-      logPdoException(
-        $e,
-        "Error occurred while creating new semester.",
-        $log);
+      logPdoException($e, "Error occurred while creating new semester.", self::logger());
     }
 
     return [
@@ -121,15 +77,53 @@ class SemesterController
     ];
   }
 
-  /**
-   * @param array|null $oldNewSemester
-   * @param array|null $postStatus
-   */
-  public function renderPage(array $oldNewSemester = null, array $postStatus = null)
+  private static function validatePost($post, $newSession = false)
   {
-    $current_semester = self::get_current_semester();
+    $valid = Semester::validateSessionIdColumn($post);
 
-    $two_most_recent_sessions = self::get_two_most_recent_session();
+    if (!$valid['valid']) {
+      return $valid['messages'];
+    }
+
+    $valid = Semester::validateDates($post, $newSession);
+
+    if (!$valid['valid']) {
+      return $valid['messages'];
+    }
+
+    $valid = Semester::validateNumberColumn($post, $newSession);
+
+    if (!$valid['valid']) {
+      return $valid['messages'];
+    }
+
+    return true;
+  }
+
+  private static function logger()
+  {
+    return get_logger('AdminAcademicsSemesterController');
+  }
+
+  /**
+   * Callers of this function will call it with zero or 2 arguments. Callers using 2 arguments are
+   * those involved in executing http method 'POST'. The 2 arguments are required to re-render post data
+   * back to users and indicate whether post succeeded or not.
+   *
+   * @param array|null $oldCurrentSemesterData - if data needed to update current semester not valid,
+   *                                              then $oldCurrentSemesterData refers to that invalid data.
+   *                                              This will then be re-rendered to user.
+   *
+   * @param array|null $oldNewSemester - if data needed to create current semester not valid,
+   *                                      then $oldNewSemester refers to that invalid data. This will then be
+   *                                      re-rendered to user.
+   * @param array|null $postStatus -   whether semester successfully updated or created.
+   */
+  public function renderPage(array $oldCurrentSemesterData = null, array $oldNewSemester = null, array $postStatus = null)
+  {
+    $current_semester = $oldCurrentSemesterData ? null : self::getCurrentSemester();
+
+    $twoMostRecentSessions = self::getTwoMostRecentSessions();
 
     $currentPage = [
       'title' => 'semester',
@@ -146,10 +140,8 @@ class SemesterController
     require(__DIR__ . '/../home/container.php');
   }
 
-  private static function get_current_semester()
+  private static function getCurrentSemester()
   {
-    $log = get_logger(self::$LOG_NAME);
-
     try {
       $semester = Semester::getCurrentSemester();
 
@@ -157,45 +149,79 @@ class SemesterController
         return $semester;
       }
     } catch (PDOException $e) {
-      logPdoException($e, 'Error occurred while getting current semester', $log);
+      logPdoException($e, 'Error occurred while getting current semester', self::logger());
     }
 
     return null;
   }
 
-  private static function get_two_most_recent_session()
+  private static function getTwoMostRecentSessions()
   {
-    $log = get_logger(self::$LOG_NAME);
-
-    $academic_sessions = [];
+    $academicSessions = [];
 
     try {
-      $academic_sessions = AcademicSession::get_two_most_recent_sessions();
+      $academicSessions = AcademicSession::getTwoMostRecentSessions();
 
-      if ($academic_sessions) {
-        $log->addInfo("Academic session successfully retrieved: ", $academic_sessions);
+      if ($academicSessions) {
 
-        $academic_sessions = array_map(function ($a_session) {
-          $a_session['label'] = $a_session['session'];
-          $a_session['value'] = $a_session['session'];
-          return $a_session;
-        }, $academic_sessions);
+        $academicSessions = array_map(function ($aSession) {
+          $aSession['label'] = $aSession['session'];
+          $aSession['value'] = $aSession['session'];
+          return $aSession;
+        }, $academicSessions);
       }
 
     } catch (PDOException $e) {
 
       logPdoException(
-        $e,
-        'Error occurred while retrieving the two most recent academic sessions',
-        $log);
+        $e, 'Error occurred while retrieving the two most recent academic sessions', self::logger());
     }
 
-    return $academic_sessions;
+    return $academicSessions;
   }
 
-  private function transform_date($val)
+  private static function updateSemester(array $post)
   {
-    return implode('-', array_reverse(explode('-', $val)));
+    $valid = self::validatePost($post);
+
+    if ($valid !== true) {
+      return [
+        'posted' => false,
+
+        'messages' => $valid
+      ];
+    }
+
+    if (isset($post['session'])) {
+      unset($post['session']);
+    }
+
+    try {
+
+      $semester = Semester::update($post);
+
+      if ($semester) {
+        $number = Semester::renderSemesterNumber($semester['number']);
+
+        return [
+          'posted' => true,
+
+          'messages' => [
+            "{$number} semester for {$semester['session']['session']} session successfully updated."
+          ]
+        ];
+      }
+
+    } catch (PDOException $e) {
+
+      logPdoException($e, "DB error occurred while updating semester", self::logger());
+    }
+
+    return [
+      'posted' => false,
+
+      'messages' => ['Database error. Unable to update semester']
+    ];
   }
 }
 

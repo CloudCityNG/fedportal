@@ -17,7 +17,6 @@ include_once(__DIR__ . '/../../helpers/models/StudentBilling.php');
 
 class CourseRegController
 {
-  private static $LOG_NAME = 'Course-registration';
 
   public function get()
   {
@@ -27,11 +26,13 @@ class CourseRegController
       self::exitOnError('You have not selected your department! Please complete bio data.');
     }
 
-    $profile = new StudentProfile($reg_no);
+    $academicYear = AcademicSession::getCurrentSession();
 
-    $dept_code = $profile->dept_code;
+    if (!$academicYear) {
+      self::exitOnError('Current session not set. Please inform admin about this error.');
+    }
 
-    $dept_name = AcademicDepartment::get_dept_name_from_code($dept_code);
+    $academicYear = $academicYear['session'];
 
     $semester = Semester::getCurrentSemester();
 
@@ -43,10 +44,16 @@ class CourseRegController
 
     $semester_text = Semester::renderSemesterNumber($semester);
 
-    $academic_year = AcademicSession::getCurrentSession()['session'];
+    $profile = new StudentProfile($reg_no);
+
+    $dept_code = $profile->dept_code;
+
+    $dept_name = AcademicDepartment::get_dept_name_from_code($dept_code);
 
     $course_data = StudentCourses::get_student_current_courses([
-      'reg_no' => $reg_no, 'semester' => $semester, 'session' => $academic_year
+      'reg_no' => $reg_no,
+      'semester' => $semester,
+      'session' => $academicYear
     ]);
 
     if (!empty($course_data)) {
@@ -54,7 +61,7 @@ class CourseRegController
       $view = __DIR__ . '/view_print.php';
 
     } else {
-      $courses_for_semester = $this->get_courses_for_semester_dept($dept_code, $semester);
+      $courses_for_semester = $this->getCoursesForSemesterDept($dept_code, $semester);
       $view = __DIR__ . '/form.php';
     }
 
@@ -73,10 +80,16 @@ class CourseRegController
     header("Location: {$home}");
   }
 
-  private function get_courses_for_semester_dept($dept_code, $semester)
+  /**
+   * @param string $dept_code
+   * @param string|int $semester
+   * @return array
+   */
+  private function getCoursesForSemesterDept($dept_code, $semester)
   {
     $data = Courses1::get_courses_for_semester_and_dept([
-      'department' => $dept_code, 'semester' => $semester
+      'department' => $dept_code,
+      'semester' => $semester
     ]);
 
     $result = [];
@@ -104,7 +117,6 @@ class CourseRegController
 
 class CourseRegistrationPostController
 {
-  private static $LOG_NAME = "CourseRegistrationPostController";
   private $academic_year;
   private $reg_no;
   private $level;
@@ -134,13 +146,13 @@ class CourseRegistrationPostController
 
       set_student_reg_form_completion_session1('error', 'Did you forget to select your courses?');
 
-      $this->redirect_to_dashboard();
+      $this->redirectToDashboard();
       return;
 
     }
   }
 
-  private function redirect_to_dashboard()
+  private static function redirectToDashboard()
   {
     $home = STATIC_ROOT . 'student_portal/home/';
     header("Location: {$home}");
@@ -153,7 +165,7 @@ class CourseRegistrationPostController
     $count = count($this->courses_chosen);
 
     try {
-      StudentCourses::bulk_create_for_student_for_semester(
+      StudentCourses::bulkCreateForStudentForSemester(
         $this->courses_chosen,
         [
           'academic_year_code' => $this->academic_year,
@@ -167,7 +179,7 @@ class CourseRegistrationPostController
       logPdoException(
         $e,
         "An error occurred while inserting courses for student $this->reg_no",
-        get_logger(self::$LOG_NAME)
+        self::logger()
       );
 
       set_student_reg_form_completion_session1(
@@ -175,7 +187,7 @@ class CourseRegistrationPostController
         "Something went wrong. But this does not mean your courses have not been saved."
       );
 
-      $this->redirect_to_dashboard();
+      self::redirectToDashboard();
       return;
     }
 
@@ -192,9 +204,17 @@ class CourseRegistrationPostController
          view and print to print course registration form."
     );
 
-    $this->redirect_to_dashboard();
+    self::redirectToDashboard();
     return;
 
+  }
+
+  /**
+   * @return \Monolog\Logger
+   */
+  private static function logger()
+  {
+    return get_logger("CourseRegistrationPostController");
   }
 
   private function set_current_level_dept()
@@ -209,7 +229,7 @@ class CourseRegistrationPostController
       ]);
 
     } catch (PDOException $e) {
-      logPdoException($e, "An error occurred while saving current academic parameters.", get_logger(self::$LOG_NAME));
+      logPdoException($e, "An error occurred while saving current academic parameters.", self::logger());
     }
   }
 

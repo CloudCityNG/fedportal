@@ -9,11 +9,16 @@ use Carbon\Carbon;
 
 Class Semester
 {
-  private static $LOG_NAME = 'SemesterModel';
-
 
   /**
-   * @param array $post
+   * @param array $post - array of columns names as keys and column values as array values
+   *                      $post = [
+   *                                'number' => number,
+   *                                'start_date' => Y-m-d,
+   *                                'end_date' => Y-m-d,
+   *                                'id' => numeric
+   *                                'session_id' => numeric
+   *                               ]
    * @return array|null
    */
   public static function update(array $post)
@@ -21,22 +26,24 @@ Class Semester
     $query = "UPDATE semester SET
                 number = :number,
                 start_date = :start_date,
-                end_date = :end_date
-                WHERE id = :_id";
+                end_date = :end_date,
+                session_id = :session_id
+                WHERE id = :id";
 
     self::logger()->addInfo("About to update semester using query: {$query} and params: ", $post);
 
-    $old_start_date = Carbon::createFromFormat('d-m-Y', $post['start_date']);
-    $old_end_date = Carbon::createFromFormat('d-m-Y', $post['end_date']);
+    $oldStartDate = Carbon::createFromFormat('d-m-Y', $post['start_date']);
+    $oldEndDate = Carbon::createFromFormat('d-m-Y', $post['end_date']);
 
-    $post['start_date'] = $old_start_date->format('Y-m-d');
-    $post['end_date'] = $old_end_date->format('Y-m-d');
+    $post['start_date'] = $oldStartDate->format('Y-m-d');
+    $post['end_date'] = $oldEndDate->format('Y-m-d');
 
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($post)) {
-      $post['start_date'] = $old_start_date;
-      $post['end_date'] = $old_end_date;
+      $post['start_date'] = $oldStartDate;
+      $post['end_date'] = $oldEndDate;
+      $post['session'] = AcademicSession::get_session_by_id($post['session_id']);
 
       self::logger()->addInfo("Semester successfully updated.");
 
@@ -148,6 +155,13 @@ Class Semester
    */
   public static function getCurrentSemester()
   {
+    $session = AcademicSession::getCurrentSession();
+
+    if (!$session) {
+      self::logger()->addWarning('Current session not set. Current semester will not be available');
+      return null;
+    }
+
     $today = date('Y-m-d', time());
 
     $query = "SELECT * FROM semester
@@ -174,7 +188,7 @@ Class Semester
 
         $semester = self::dbDatesToCarbon($semester);
 
-        $semester['session'] = AcademicSession::getCurrentSession();
+        $semester['session'] = $session;
 
         return $semester;
       }
@@ -216,7 +230,17 @@ Class Semester
     return null;
   }
 
-  public static function validateDates($data)
+  /**
+   * Validates start and end dates of semester
+   *
+   * @param array $data - an array that must have two keys: start_date and end_date for semester database date columns
+   *
+   * @param bool $newSession - a flag indicating whether the data will be used to create a new session or update
+   * an existing session.
+   *
+   * @return array - we return the data array without modification
+   */
+  public static function validateDates(array $data, $newSession = false)
   {
     $returnedVal['valid'] = false;
 
@@ -248,16 +272,18 @@ Class Semester
         return $returnedVal;
       }
 
-      $latest_end_date = self::getLatestSemesterEndDate();
+      if ($newSession) {
+        $latest_end_date = self::getLatestSemesterEndDate();
 
-      if ($latest_end_date && $latest_end_date > $dt_start) {
-        $returnedVal['messages'] = [
-          "A new semester may only start after "
-          . $latest_end_date->format('d-M-Y')
-          . " But you specified " . $dt_start->format('d-M-Y')
-        ];
+        if ($latest_end_date && $latest_end_date > $dt_start) {
+          $returnedVal['messages'] = [
+            "A new semester may only start after "
+            . $latest_end_date->format('d-M-Y')
+            . " But you specified " . $dt_start->format('d-M-Y')
+          ];
 
-        return $returnedVal;
+          return $returnedVal;
+        }
       }
 
     } catch (InvalidArgumentException $e) {
@@ -301,10 +327,16 @@ Class Semester
   }
 
   /**
-   * @param array $data
-   * @return array
+   * Validates whether the semester number is 1 or 2. Also enforces other business rules on semester number column
+   *
+   * @param array $data - the data array that will be passed to the database. Contains a key 'number'
+   *
+   * @param bool $newSemester - indicates whether data will be used to create new semester or update an existing semester
+   * Some business rules e.g existence rule, can not be enforced for update
+   *
+   * @return array - we return back the data to the caller unmodified.
    */
-  public static function validateNumberColumn(array $data)
+  public static function validateNumberColumn(array $data, $newSemester = false)
   {
 
     $returnedVal['valid'] = false;
@@ -326,12 +358,14 @@ Class Semester
       return $returnedVal;
     }
 
-    if (self::semesterExists($number, $data['session_id'])) {
-      $returnedVal['messages'] = [
-        'The specified semester exists for the specified session: ' .
-        self::renderSemesterNumber($number) . ' semester!'
-      ];
-      return $returnedVal;
+    if ($newSemester) {
+      if (self::semesterExists($number, $data['session_id'])) {
+        $returnedVal['messages'] = [
+          'The specified semester exists for the specified session: ' .
+          self::renderSemesterNumber($number) . ' semester!'
+        ];
+        return $returnedVal;
+      }
     }
 
     return ['valid' => true];
@@ -368,7 +402,8 @@ Class Semester
   }
 
   /**
-   * @param int|string $number
+   * Takes a semester number and turns 1 into 1st and 2 into 2nd
+   * @param int|string $number - the semester number (whether 1 or 2)
    * @return string
    */
   public static function renderSemesterNumber($number)
@@ -404,6 +439,40 @@ Class Semester
     if (!AcademicSession::session_exists_by_id($id)) {
       $returnedVal['messages'] = ["Session ID does not exist."];
       return $returnedVal;
+    }
+
+    try {
+
+      $session = AcademicSession::get_session_by_id($id);
+
+      $sessionStart = $session['start_date'];
+      $semesterStart = Carbon::createFromFormat('d-m-Y', $data['start_date']);
+      $semesterStart->hour = 0;
+      $semesterStart->minute = 0;
+      $semesterStart->second = 0;
+
+      if ($semesterStart < $sessionStart) {
+        $returnedVal['messages'] = ['Semester can not start before session.'];
+        return $returnedVal;
+      }
+
+      $sessionEnd = $session['end_date'];
+      $semesterEnd = Carbon::createFromFormat('d-m-Y', $data['end_date']);
+      $semesterEnd->hour = 0;
+      $semesterEnd->minute = 0;
+      $semesterEnd->second = 0;
+
+      if ($semesterEnd > $sessionEnd) {
+        $returnedVal['messages'] = ['Semester can not end after session.'];
+        return $returnedVal;
+      }
+
+    } catch (InvalidArgumentException $e) {
+      $returnedVal['messages'] = ['Semester start or end dates invalid'];
+      return $returnedVal;
+
+    } catch (PDOException $e) {
+      logPdoException($e, 'Database error occurred while validating session for semester', self::logger());
     }
 
     return ['valid' => true];

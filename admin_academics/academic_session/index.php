@@ -2,68 +2,17 @@
 
 require_once(__DIR__ . '/../../helpers/app_settings.php');
 require_once(__DIR__ . '/../models/AcademicSession.php');
+require_once(__DIR__ . '/../Utilities.php');
 
 class AcademicSessionController
 {
-  private static $LOG_NAME = 'ACADEMICS-ADMIN-SESSION-CONTROLLER';
-
-  public function renderPage($oldNewSessionData = null, $postStatus = null)
-  {
-    $currentPage = [
-      'title' => 'session',
-
-      'link' => 'new-session'
-    ];
-
-    $current_session = $this->get_current_session();
-
-    $link_template = __DIR__ . '/session-form.php';
-
-    $pageJsPath = path_to_link(__DIR__ . '/js/session.min.js');
-
-    $pageCssPath = path_to_link(__DIR__ . '/css/session.min.css');
-
-    require(__DIR__ . '/../home/container.php');
-
-  }
-
-  private function get_current_session()
-  {
-    $log = get_logger(self::$LOG_NAME);
-
-    $current_session = [
-      'id' => '',
-      'session' => '',
-      'start_date' => '',
-      'end_date' => ''
-    ];
-
-    try {
-      $current_session = AcademicSession::getCurrentSession();
-
-      if ($current_session) {
-        $current_session['current_session_not_found'] = '';
-        return $current_session;
-
-      } else {
-        $current_session['current_session_not_found'] = 'current_session_not_found';
-      }
-
-    } catch (PDOException $e) {
-
-      logPdoException($e, "Error while getting current session.", $log);
-    }
-
-    return $current_session;
-  }
-
   public function post()
   {
     if (isset($_POST['new-session-form-submit'])) {
 
       $newSessionData = $_POST['new_session'];
 
-      $status = self::create_session($newSessionData);
+      $status = self::createSession($newSessionData);
 
       $oldNewSessionData = $status['posted'] ? null : $newSessionData;
 
@@ -76,21 +25,19 @@ class AcademicSessionController
 
       $currentSessionData = $_POST['current_session'];
 
-      $status['current_session'] = self::update_session($currentSessionData);
+      $status['current_session'] = self::updateSession($currentSessionData);
 
       $this->renderPage(null, $status);
 
     }
   }
 
-  private static function create_session($data)
+  private static function createSession($data)
   {
-    $log = get_logger(self::$LOG_NAME);
-
     $session = $data['session'];
 
     try {
-      if (AcademicSession::session_exists_by_session($session)) {
+      if (AcademicSession::sessionExistsBySession($session)) {
         return [
           'posted' => false,
 
@@ -101,7 +48,7 @@ class AcademicSessionController
 
       }
 
-      if (AcademicSession::create_session($data)) {
+      if (AcademicSession::createSession($data)) {
         return [
           'posted' => true,
 
@@ -111,16 +58,47 @@ class AcademicSessionController
 
     } catch (PDOException $e) {
 
-      logPdoException($e, "Error occurred while creating new session.", $log);
+      logPdoException($e, "Error occurred while creating new session.", self::logger());
     }
 
     return ['error' => true];
   }
 
-  private static function update_session($data)
+  /**
+   * @return \Monolog\Logger
+   */
+  private static function logger()
   {
-    $log = get_logger(self::$LOG_NAME);
+    return get_logger('AcademicAdminSessionController');
+  }
 
+  public function renderPage($oldNewSessionData = null, $postStatus = null)
+  {
+    $currentPage = [
+      'title' => 'session',
+
+      'link' => 'new-session'
+    ];
+
+    $theSession = AcademicAdminUtilities::getCurrentSession();
+
+    if ($theSession) {
+      $currentSession = $theSession['session'];
+      $alternative = $theSession['alternative'];
+    }
+
+    $link_template = __DIR__ . '/session-partial.php';
+
+    $pageJsPath = path_to_link(__DIR__ . '/js/session.min.js');
+
+    $pageCssPath = path_to_link(__DIR__ . '/css/session.min.css');
+
+    require(__DIR__ . '/../home/container.php');
+
+  }
+
+  private static function updateSession($data)
+  {
     try {
       $session = AcademicSession::update_session($data);
 
@@ -132,12 +110,49 @@ class AcademicSessionController
 
     } catch (PDOException $e) {
 
-      logPdoException($e, "Error while updating session", $log);
+      logPdoException($e, "Error while updating session", self::logger());
     }
 
     return [
       'updated' => false
     ];
+  }
+
+  /**
+   * We first try to get the current session. if found, we tell caller that we did not
+   * use the alternative algorithm. If we can't find current session , we use alternative
+   * algorithm and then tell caller ['alternative' => true]. Caller can use this knowledge
+   * to tell user.
+   *
+   * @return array|null
+   */
+  private function getCurrentSession()
+  {
+    try {
+      $currentSession = AcademicSession::getCurrentSession();
+
+      if ($currentSession) {
+        return [
+          'session' => $currentSession,
+          'alternative' => false
+        ];
+      }
+
+      $alternativeCurrentSession = AcademicSession::getAlternativeCurrentSession();
+
+      if ($alternativeCurrentSession) {
+        return [
+          'session' => $alternativeCurrentSession,
+          'alternative' => true
+        ];
+      }
+
+    } catch (PDOException $e) {
+
+      logPdoException($e, "Error while getting current session.", self::logger());
+    }
+
+    return null;
   }
 }
 

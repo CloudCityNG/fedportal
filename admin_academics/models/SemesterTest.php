@@ -100,6 +100,12 @@ function testGetImmediatePastSemester()
   return Semester::getImmediatePastSemester();
 }
 
+function testGetCurrentSemester(){
+  print_r(Semester::getCurrentSemester());
+}
+
+testGetCurrentSemester();
+
 print_r(testGetImmediatePastSemester());
 
 //print_r(test_validate_dates_start_date_after_latest_semester_date());

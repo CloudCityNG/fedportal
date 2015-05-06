@@ -3,6 +3,7 @@
 require_once(__DIR__ . '/../models/AcademicSession.php');
 require_once(__DIR__ . '/../models/Semester.php');
 require_once(__DIR__ . '/../../vendor/autoload.php');
+require_once(__DIR__ . '/../Utilities.php');
 
 use Carbon\Carbon;
 
@@ -11,13 +12,17 @@ class CurrentSessionSemesterInfo
 
   public static function getCurrentSession()
   {
-    $session = AcademicSession::getCurrentSession();
-
     $diff = 'unknown';
     $startDate = 'unknown';
     $endDate = 'unknown';
+    $alternative = false;
 
-    if ($session) {
+    $theSession = AcademicAdminUtilities::getCurrentSession();
+
+    if ($theSession) {
+      $session = $theSession['session'];
+      $alternative = $theSession['alternative'];
+
       $end = $session['end_date'];
       $diff = $end->diff(Carbon::now())->days;
 
@@ -30,7 +35,7 @@ class CurrentSessionSemesterInfo
     $returnedVal['end'] = $endDate;
     $returnedVal['session'] = $session['session'];
 
-    return $returnedVal;
+    return [$returnedVal, $alternative];
   }
 
   public static function getCurrentSemester()
@@ -61,10 +66,17 @@ class CurrentSessionSemesterInfo
 }
 
 $currentSemesterInfo = CurrentSessionSemesterInfo::getCurrentSemester();
-$currentSessionInfo = CurrentSessionSemesterInfo::getCurrentSession();
+list($currentSessionInfo, $sessionAlternative) = CurrentSessionSemesterInfo::getCurrentSession();
 ?>
 
 <div class="session-semester-info row">
+  <div class="alternative">
+    <?php if ($sessionAlternative) {
+      echo 'Academic session has ended but new session not set.';
+    }
+    ?>
+  </div>
+
   <div class="col-sm-6">
     <div class="panel <?php echo $currentSemesterInfo['panel-class'] ?>">
       <div class="panel-heading">
@@ -90,6 +102,13 @@ $currentSessionInfo = CurrentSessionSemesterInfo::getCurrentSession();
       </div>
 
       <div class="panel-body">
+        <div class="alternative">
+          <?php if ($sessionAlternative) {
+            echo 'Academic session has ended but new session not set.';
+          }
+          ?>
+        </div>
+
         <div><strong>Started:&nbsp;&nbsp;&nbsp;</strong>
           <?php echo $currentSessionInfo['start'] ?>
         </div>

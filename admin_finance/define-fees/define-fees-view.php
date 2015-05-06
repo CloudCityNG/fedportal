@@ -38,7 +38,7 @@
                       <select class="form-control" name="academic_year" id="academic_year" required>
                         <option value="">-------</option>
                         <?php
-                        foreach (AcademicSession::get_two_most_recent_sessions() as $academic_sessions) {
+                        foreach (AcademicSession::getTwoMostRecentSessions() as $academic_sessions) {
                           echo "<option value='{$academic_sessions['session']}'>
                                   {$academic_sessions['session']}
                                 </option>";

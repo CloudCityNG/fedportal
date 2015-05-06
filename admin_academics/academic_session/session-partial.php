@@ -1,6 +1,8 @@
 <div class="panel panel-default current-session-panel">
   <div class="panel-heading">
-    <h1 class="panel-title">Current Session</h1>
+    <h1 class="panel-title">
+      Current Session
+    </h1>
   </div>
 
   <div class="panel-body">
@@ -28,77 +30,15 @@
                 <h5>{$status}</h5>
               </div> ";
     }
+
+    if ($currentSession) {
+      require __DIR__ . '/current-session-form.php';
+
+    } else {
+      echo 'Academic session has ended but new session not set.';
+    }
     ?>
 
-    <form
-      class="form-horizontal academic-session-form current-session-form <?php echo $current_session['current_session_not_found']; ?>"
-      role="form" method="post"
-      action="<?php echo STATIC_ROOT . 'admin_academics/academic_session/' ?>"
-      >
-
-      <input type="hidden"
-             value="<?php echo $current_session['id']; ?>"
-             name="current_session[id]"/>
-
-      <fieldset>
-        <div class="form-group">
-          <label class="control-label col-sm-3" for="session">Session</label>
-
-          <div class="col-sm-4">
-            <input disabled class="form-control" maxlength="9"
-                   name="current_session[session]" id="session" required
-                   value="<?php echo $current_session['session']; ?>">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="control-label col-sm-3" for=start_date>Start Date</label>
-
-          <div class="col-sm-4">
-            <div class="input-group date show-date-picker input-append">
-              <input disabled class="form-control" maxlength="10"
-                     name="current_session[start_date]"
-                     required id="start_date"
-                     value="<?php echo $current_session['start_date']->format('d-m-Y'); ?>"
-                     data-fv-date
-                     data-fv-date-format="DD-MM-YYYY"
-                />
-
-              <span class="input-group-addon add-on">
-                <span class="glyphicon glyphicon-calendar"></span>
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="control-label col-sm-3" for=end_date>End Date</label>
-
-          <div class="col-sm-4">
-            <div class="input-group date show-date-picker">
-              <input disabled class="form-control" maxlength="10"
-                     name="current_session[end_date]"
-                     required id="end_date"
-                     value="<?php echo $current_session['end_date']->format('d-m-Y'); ?>"
-                     data-fv-date
-                     data-fv-date-format="DD-MM-YYYY"/>
-
-              <span class="input-group-addon">
-                <span class="glyphicon glyphicon-calendar"></span>
-              </span>
-            </div>
-          </div>
-        </div>
-      </fieldset>
-
-      <div class="row">
-        <div class="current-session-form-btn col-sm-4 col-sm-offset-3">
-          <button class="btn btn-default" type="submit" name="current-session-form-submit">
-            Edit Current Session
-          </button>
-        </div>
-      </div>
-    </form>
   </div>
 
   <div class="panel-footer">

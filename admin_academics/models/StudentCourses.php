@@ -53,7 +53,7 @@ class StudentCourses
    * @param array $student_details
    * @return array
    */
-  public static function bulk_create_for_student_for_semester(array $course_ids, array $student_details)
+  public static function bulkCreateForStudentForSemester(array $course_ids, array $student_details)
   {
     $semester = Semester::getSemesterByNumberAndSession(
       $student_details['semester'],

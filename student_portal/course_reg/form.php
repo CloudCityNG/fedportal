@@ -11,7 +11,7 @@
   <input type="hidden" name="reg_no" value="<?php echo $reg_no; ?>"/>
   <input type="hidden" name="semester" value="<?php echo $semester; ?>"/>
   <input type="hidden" name="academic_year"
-         value="<?php echo $academic_year; ?>"/>
+         value="<?php echo $academicYear; ?>"/>
   <input type="hidden" name="dept" value="<?php echo $dept_code; ?>"/>
 
   <div class="row level">
