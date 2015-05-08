@@ -1,9 +1,12 @@
 .new-semester-form legend > span {
   display: block;
 }
+
 .current-semester-form-btn {
   display: none;
 }
-.current-semester-edit-trigger {
+
+.current-semester-edit-trigger, .current-semester-select-update-trigger {
   cursor: pointer;
 }
+

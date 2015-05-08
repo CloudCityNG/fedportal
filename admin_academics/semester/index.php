@@ -123,6 +123,12 @@ class SemesterController
   {
     $current_semester = $oldCurrentSemesterData ? null : self::getCurrentSemester();
 
+    $semestersInCurrentSession = null;
+
+    if (!$current_semester) {
+      list($semestersInCurrentSession, $currentSession) = self::getSemestersInCurrentSession();
+    }
+
     $twoMostRecentSessions = self::getTwoMostRecentSessions();
 
     $currentPage = [
@@ -153,6 +159,27 @@ class SemesterController
     }
 
     return null;
+  }
+
+  /**
+   *
+   * @return array
+   */
+  private static function getSemestersInCurrentSession()
+  {
+    try {
+      $currentSession = AcademicSession::getCurrentSession();
+
+      if ($currentSession) {
+        $sessionId = $currentSession['id'];
+        return [Semester::getSemestersInSession($sessionId), $currentSession];
+      }
+
+    } catch (PDOException $e) {
+      logPdoException($e, "Database error while retrieving semesters in current session", self::logger());
+    }
+
+    return [null, null];
   }
 
   private static function getTwoMostRecentSessions()

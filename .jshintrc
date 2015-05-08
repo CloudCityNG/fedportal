@@ -20,6 +20,7 @@
   "jquery": true,
   "expr": true,
   "predef": [
+    "moment",
     "_",
     "numberFormat",
     "paymentHistoryTmpl",

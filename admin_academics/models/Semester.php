@@ -408,7 +408,48 @@ Class Semester
    */
   public static function renderSemesterNumber($number)
   {
-    return $number == 1 ? '1st' : '2nd';
+    if ($number == 1) {
+      return '1st';
+
+    } else if ($number == 2) {
+      return '2nd';
+    }
+    return null;
+  }
+
+  /**
+   * Given session id, get the semesters registered with that session
+   *
+   * @param string|int $sessionId
+   * @return array|null
+   */
+  public static function getSemestersInSession($sessionId)
+  {
+    $query = "SELECT * FROM semester WHERE session_id = ?";
+
+    $param = [$sessionId];
+
+    self::logger()->addInfo("About to get semesters in session with query: {$query}, and param: ", $param);
+
+    $stmt = get_db()->prepare($query);
+
+    if ($stmt->execute($param)) {
+      $results = $stmt->fetchAll();
+
+      if (count($results)) {
+        $data = [];
+
+        self::logger()->addInfo('Query ran successfully, semesters are', $results);
+        foreach ($results as $result) {
+          $data[] = self::dbDatesToCarbon($result);
+        }
+
+        return $data;
+      }
+    }
+
+    self::logger()->addWarning('Semesters not found.');
+    return null;
   }
 
   /**

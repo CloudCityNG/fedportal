@@ -55,10 +55,12 @@ class CurrentSessionSemesterInfo
       $endDate = $end->format('l, F j, Y');
     }
 
+    $semesterText = Semester::renderSemesterNumber($semester['number']);
+
     $returnedVal['diff'] = $diff;
     $returnedVal['start'] = $startDate;
     $returnedVal['end'] = $endDate;
-    $returnedVal['semester'] = Semester::renderSemesterNumber($semester['number']);
+    $returnedVal['semester'] = $semesterText ? $semesterText : 'Unknown';
     $returnedVal['panel-class'] = $diff <= 30 ? 'panel-danger' : 'panel-default';
 
     return $returnedVal;

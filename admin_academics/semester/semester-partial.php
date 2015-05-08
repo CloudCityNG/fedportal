@@ -69,17 +69,24 @@ function renderPostStatus(array $postStatus = null, $formType)
 
         require __DIR__ . '/current-semester-form.php';
 
+      } else if ($semestersInCurrentSession) {
+        require(__DIR__ . '/current-semester-select-update.php');
+
       } else {
-        echo 'Semester or session not set.';
+        echo 'Semester or session not set';
       }
       ?>
     </div>
 
-    <div class="panel-footer">
-       <span class="glyphicon glyphicon-edit current-semester-edit-trigger"
-             data-toggle="tooltip" title="Edit semester"
-             id="semester-form-edit-icon1"></span>
-    </div>
+    <?php
+    if ($oldCurrentSemesterData || $current_semester) {
+      echo '<div class="panel-footer">
+                <span class="glyphicon glyphicon-edit current-semester-edit-trigger"
+                data-toggle="tooltip" title="Edit semester"
+                id="semester-form-edit-icon1"></span>
+            </div>';
+    }
+    ?>
   </div>
 
   <?php
