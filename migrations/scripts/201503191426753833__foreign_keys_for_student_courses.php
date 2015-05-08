@@ -1,11 +1,11 @@
 <?php
 
 
-Class A201503191426753814
+Class A201503191426753833
 {
   public function up(PDO $db)
   {
-    $query2 = "SELECT id, academic_year_code, semester FROM student_courses WHERE id < 201 AND id > 0";
+    $query2 = "SELECT id, academic_year_code, semester FROM student_courses WHERE id < 4001 AND id > 3800";
     $stmt2 = $db->query($query2);
     $stmt2_results = $stmt2->fetchAll();
     $stmt2->closeCursor();
