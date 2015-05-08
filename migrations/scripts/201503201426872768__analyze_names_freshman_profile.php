@@ -22,7 +22,6 @@ Class A201503201426872768
     $id = '';
     $surname = '';
     $first_name = '';
-    $other_names = '';
 
     $stmt2->bindParam('id', $id);
     $stmt2->bindParam('surname', $surname);
@@ -39,10 +38,10 @@ Class A201503201426872768
         }
       }
 
-      $surname = trim($names[0]);
-      $first_name = trim($names[1]);
+      $surname = strtoupper(trim($names[0]));
+      $first_name = strtoupper(trim($names[1]));
 
-      $other_names = trim(implode(' ', array_slice($names, 2)));
+      $other_names = strtoupper(trim(implode(' ', array_slice($names, 2))));
 
       $stmt2->bindParam('other_names', $other_names, $other_names ? PDO::PARAM_STR : PDO::PARAM_NULL);
 
