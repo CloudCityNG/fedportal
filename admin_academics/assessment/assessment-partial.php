@@ -21,25 +21,35 @@
 
     <div>
       <?php
-      if ($postStatus && $postStatus['post-form'] === 'student-course-query') {
+      if ($postStatus) {
         $messages = '';
 
-        foreach ($postStatus['errors'] as $message) {
+        foreach ($postStatus['messages'] as $message) {
           $messages .= "<li>{$message}</li>\n";
         }
 
+        $errorLabel = '';
+
+        if ($postStatus['posted']) {
+          $alertClass = 'alert-success';
+
+        } else {
+          $alertClass = 'alert-danger';
+          $errorLabel = '<h5>Following errors occurred:</h5>';
+        }
+
         echo "
-      <div class='alert alert-dismissible alert-danger' role='alert'>
-        <button type=button class=close data-dismiss=alert aria-label=Close>
-          <span aria-hidden=true>&times;</span>
-        </button>
+              <div class='alert alert-dismissible {$alertClass}' role='alert'>
+                <button type=button class=close data-dismiss=alert aria-label=Close>
+                  <span aria-hidden=true>&times;</span>
+                </button>
 
-        <h5>Following errors occurred:</h5>
+                {$errorLabel}
 
-        <ol>
-          {$messages}
-        </ol>
-      </div> ";
+                <ul>
+                  {$messages}
+                </ul>
+              </div> ";
       }
       ?>
     </div>

@@ -28,8 +28,9 @@ class AssessmentController
         $oldStudentCourseQueryData,
 
         [
-          'errors' => $valid['errors'],
-          'post-form' => 'student-course-query'
+          'messages' => $valid['errors'],
+          'post-form' => 'student-course-query',
+          'posted' => false
         ]
       );
       return;
@@ -49,12 +50,14 @@ class AssessmentController
         $oldStudentCourseQueryData,
 
         [
-          'errors' => [
+          'messages' => [
             'Student courses not found. May be student has not registered for courses for ' .
             $oldStudentCourseQueryData['semester']
           ],
 
-          'post-form' => 'student-course-query'
+          'post-form' => 'student-course-query',
+
+          'posted' => false
         ]
       );
       return;
@@ -133,7 +136,7 @@ class AssessmentController
       'link' => 'enter-grades'
     ];
 
-    $link_template = __DIR__ . '/grade-student-form.php';
+    $link_template = __DIR__ . '/assessment-partial.php';
 
     $pageJsPath = path_to_link(__DIR__ . '/js/assessment.min.js');
 
@@ -179,6 +182,10 @@ class AssessmentController
     return get_logger('AssessmentController');
   }
 
+  /**
+   * Take courses and scores set on client and update in the database. Tell user
+   * how many courses were updated.
+   */
   private static function updateCourseScores()
   {
     $postedCourses = [];
@@ -231,7 +238,7 @@ class AssessmentController
        * only send course id and score back to us.
        * We extract other course data from @var $studentCourses
        */
-      $successfullyUpdatedCourses = [];
+      $successfullyUpdatedCourses = []; //:TODO will be sent back to client to indicate which courses were updated.
 
       foreach ($studentCourses as $studentCourse) {
         $courseId = $studentCourse['id'];
@@ -244,7 +251,16 @@ class AssessmentController
         }
       }
 
-      print_r($successfullyUpdatedCourses);
+      self::renderPage(
+        null,
+        [
+          'messages' => ["<strong>Success:</strong><br/>course(s) updated = {$countUpdatedCourses}."],
+
+          'post-form' => 'student-course-score',
+
+          'posted' => true
+        ]
+      );
 
     }
   }
