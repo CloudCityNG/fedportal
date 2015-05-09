@@ -57,34 +57,6 @@ class AcademicSession
     return $data;
   }
 
-  public static function get_sessions($how_many = null)
-  {
-    $query = "SELECT * FROM session_table ORDER BY session DESC";
-
-    if ($how_many) {
-      $query .= " LIMIT {$how_many}";
-    }
-
-    self::logger()->addInfo("About to get sessions with query: {$query}");
-
-    $stmt = get_db()->query($query);
-
-    if ($stmt) {
-      $sessions = [];
-
-      while ($row = $stmt->fetch()) {
-        $sessions[] = self::dbDatesToCarbon($row);
-      }
-
-      self::logger()->addInfo("Statement executed successfully. Session is: ", $sessions);
-
-      return $sessions;
-    }
-
-    self::logger()->addWarning("Statement did not execute.");
-    return null;
-  }
-
   /**
    * @return null|array
    */
@@ -201,28 +173,39 @@ class AcademicSession
     return $stmt->fetchColumn() ? false : true;
   }
 
-  public static function getTwoMostRecentSessions()
+  /**
+   * Either get all academic sessions in the database or get a limited number of sessions
+   *
+   * @param null|string $howMany - number of sessions to be retrieved. If 'null', get all sessions in database
+   * @return array|null
+   */
+  public static function getSessions($howMany = null)
   {
-    $query = "SELECT * FROM session_table ORDER BY session DESC LIMIT 2";
+    $query = "SELECT * FROM session_table ORDER BY session DESC";
 
-    self::logger()->addInfo("About to get 2 most recent sessions with query {$query}.");
+    if ($howMany) {
+      $query .= " LIMIT {$howMany}";
+    }
+
+    self::logger()->addInfo("About to get sessions with query: {$query}");
 
     $stmt = get_db()->query($query);
 
-    if ($stmt && $stmt->rowCount()) {
-
+    if ($stmt) {
       $sessions = [];
 
       while ($row = $stmt->fetch()) {
         $sessions[] = self::dbDatesToCarbon($row);
       }
 
-      self::logger()->addInfo("SQL statement ran successfully. The two most recent sessions are: ", $sessions);
+      if (count($sessions)) {
+        self::logger()->addInfo("Statement executed successfully. Sessions are: ", $sessions);
 
-      return $sessions;
+        return $sessions;
+      }
     }
 
-    self::logger()->addWarning('Unable to retrieve 2 most recent sessions');
+    self::logger()->addWarning("Sessions could not be retrieved.");
     return null;
   }
 

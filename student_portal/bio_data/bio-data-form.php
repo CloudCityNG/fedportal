@@ -44,7 +44,7 @@
     <option value="">---------------</option>
 
     <?php
-    foreach (AcademicSession::get_sessions(20) as $academic_session) {
+    foreach (AcademicSession::getSessions(20) as $academic_session) {
       echo "<option value='{$academic_session['session']}'>{$academic_session['session']}</option>";
     }
     ?>

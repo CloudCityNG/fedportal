@@ -34,13 +34,13 @@ class CourseRegController
 
     $academicYear = $academicYear['session'];
 
-    $semester = Semester::getCurrentSemester();
+    $semesterFromDb = Semester::getCurrentSemester();
 
-    if (!$semester) {
+    if (!$semesterFromDb) {
       self::exitOnError('Current semester not set. Please inform admin about this error.');
     }
 
-    $semester = $semester['number'];
+    $semester = $semesterFromDb['number'];
 
     $semester_text = Semester::renderSemesterNumber($semester);
 
@@ -50,10 +50,9 @@ class CourseRegController
 
     $dept_name = AcademicDepartment::get_dept_name_from_code($dept_code);
 
-    $course_data = StudentCourses::get_student_current_courses([
+    $course_data = StudentCourses::getStudentCurrentCourses([
       'reg_no' => $reg_no,
-      'semester' => $semester,
-      'session' => $academicYear
+      'semester_id' => $semesterFromDb['id']
     ]);
 
     if (!empty($course_data)) {

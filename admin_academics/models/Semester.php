@@ -418,6 +418,43 @@ Class Semester
   }
 
   /**
+   * Either get all semesters in the database or get a limited number of semesters
+   *
+   * @param null|string|int $howMany - number of semesters to be retrieved. If 'null', get all semesters in database
+   * @return array|null
+   */
+  public static function getSemesters($howMany = null)
+  {
+    $query = "SELECT * FROM semester ORDER BY end_date DESC";
+
+    if ($howMany) {
+      $query .= " LIMIT {$howMany}";
+    }
+
+    self::logger()->addInfo("About to get semesters with query: {$query}");
+
+    $stmt = get_db()->query($query);
+
+    if ($stmt) {
+      $semesters = [];
+
+      while ($row = $stmt->fetch()) {
+        $data = self::dbDatesToCarbon($row);
+        $data['session'] = AcademicSession::get_session_by_id($data['session_id']);
+        $semesters[] = $data;
+      }
+
+      if (count($semesters)) {
+        self::logger()->addInfo("Statement executed successfully. Semesters are: ", $semesters);
+        return $semesters;
+      }
+    }
+
+    self::logger()->addWarning("Semesters could not be retrieved.");
+    return null;
+  }
+
+  /**
    * Given session id, get the semesters registered with that session
    *
    * @param string|int $sessionId

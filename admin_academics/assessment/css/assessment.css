@@ -1,0 +1,12 @@
+.student-course-score-form-container {
+  margin-top: 55px;
+}
+input.course-score.form-control {
+  display: inline-block;
+  width: 65%;
+  margin-right: 10%;
+}
+.course-score-edit-trigger {
+  cursor: pointer;
+  display: none;
+}

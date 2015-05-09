@@ -129,7 +129,7 @@ class SemesterController
       list($semestersInCurrentSession, $currentSession) = self::getSemestersInCurrentSession();
     }
 
-    $twoMostRecentSessions = self::getTwoMostRecentSessions();
+    $twoMostRecentSessions = self::getSessionsForJSAutoComplete(2);
 
     $currentPage = [
       'title' => 'semester',
@@ -182,12 +182,18 @@ class SemesterController
     return [null, null];
   }
 
-  private static function getTwoMostRecentSessions()
+  /**
+   * Jquery UI autocomplete plugin requires the source to be an object with keys 'label' and 'value'
+   *
+   * @param int|string $howMany
+   * @return array
+   */
+  private static function getSessionsForJSAutoComplete($howMany)
   {
     $academicSessions = [];
 
     try {
-      $academicSessions = AcademicSession::getTwoMostRecentSessions();
+      $academicSessions = AcademicSession::getSessions($howMany);
 
       if ($academicSessions) {
 

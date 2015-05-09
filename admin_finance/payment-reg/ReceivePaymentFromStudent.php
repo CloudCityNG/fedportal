@@ -35,7 +35,7 @@ class ReceivePaymentFromStudent
 
     $this->past_academic_years = array_map(function ($session) {
       return $session['session'];
-    }, AcademicSession::get_sessions(4));
+    }, AcademicSession::getSessions(4));
 
   }
 
