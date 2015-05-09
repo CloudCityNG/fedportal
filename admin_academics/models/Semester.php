@@ -233,14 +233,17 @@ Class Semester
   /**
    * Validates start and end dates of semester
    *
-   * @param array $data - an array that must have two keys: start_date and end_date for semester database date columns
+   * @param array $data - an array that must have two keys:
+   * start_date and end_date for semester database date columns
    *
-   * @param bool $newSession - a flag indicating whether the data will be used to create a new session or update
-   * an existing session.
+   * @param bool $newSemester - a flag indicating whether the
+   * data will be used to create a new semester or update
+   * an existing semester.
    *
-   * @return array - we return the data array without modification
+   * @return array - we return array ['valid' => false, 'messages' => {string}]
+   * if @var $data is invalid. Else we return ['valid' => true]
    */
-  public static function validateDates(array $data, $newSession = false)
+  public static function validateDates(array $data, $newSemester = false)
   {
     $returnedVal['valid'] = false;
 
@@ -264,22 +267,22 @@ Class Semester
     }
 
     try {
-      $dt_start = Carbon::createFromFormat('d-m-Y', $start_date);
-      $dt_end = Carbon::createFromFormat('d-m-Y', $end_date);
+      $dtStart = Carbon::createFromFormat('d-m-Y H', $start_date . ' 0');
+      $dtEnd = Carbon::createFromFormat('d-m-Y H', $end_date . ' 0');
 
-      if ($dt_start >= $dt_end) {
+      if ($dtStart >= $dtEnd) {
         $returnedVal['messages'] = ['End date must be after start date'];
         return $returnedVal;
       }
 
-      if ($newSession) {
-        $latest_end_date = self::getLatestSemesterEndDate();
+      if ($newSemester) {
+        $latestEndDate = self::getLatestSemesterEndDate();
 
-        if ($latest_end_date && $latest_end_date > $dt_start) {
+        if ($latestEndDate && $latestEndDate >= $dtStart) {
           $returnedVal['messages'] = [
             "A new semester may only start after "
-            . $latest_end_date->format('d-M-Y')
-            . " But you specified " . $dt_start->format('d-M-Y')
+            . $latestEndDate->format('d-M-Y')
+            . " But you specified " . $dtStart->format('d-M-Y')
           ];
 
           return $returnedVal;
@@ -314,7 +317,7 @@ Class Semester
       $result = $stmt->fetch(PDO::FETCH_NUM);
 
       if ($result && $result[0]) {
-        $dt = Carbon::createFromFormat('Y-m-d', $result[0]);
+        $dt = Carbon::createFromFormat('Y-m-d H', $result[0] . ' 0');
         self::logger()->addInfo(
           "query executed successfully. Latest semester end date is {$dt}"
         );

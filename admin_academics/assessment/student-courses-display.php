@@ -14,17 +14,29 @@
     </a>
 
     <div class='media-body'>
-      <div><strong>NAMES:</strong> {$student['names']}</div>
+        <table class='table table-condense table-bordered'>
+            <tbody>
+                <tr>
+                    <th>NAMES</th> <td>{$student['names']}</td>
+                </tr>
 
-      <div><strong>MATRIC NO:</strong> {$student['reg_no']}</div>
+                <tr>
+                    <th>MATRIC NO</th> <td>{$student['reg_no']}</td>
+                </tr>
 
-      <div><strong>DEPARTMENT:</strong> {$student['dept_name']}</div>
+                <tr>
+                    <th>DEPARTMENT</th> <td>{$student['dept_name']}</td>
+                </tr>
 
-      <div><strong>LEVEL:</strong> {$student['level']}</div>
+                <tr>
+                    <th>LEVEL</th> <td>{$student['level']}</td>
+                </tr>
 
-      <div>
-        <strong>SEMESTER:</strong> {$student['semester']}
-      </div>
+                <tr>
+                    <th>SEMESTER</th> <td>{$student['semester']}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
   </div>
   ";
@@ -42,7 +54,10 @@
         data-fv-icon-validating="glyphicon glyphicon-refresh">
 
     <fieldset>
-      <legend>Courses Student Registered <br/> Enter score for each course.</legend>
+      <legend>
+        Courses Student Registered for in "<?php echo $student['semester'] ?>" <br/>
+        Enter score for each course.
+      </legend>
 
       <table class="table table-striped table-condensed table-bordered student-course-score-form-table">
         <thead>
