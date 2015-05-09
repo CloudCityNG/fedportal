@@ -9,18 +9,33 @@ use Carbon\Carbon;
 
 class StudentCourses
 {
+  /**
+   * @var array - [low, high, letter grade] a score between high and low inclusive will be awarded the grade letter
+   */
+  public static $SCORE_GRADE_MAPPING = [
+    [70, 100, 'A'],
 
-  private static $LOG_NAME = 'StudentCoursesModel';
+    [60, 69, 'B'],
+
+    [50, 59, 'C'],
+
+    [45, 49, 'D'],
+
+    [40, 44, 'E'],
+
+    [0, 39, 'F']
+  ];
 
   /**
    * Get the courses that a student has registered for a particular semester
    *
    * @param array $data - in the form ['reg_no' => string, 'semester_id' => string|int]
+   * @param bool $withLetterGrades - whether we should computer letter grade for each score
    * @return array|null
    */
-  public static function getStudentCurrentCourses(array $data)
+  public static function getStudentCurrentCourses(array $data, $withLetterGrades = false)
   {
-    $query = "SELECT student_courses.id as `id`, `reg_no`, `level`, `semester_id`, `score`, `title`, `unit`,
+    $query = "SELECT student_courses.id AS `id`, `reg_no`, `level`, `semester_id`, `score`, `title`, `unit`,
               `department`, `code`
 
               FROM student_courses JOIN course_table ON (course_id = course_table.id)
@@ -37,7 +52,10 @@ class StudentCourses
       $result = $stmt->fetchAll();
 
       if (count($result)) {
+        if ($withLetterGrades) $result = self::addLetterGrades($result);
+
         self::logger()->addInfo("Statement executed successfully. Current courses are: ", $result);
+
         return $result;
       }
     }
@@ -49,6 +67,48 @@ class StudentCourses
   private static function logger()
   {
     return get_logger('StudentCoursesModel');
+  }
+
+  /**
+   * Takes student courses retrieved from database and adds a key for
+   * grade with corresponding letter grade for those courses that have
+   * valid scores
+   *
+   * @param array $data
+   * @return array
+   */
+  private static function addLetterGrades(array $data)
+  {
+    $returnedVal = [];
+
+    foreach ($data as $row) {
+      $grade = null;
+
+      if (isset($row['score'])) {
+        $score = $row['score'];
+
+        if ($score) {
+          $score = floatval($score);
+
+          foreach (self::$SCORE_GRADE_MAPPING as $scoreGrade) {
+            $min = $scoreGrade[0];
+            $max = $scoreGrade[1];
+
+            if ($min <= $score && $score <= $max) {
+              $grade = $scoreGrade[2];
+              break;
+            }
+          }
+
+        }
+      }
+
+      $row['grade'] = $grade;
+      $returnedVal[] = $row;
+    }
+
+    return $returnedVal;
+
   }
 
   /**

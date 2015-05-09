@@ -18,7 +18,7 @@ class FreshmanRegController1
 
   private static $LOGGER_NAME = 'student-bio-registration';
 
-  private function get_email($reg_no)
+  private function get_email($regNo)
   {
     $log = get_logger(self::$LOGGER_NAME);
 
@@ -26,13 +26,13 @@ class FreshmanRegController1
 
     $query = "SELECT email FROM pin_table WHERE  number = ?";
 
-    $log->addInfo("About to get email for student \"$reg_no\" with query: $query");
+    $log->addInfo("About to get email for student \"$regNo\" with query: $query");
 
     try {
 
       $stmt = $db->prepare($query);
 
-      $stmt->execute([$reg_no]);
+      $stmt->execute([$regNo]);
 
       $email = $stmt->fetch(PDO::FETCH_NUM)[0];
 
@@ -57,9 +57,9 @@ class FreshmanRegController1
   public function get()
   {
 
-    $reg_no = $_SESSION['REG_NO'];
+    $regNo = $_SESSION['REG_NO'];
 
-    if (StudentProfile::student_exists($reg_no)) {
+    if (StudentProfile::student_exists($regNo)) {
 
       set_student_reg_form_completion_session1(
         'error', "Your bio data exists in database!");
@@ -70,7 +70,7 @@ class FreshmanRegController1
       return;
     }
 
-    $email = $this->get_email($reg_no);
+    $email = $this->get_email($regNo);
 
     include(__DIR__ . '/view.php');
 

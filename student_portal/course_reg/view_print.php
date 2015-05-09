@@ -18,13 +18,13 @@
     <tbody>
     <tr>
       <td>
-        <img src="<?php echo get_photo($reg_no, true); ?>" alt="<?php echo $student['names']; ?>"/>
+        <img src="<?php echo get_photo($regNo, true); ?>" alt="<?php echo $student['names']; ?>"/>
       </td>
 
       <td class="names">
         <span>
           <strong>NAMES:</strong> <?php echo strtoupper($student['names']); ?>
-          <p><strong>MATRIC NO:</strong> <?php echo $reg_no; ?> </p>
+          <p><strong>MATRIC NO:</strong> <?php echo $regNo; ?> </p>
         </span>
       </td>
     </tr>

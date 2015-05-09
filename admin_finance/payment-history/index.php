@@ -11,22 +11,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
   include_once(__DIR__ . '/../../helpers/models/StudentProfile.php');
 
-  $reg_no = $_POST['reg_no'];
+  $regNo = $_POST['reg_no'];
 
   $returned_val = [
     'found' => false,
 
-    'regNo' => $reg_no
+    'regNo' => $regNo
   ];
 
-  if (StudentProfile::student_exists($reg_no)) {
+  if (StudentProfile::student_exists($regNo)) {
 
     $returned_val['found'] = true;
 
-    $profile = new StudentProfile($reg_no);
+    $profile = new StudentProfile($regNo);
 
     $returned_val['billsHistory'] = $profile->get_billing_history();
-    $returned_val['student'] = $profile->get_complete_current_details();
+    $returned_val['student'] = $profile->getCompleteCurrentDetails();
 
   }
 

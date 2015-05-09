@@ -10,3 +10,6 @@ input.course-score.form-control {
   cursor: pointer;
   display: none;
 }
+.student-courses-display-img-and-name {
+  margin-bottom: 25px;
+}

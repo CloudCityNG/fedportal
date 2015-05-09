@@ -31,7 +31,7 @@
 
                 <input name="student_bio[personalno]"
                        type="hidden"
-                       value="<?php echo $reg_no; ?>">
+                       value="<?php echo $regNo; ?>">
 
                 <fieldset>
                   <legend class="text-center">Bio Data</legend>

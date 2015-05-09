@@ -1,4 +1,35 @@
+<hr/>
+
 <div class="student-course-score-form-container">
+
+  <?php
+  $student = $studentCoursesData['student'];
+
+  echo "
+  <div class='student-courses-display-img-and-name media'>
+    <a class='pull-left'>
+      <img class='media-object' width='120px'
+           src='{$student['photo']}'
+           alt='{$student['names']}'/>
+    </a>
+
+    <div class='media-body'>
+      <div><strong>NAMES:</strong> {$student['names']}</div>
+
+      <div><strong>MATRIC NO:</strong> {$student['reg_no']}</div>
+
+      <div><strong>DEPARTMENT:</strong> {$student['dept_name']}</div>
+
+      <div><strong>LEVEL:</strong> {$student['level']}</div>
+
+      <div>
+        <strong>SEMESTER:</strong> {$student['semester']}
+      </div>
+    </div>
+  </div>
+  ";
+  ?>
+
   <form id="student-course-score-form"
         class="form-horizontal student-course-score-form"
         method="post"
@@ -57,7 +88,7 @@
                      <span class='glyphicon glyphicon-edit course-score-edit-trigger'></span>
                 </td>
 
-                <td></td>
+                <td>{$course['grade']}</td>
             </tr>
            ";
             $count++;

@@ -8,7 +8,7 @@
     </h3>
   </header>
 
-  <input type="hidden" name="reg_no" value="<?php echo $reg_no; ?>"/>
+  <input type="hidden" name="reg_no" value="<?php echo $regNo; ?>"/>
   <input type="hidden" name="semester" value="<?php echo $semester; ?>"/>
   <input type="hidden" name="academic_year"
          value="<?php echo $academicYear; ?>"/>

@@ -30,7 +30,7 @@
                     data-fv-icon-invalid="glyphicon glyphicon-remove"
                     data-fv-icon-validating="glyphicon glyphicon-refresh">
 
-                <input type="hidden" name="medicals_input[reg_no]" value="<?php echo $reg_no; ?>"/>
+                <input type="hidden" name="medicals_input[reg_no]" value="<?php echo $regNo; ?>"/>
 
                 <fieldset class="medicals-field-set">
                   <legend class="text-center">Medicals</legend>

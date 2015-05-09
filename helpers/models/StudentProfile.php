@@ -15,16 +15,11 @@ include_once(__DIR__ . '/../../admin_academics/models/AcademicSession.php');
 class StudentProfile
 {
 
-  public $names;
-
-  public $reg_no;
-
-  public $photo;
-
-  public $dept_code;
-
   private static $LOG_NAME = "student-profile";
-
+  public $names;
+  public $reg_no;
+  public $photo;
+  public $dept_code;
 
   function __construct($reg_no)
   {
@@ -75,6 +70,43 @@ class StudentProfile
     }
   }
 
+  public static function student_exists($reg_no)
+  {
+    $log = get_logger(self::$LOG_NAME);
+
+    $db = get_db();
+
+    $log->addInfo("Attempting to confirm if student $reg_no exists in database");
+
+    $query = "SELECT Count(*) FROM freshman_profile WHERE personalno = ?";
+
+    $query_param = [$reg_no];
+
+    $query_param_string = print_r($query_param, true);
+
+    $stmt = $db->prepare($query);
+
+    if ($stmt->execute($query_param)) {
+
+      $log->addInfo("Query: \"$query\" successfully ran with param: \"$query_param_string\"");
+
+      if ($stmt->fetchColumn()) {
+
+        $log->addInfo("Student $reg_no exists in database.");
+
+        return true;
+
+      } else {
+
+        $log->addWarning("Student $reg_no not found in database.");
+      }
+
+    }
+
+    return false;
+
+  }
+
   public function get_owing()
   {
     include_once(__DIR__ . '/StudentBilling.php');
@@ -84,6 +116,22 @@ class StudentProfile
     return $bill->get_owing($this->reg_no);
   }
 
+  public function getCompleteCurrentDetails()
+  {
+    return array_merge($this->to_array(), $this->get_current_level_dept());
+  }
+
+  public function to_array()
+  {
+    return [
+      'names' => $this->names,
+
+      'reg_no' => $this->reg_no,
+
+      'photo' => $this->photo
+    ];
+  }
+
   public function get_current_level_dept($academic_year = null)
   {
     //if academic year is not given, it defaults to current academic year
@@ -91,8 +139,6 @@ class StudentProfile
 
       $academic_year = AcademicSession::getCurrentSession()['session'];
     }
-
-    $db = get_db();
 
     $log = get_logger(self::$LOG_NAME);
 
@@ -119,7 +165,7 @@ class StudentProfile
     );
 
     try {
-      $stmt = $db->prepare($query);
+      $stmt = get_db()->prepare($query);
 
       if ($stmt->execute($params)) {
         $returned_data = $stmt->fetch();
@@ -146,11 +192,6 @@ class StudentProfile
 
     return $returned_data;
 
-  }
-
-  public function get_complete_current_details()
-  {
-    return array_merge($this->to_array(), $this->get_current_level_dept());
   }
 
   public function get_billing_history()
@@ -202,54 +243,6 @@ class StudentProfile
 
     return $payments ? $payments : [];
 
-  }
-
-  public static function student_exists($reg_no)
-  {
-    $log = get_logger(self::$LOG_NAME);
-
-    $db = get_db();
-
-    $log->addInfo("Attempting to confirm if student $reg_no exists in database");
-
-    $query = "SELECT Count(*) FROM freshman_profile WHERE personalno = ?";
-
-    $query_param = [$reg_no];
-
-    $query_param_string = print_r($query_param, true);
-
-    $stmt = $db->prepare($query);
-
-    if ($stmt->execute($query_param)) {
-
-      $log->addInfo("Query: \"$query\" successfully ran with param: \"$query_param_string\"");
-
-      if ($stmt->fetchColumn()) {
-
-        $log->addInfo("Student $reg_no exists in database.");
-
-        return true;
-
-      } else {
-
-        $log->addWarning("Student $reg_no not found in database.");
-      }
-
-    }
-
-    return false;
-
-  }
-
-  public function to_array()
-  {
-    return [
-      'names' => $this->names,
-
-      'reg_no' => $this->reg_no,
-
-      'photo' => $this->photo
-    ];
   }
 
   function __toString()

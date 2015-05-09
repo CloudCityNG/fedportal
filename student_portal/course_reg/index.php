@@ -20,9 +20,9 @@ class CourseRegController
 
   public function get()
   {
-    $reg_no = $_SESSION['REG_NO'];
+    $regNo = $_SESSION['REG_NO'];
 
-    if (!StudentProfile::student_exists($reg_no)) {
+    if (!StudentProfile::student_exists($regNo)) {
       self::exitOnError('You have not selected your department! Please complete bio data.');
     }
 
@@ -44,19 +44,19 @@ class CourseRegController
 
     $semester_text = Semester::renderSemesterNumber($semester);
 
-    $profile = new StudentProfile($reg_no);
+    $profile = new StudentProfile($regNo);
 
     $dept_code = $profile->dept_code;
 
     $dept_name = AcademicDepartment::get_dept_name_from_code($dept_code);
 
     $course_data = StudentCourses::getStudentCurrentCourses([
-      'reg_no' => $reg_no,
+      'reg_no' => $regNo,
       'semester_id' => $semesterFromDb['id']
     ]);
 
     if (!empty($course_data)) {
-      $student = get_student_profile_from_reg_no($reg_no);
+      $student = get_student_profile_from_reg_no($regNo);
       $view = __DIR__ . '/view_print.php';
 
     } else {
