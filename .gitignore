@@ -9,7 +9,9 @@ error_log
 node_modules
 vendor
 img
-js
-libs/eonasdan-bootstrap-datetimepicker
 libs/jquery
 libs/moment
+libs/formValidation
+libs/bootstrap-datepicker
+libs/bootstrap
+libs/fonts
