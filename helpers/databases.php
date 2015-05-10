@@ -1,16 +1,15 @@
 <?php
-//include_once(__DIR__ . '/../vendor/autoload.php');
+require_once(__DIR__ . '/../vendor/autoload.php');
+require_once(__DIR__ . '/app_settings.php');
 
 use Monolog\Logger;
 
 function get_db()
 {
-  $db_name = 'fedportal';
-  $username = 'fedportal';
-  $password = 'fedportal';
+  $db_name = DB_NAME;
 
   return new PDO(
-    "mysql:host=localhost;dbname={$db_name};charset=utf8", $username, $password,
+    "mysql:host=localhost;dbname={$db_name};charset=utf8", DB_USERNAME, DB_PASSWORD,
     [
       PDO::ATTR_EMULATE_PREPARES => false,
       PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

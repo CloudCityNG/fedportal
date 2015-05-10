@@ -101,6 +101,7 @@ class LoginStudentController1
     session_regenerate_id();
 
     $_SESSION['REG_NO'] = $reg_no;
+    $_SESSION['LAST-ACTIVITY-REG_NO'] = time();
 
     session_write_close();
   }

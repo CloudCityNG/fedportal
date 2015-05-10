@@ -2,6 +2,13 @@
 
 define('STATIC_ROOT', '/fedportal/');
 
+define('SESSION_TIME_OUT', 1800);
+define('SESSION_TIME_OUT_ALERT', 1500);
+
+define('DB_NAME', 'fedportal');
+define('DB_USERNAME', 'fedportal');
+define('DB_PASSWORD', 'fedportal');
+
 include_once(__DIR__ . '/../vendor/autoload.php');
 
 use Monolog\Logger;
@@ -51,4 +58,25 @@ function path_to_link($path)
   return substr($unix_path, $root_pos) . (is_dir($path) ? '/' : '');
 }
 
-//echo path_to_link(__DIR__ . '/../admin_academics/home/css/');
+/**
+ * checks whether the session has expired.
+ * Returns 'true' if session is not old and invalid, 'false' otherwise
+ *
+ * @param string $appSessionName - name of the session used by the app
+ * @return bool
+ */
+function sessionAgeValid($appSessionName)
+{
+  $lastActivitySessionName = 'LAST-ACTIVITY-' . $appSessionName;
+
+  if (isset($_SESSION[$lastActivitySessionName]) &&
+    (time() - $_SESSION[$lastActivitySessionName] > SESSION_TIME_OUT)
+  ) {
+
+    if (isset($_SESSION[$appSessionName])) unset($_SESSION[$appSessionName]);
+    return false;
+  }
+  $_SESSION[$lastActivitySessionName] = time();
+
+  return true;
+}

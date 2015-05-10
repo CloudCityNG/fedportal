@@ -44,7 +44,8 @@ class AcademicAdminLogin
         session_start();
 
         session_regenerate_id();
-        $_SESSION['ADMIN'] = "Administrator";
+        $_SESSION['ADMIN-FINANCE'] = 'ADMIN-FINANCE';
+        $_SESSION['LAST-ACTIVITY-ADMIN-FINANCE'] = time();
         session_write_close();
       }
 

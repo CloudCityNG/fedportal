@@ -44,7 +44,8 @@ class AdminFinanceLogin
         session_start();
 
         session_regenerate_id();
-        $_SESSION['FINANCE'] = "FINANCE-Administrator";
+        $_SESSION['ADMIN-FINANCE'] = "FINANCE-Administrator";
+        $_SESSION['LAST-ACTIVITY-ADMIN-FINANCE'] = time();
         session_write_close();
       }
 
