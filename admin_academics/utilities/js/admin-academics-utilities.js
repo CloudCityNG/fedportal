@@ -3,7 +3,9 @@
 /**
  *
  * @param {Array} source
- * @param {String} fieldToDisplay
+ * @param {String} fieldToDisplay - the field from the source that will be set as value
+ * of form control been auto-completed
+ *
  * @returns {{minLength: number, source: Array, select: Function}}
  */
 function sessionAutoComplete(source, fieldToDisplay) {
@@ -14,7 +16,7 @@ function sessionAutoComplete(source, fieldToDisplay) {
 
     select: function(evt, ui) {
       var
-        $el = $(this),
+        $el      = $(this),
         $related = $($el.data('related-input-id'));
 
       $related.val(ui.item.id);

@@ -20,38 +20,7 @@
     <legend>Input student data to get courses</legend>
 
     <div>
-      <?php
-      if ($postStatus) {
-        $messages = '';
-
-        foreach ($postStatus['messages'] as $message) {
-          $messages .= "<li>{$message}</li>\n";
-        }
-
-        $errorLabel = '';
-
-        if ($postStatus['posted']) {
-          $alertClass = 'alert-success';
-
-        } else {
-          $alertClass = 'alert-danger';
-          $errorLabel = '<h5>Following errors occurred:</h5>';
-        }
-
-        echo "
-              <div class='alert alert-dismissible {$alertClass}' role='alert'>
-                <button type=button class=close data-dismiss=alert aria-label=Close>
-                  <span aria-hidden=true>&times;</span>
-                </button>
-
-                {$errorLabel}
-
-                <ul>
-                  {$messages}
-                </ul>
-              </div> ";
-      }
-      ?>
+      <?php AssessmentGradeStudentController::renderPostStatus($postStatus); ?>
     </div>
 
     <div class="form-group">
@@ -96,6 +65,6 @@
 
 <?php
 if ($studentCoursesData) {
-  require __DIR__ . '/student-courses-display.php';
+  require __DIR__ . '/student-courses-score-display-input.php';
 }
 ?>

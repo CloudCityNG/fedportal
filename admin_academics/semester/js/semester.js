@@ -1,3 +1,4 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"C:\\wamp\\www\\fedportal\\admin_academics\\semester\\js\\semester-raw.js":[function(require,module,exports){
 /*jshint camelcase:false*/
 
 "use strict";
@@ -74,41 +75,14 @@ $(document.body).on(
 var twoMostRecentSessions = JSON.parse($('#two-most-recent-sessions').text());
 
 $('.semester-session').autocomplete(
-  {
-    minLength: 1,
-
-    source: twoMostRecentSessions,
-
-    select: function(evt, ui) {
-      var
-        $el = $(this),
-        $related = $($el.data('related-input-id'));
-
-      $related.val(ui.item.id);
-
-      if (evt.originalEvent.which === 1) {
-        window.setTimeout(function() {
-                            $el.val(ui.item.session);
-                          }
-        );
-      }
-
-      window.setTimeout(function() {
-                          $el.closest('form').formValidation('revalidateField', $el);
-                          $el.closest('form').formValidation('revalidateField', $related);
-                        }
-      );
-
-      return false;
-    }
-  }
+  require('../../utilities/js/admin-academics-utilities.js').sessionAutoComplete(twoMostRecentSessions, 'session')
 );
 
 (function currentSemesterForm() {
   var $form = $('.current-semester-form').formValidation(
     {
       fields: {
-        'current_semester[session][session]': {
+        'current_semester[session]': {
           validators: {
             callback: {
               callback: sessionValidation.callback,
@@ -117,7 +91,7 @@ $('.semester-session').autocomplete(
           }
         },
 
-        'current_semester[session][id]': {
+        'current_semester[session_id]': {
           excluded: false,
           validators: {
             notEmpty: {message: 'You may only pick from the drop down list'}
@@ -218,3 +192,51 @@ $('.semester-session').autocomplete(
   }
   );
 })();
+
+},{"../../utilities/js/admin-academics-utilities.js":"C:\\wamp\\www\\fedportal\\admin_academics\\utilities\\js\\admin-academics-utilities.js"}],"C:\\wamp\\www\\fedportal\\admin_academics\\utilities\\js\\admin-academics-utilities.js":[function(require,module,exports){
+"use strict";
+
+/**
+ *
+ * @param {Array} source
+ * @param {String} fieldToDisplay - the field from the source that will be set as value
+ * of form control been auto-completed
+ *
+ * @returns {{minLength: number, source: Array, select: Function}}
+ */
+function sessionAutoComplete(source, fieldToDisplay) {
+  return {
+    minLength: 1,
+
+    source: source,
+
+    select: function(evt, ui) {
+      var
+        $el      = $(this),
+        $related = $($el.data('related-input-id'));
+
+      $related.val(ui.item.id);
+
+      if (evt.originalEvent.which === 1) {
+        window.setTimeout(function() {
+                            $el.val(ui.item[fieldToDisplay]);
+                          }
+        );
+      }
+
+      window.setTimeout(function() {
+                          $el.closest('form').formValidation('revalidateField', $el);
+                          $el.closest('form').formValidation('revalidateField', $related);
+                        }
+      );
+
+      return false;
+    }
+  };
+}
+
+module.exports = {
+  sessionAutoComplete: sessionAutoComplete
+};
+
+},{}]},{},["C:\\wamp\\www\\fedportal\\admin_academics\\semester\\js\\semester-raw.js","C:\\wamp\\www\\fedportal\\admin_academics\\utilities\\js\\admin-academics-utilities.js"]);

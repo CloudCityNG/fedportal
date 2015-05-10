@@ -21,7 +21,7 @@
                 </tr>
 
                 <tr>
-                    <th>MATRIC NO</th> <td>{$student['reg_no']}</td>
+                    <th>REGISTRATION NO</th> <td>{$student['reg_no']}</td>
                 </tr>
 
                 <tr>
@@ -33,7 +33,7 @@
                 </tr>
 
                 <tr>
-                    <th>SEMESTER</th> <td>{$student['semester']}</td>
+                    <th>COURSES FOR</th> <td>{$student['semester']}</td>
                 </tr>
             </tbody>
         </table>
@@ -59,7 +59,7 @@
         Enter score for each course.
       </legend>
 
-      <table class="table table-striped table-condensed table-bordered student-course-score-form-table">
+      <table class="table table-striped table-condense table-bordered student-course-score-form-table">
         <thead>
           <tr>
             <th>S/N</th>

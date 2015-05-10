@@ -89,26 +89,26 @@ module.exports = function(grunt) {
       },
 
       browserify: {
-        'admin-academics-assessment': {
+        'admin-academics-assessment-grade-student': {
           options: {
             watch: true,
             keepAlive: true
           },
           files: {
-            'admin_academics/assessment/js/assessment.js': [
-              'admin_academics/assessment/js/assessment-raw.js',
+            'admin_academics/assessment/grade-student/js/grade-student.js': [
+              'admin_academics/assessment/grade-student/js/grade-student-raw.js',
               'admin_academics/utilities/js/admin-academics-utilities.js'
             ]
           }
         },
 
-        'admin-academics-session': {
+        'admin-academics-semester': {
           options: {
             watch: true,
             keepAlive: true
           },
           files: {
-            'admin_academics/assessment/js/semester.js': [
+            'admin_academics/semester/js/semester.js': [
               'admin_academics/semester/js/semester-raw.js',
               'admin_academics/utilities/js/admin-academics-utilities.js'
             ]

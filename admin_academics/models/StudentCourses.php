@@ -30,37 +30,57 @@ class StudentCourses
    * Get the courses that a student has registered for a particular semester
    *
    * @param array $data - in the form ['reg_no' => string, 'semester_id' => string|int]
-   * @param bool $withLetterGrades - whether we should computer letter grade for each score
+   * @param bool $withLetterGrades - see @method "getStudentCourses"
+   * @param bool $gradeNullScore - see @method "getStudentCourses"
    * @return array|null
    */
-  public static function getStudentCurrentCourses(array $data, $withLetterGrades = false)
+  public static function getStudentCoursesForSemester(array $data, $withLetterGrades = false, $gradeNullScore = false)
+  {
+    return self::getStudentCourses($data, $withLetterGrades, $gradeNullScore);
+  }
+
+  /**
+   * Get the courses that a student has registered for
+   * and optionally restrict to particular semester
+   *
+   * @param array $data - in the form ['reg_no' => string]  or
+   * ['reg_no' => string, 'semester_id' => string|int] if we wish
+   * to restrict to particular semester
+   *
+   * @param bool $withLetterGrades - whether we should computer letter grade for each score
+   * @param bool $gradeNullScore - whether to grade null scores. By default, we will not
+   * assign letter grades to null scores. We only do so if caller of this method
+   * specifically asks for it.
+   *
+   * @return array|null
+   */
+  public static function getStudentCourses(array $data, $withLetterGrades = false, $gradeNullScore = false)
   {
     $query = "SELECT student_courses.id AS `id`, `reg_no`, `level`, `semester_id`, `score`, `title`, `unit`,
               `department`, `code`
 
               FROM student_courses JOIN course_table ON (course_id = course_table.id)
-              WHERE reg_no = ?
-              AND semester_id = ?";
+              WHERE reg_no = :reg_no";
 
-    $params = [$data['reg_no'], $data['semester_id']];
+    if (isset($data['semester_id'])) $query .= ' AND semester_id = :semester_id';
 
-    self::logger()->addInfo("About to get student courses with query: {$query} and params: ", $params);
+    self::logger()->addInfo("About to get student courses with query: {$query} and params: ", $data);
 
     $stmt = get_db()->prepare($query);
 
-    if ($stmt->execute($params)) {
+    if ($stmt->execute($data)) {
       $result = $stmt->fetchAll();
 
       if (count($result)) {
-        if ($withLetterGrades) $result = self::addLetterGrades($result);
+        if ($withLetterGrades) $result = self::addLetterGrades($result, $gradeNullScore);
 
-        self::logger()->addInfo("Statement executed successfully. Current courses are: ", $result);
+        self::logger()->addInfo("Statement executed successfully. Courses are: ", $result);
 
         return $result;
       }
     }
 
-    self::logger()->addWarning("Current courses for student can not be retrieved.");
+    self::logger()->addWarning("Courses for student can not be retrieved.");
     return null;
   }
 
@@ -74,10 +94,16 @@ class StudentCourses
    * grade with corresponding letter grade for those courses that have
    * valid scores
    *
-   * @param array $data
-   * @return array
+   * @param array $data - student courses retrieved from database with their
+   * associated scores
+   *
+   * @param bool $gradeNullScore - whether to grade null scores. By default, we will not
+   * assign letter grades to null scores. We only do so if caller of this method
+   *
+   * @return array - we return the @argument $data augmented with letter grades
+   * corresponding to the scores.
    */
-  private static function addLetterGrades(array $data)
+  private static function addLetterGrades(array $data, $gradeNullScore = false)
   {
     $returnedVal = [];
 
@@ -102,6 +128,8 @@ class StudentCourses
 
         }
       }
+
+      if ($gradeNullScore && !$grade) $grade = 'F';
 
       $row['grade'] = $grade;
       $returnedVal[] = $row;

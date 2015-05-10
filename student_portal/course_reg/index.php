@@ -50,7 +50,7 @@ class CourseRegController
 
     $dept_name = AcademicDepartment::get_dept_name_from_code($dept_code);
 
-    $course_data = StudentCourses::getStudentCurrentCourses([
+    $course_data = StudentCourses::getStudentCoursesForSemester([
       'reg_no' => $regNo,
       'semester_id' => $semesterFromDb['id']
     ]);
