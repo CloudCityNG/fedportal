@@ -91,16 +91,22 @@
 </div>
 
 <div class="form-group">
-  <label class="control-label" for="date_of_birth">Date of Birth (dd-mm-yyyy)</label>
+  <label class="control-label" for="date-of-birth-view">Date of Birth (dd-mmm-yyyy)</label>
 
   <div class="input-group date input-append show-date-picker">
-    <input type="text" class="form-control" name="student_bio[dateofbirth]" id="date_of_birth"
-           required placeholder="dd-mm-yyyy" pattern="\d{1,2}-\d{1,2}-\d{4}">
+    <input type="text" class="form-control" maxlength="11"
+           name="date-of-birth-view" id="date-of-birth-view"
+           required placeholder="dd-mmm-yyyy"
+           pattern="^\d{1,2}-[A-Za-z]{3}-\d{4}$"
+      >
 
     <span class="input-group-addon add-on">
       <span class="glyphicon glyphicon-calendar"></span>
     </span>
   </div>
+
+  <input type="hidden" id="date-of-birth" name="student_bio[dateofbirth]"
+         data-fv-date data-fv-date-format="YYYY-MM-DD" data-fv-excluded="false"/>
 </div>
 
 <div class="form-group">

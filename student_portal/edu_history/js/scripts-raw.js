@@ -1,6 +1,3 @@
-/**
- * Created by maneptha on 03-Feb-15.
- */
 "use strict";
 
 var $form           = $('form').formValidation();

@@ -11,48 +11,10 @@ require_once(__DIR__ . '/../../helpers/models/StudentProfile.php');
 
 require_once(__DIR__ . '/../../admin_academics/models/AcademicSession.php');
 
-use Carbon\Carbon;
-
 class FreshmanRegController1
 {
 
   private static $LOGGER_NAME = 'student-bio-registration';
-
-  private function get_email($regNo)
-  {
-    $log = get_logger(self::$LOGGER_NAME);
-
-    $db = get_db();
-
-    $query = "SELECT email FROM pin_table WHERE  number = ?";
-
-    $log->addInfo("About to get email for student \"$regNo\" with query: $query");
-
-    try {
-
-      $stmt = $db->prepare($query);
-
-      $stmt->execute([$regNo]);
-
-      $email = $stmt->fetch(PDO::FETCH_NUM)[0];
-
-      $stmt->closeCursor();
-
-      return $email;
-
-    } catch (PDOException $e) {
-
-      logPdoException(
-        $e,
-
-        "Error occurred while executing query $query
-         while setting view for student registration for bio data",
-
-        $log);
-    }
-
-    return '';
-  }
 
   public function get()
   {
@@ -77,10 +39,42 @@ class FreshmanRegController1
     return;
   }
 
+  private function get_email($regNo)
+  {
+    $log = get_logger(self::$LOGGER_NAME);
+
+    $query = "SELECT email FROM pin_table WHERE  number = ?";
+
+    $log->addInfo("About to get email for student \"$regNo\" with query: $query");
+
+    try {
+
+      $stmt = get_db()->prepare($query);
+
+      $stmt->execute([$regNo]);
+
+      $email = $stmt->fetch(PDO::FETCH_NUM)[0];
+
+      $stmt->closeCursor();
+
+      return $email;
+
+    } catch (PDOException $e) {
+
+      logPdoException(
+        $e,
+
+        "Error occurred while executing query $query
+         while setting view for student registration for bio data",
+
+        $log);
+    }
+
+    return '';
+  }
+
   public function post()
   {
-
-    $db = get_db();
 
     $log = get_logger(self::$LOGGER_NAME);
 
@@ -111,18 +105,27 @@ class FreshmanRegController1
 
       $log->addInfo("Data is valid, will be inserted into database with sql : $query");
 
+      $shouldBeUppercase = [
+        'permanentaddress',
+        'contactperson',
+        'first_name',
+        'surname',
+        'other_names',
+        'previousname',
+        'activities',
+        'parentname',
+        'lga',
+        'nationality',
+      ];
+
       try {
-        $stmt = $db->prepare($query);
+        $stmt = get_db()->prepare($query);
 
         foreach ($_POST['student_bio'] as $param => $val) {
 
-          if ($param === 'dateofbirth') {
-            list($day, $mon, $year) = explode('-', $val);
+          if (in_array($param, $shouldBeUppercase)) $val = strtoupper($val);
 
-            $val = Carbon::createFromDate($year, $mon, $day)->toDateString();
-          }
-
-          $stmt->bindValue(':' . $param, $val);
+          $stmt->bindValue($param, $val);
 
         }
 
@@ -130,7 +133,7 @@ class FreshmanRegController1
 
         $log->addInfo("Bio data successfully created.");
 
-        $this->handle_photo($_POST['student_bio']['personalno']);
+        $this->handlePhoto($_POST['student_bio']['personalno']);
 
         set_student_reg_form_completion_session1('success', 'Bio data saved.');
 
@@ -148,80 +151,79 @@ class FreshmanRegController1
 
   }
 
-  private function handle_photo($reg)
+  private function handlePhoto($reg)
   {
     $log = get_logger(self::$LOGGER_NAME);
 
     try {
 
-      $file_name = $this->upload_file_handler('photo');
+      $fileName = $this->uploadFileHandler('photo');
 
-      $log->addInfo("File '$file_name' for student '$reg' uploaded successfully");
+      $log->addInfo("File '$fileName' for student '$reg' uploaded successfully");
 
-      $db = get_db();
-
-      $query = "INSERT INTO pics(personalno, nameofpic) VALUES ('$reg', '$file_name')";
+      $query = "INSERT INTO pics(personalno, nameofpic) VALUES ('$reg', '$fileName')";
 
       $log->addInfo("About to insert file name into database with query: $query");
 
-      $db->query($query);
+      get_db()->query($query);
 
-      $log->addInfo("File '$file_name' successfully inserted into database.");
+      $log->addInfo("File '$fileName' successfully inserted into database.");
 
       return true;
 
     } catch (Exception $e) {
 
-      $log->addError("Either File upload failed with error: ");
       $log->addError(
-        "Or we are unable to save file name in database with error: " . $e->getMessage()
+        "Either File upload failed with error: " .
+        "Or we are unable to save file name in database with error: " .
+        $e->getMessage()
       );
     }
 
     return false;
   }
 
-  private function upload_file_handler($field_name)
+  private function uploadFileHandler($fieldName)
   {
     $log = get_logger(self::$LOGGER_NAME);
 
-    $file_errors = $_FILES[$field_name]['error'];
+    $fileErrors = $_FILES[$fieldName]['error'];
 
-    if ($file_errors) {
+    if ($fileErrors) {
 
-      $log->addError("Uploaded file has error: $file_errors");
+      $log->addError("Uploaded file has error: $fileErrors");
 
       return false;
     }
 
-    if (!@is_uploaded_file($_FILES[$field_name]['tmp_name'])) {
+    if (!@is_uploaded_file($_FILES[$fieldName]['tmp_name'])) {
 
       $log->addError("Upload is not a valid file.");
 
       return false;
     }
 
-    if (!@getimagesize($_FILES[$field_name]['tmp_name'])) {
+    if (!@getimagesize($_FILES[$fieldName]['tmp_name'])) {
 
       $log->addError("Uploaded file is not an image file.");
 
       return false;
     }
 
-    $uploadFilename = basename($_FILES[$field_name]['name']);
+    $uploadFilename = basename($_FILES[$fieldName]['name']);
 
-    $replaced_image_name = str_replace(['.', ' '], '', time()) . $uploadFilename;
+    $replacedImageName = str_replace(['.', ' '], '', time()) . $uploadFilename;
 
-    $destination = get_photo_dir() . $replaced_image_name;
+    $destination = get_photo_dir() . $replacedImageName;
 
-    if (!@move_uploaded_file($_FILES[$field_name]['tmp_name'], $destination)) {
+    if (!@move_uploaded_file($_FILES[$fieldName]['tmp_name'], $destination)) {
 
       $log->addError("Uploaded file could not be saved on disk as {$destination}.");
 
       return false;
     }
 
-    return $replaced_image_name ;
+    return $replacedImageName;
   }
 }
 

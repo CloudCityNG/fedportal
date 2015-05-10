@@ -1,7 +1,3 @@
-/**
- * Created by maneptha on 01-Mar-15.
- */
-
 "use strict";
 
 module.exports = function (selector) {

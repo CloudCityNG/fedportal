@@ -12,9 +12,9 @@ class MedicalsController
 
   public function get()
   {
-    $reg_no = $_SESSION['REG_NO'];
+    $regNo = $_SESSION['REG_NO'];
 
-    if (Medicals::exists($reg_no)) {
+    if (Medicals::exists($regNo)) {
 
       set_student_reg_form_completion_session1(
         'error', "Your Medical data exists in database!");

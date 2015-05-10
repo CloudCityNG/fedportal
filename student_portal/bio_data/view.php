@@ -71,6 +71,6 @@
 
 <?php include(__DIR__ . '/../../includes/js-footer.php'); ?>
 
-<script src="<?php echo STATIC_ROOT . 'student_portal/bio_data/js/bio-data.js'?>"></script>
+<script src="<?php echo STATIC_ROOT . 'student_portal/bio_data/js/bio-data.min.js'?>"></script>
 </body>
 </html>
