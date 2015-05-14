@@ -75,9 +75,9 @@ echo "
   </tbody>
 </table>
 
-<form action="" class="form-horizontal" role="form" id="transcript-download-form">
+<form action="" class="form-horizontal" role="form" id="transcript-download-form" method="post">
 
-  <input type='hidden' value="<?php echo json_encode($studentScoresData) ?>" name="student-scores-data"/>
+  <input type='hidden' value='<?php echo json_encode($studentScoresData) ?>' name="student-scores-data"/>
 
   <div class="form-group">
     <div class="student-transcript-download-form-btn col-sm-5 col-sm-offset-4">

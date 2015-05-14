@@ -129,7 +129,10 @@ class StudentCourses
         }
       }
 
-      if ($gradeNullScore && !$grade) $grade = 'F';
+      if ($gradeNullScore && !$grade) {
+        $grade = 'F';
+        $row['score'] = '0.00';
+      }
 
       $row['grade'] = $grade;
       $returnedVal[] = $row;

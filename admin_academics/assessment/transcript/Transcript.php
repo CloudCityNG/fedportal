@@ -1,5 +1,7 @@
 <?php
 
+require(__DIR__ . '/TranscriptToPDF.php');
+
 class AssessmentTranscriptController extends AssessmentController
 {
   public static function post()
@@ -22,10 +24,13 @@ class AssessmentTranscriptController extends AssessmentController
 
         $profile = (new StudentProfile($regNo))->getCompleteCurrentDetails();
 
-        self::renderPage(null, null, ['student' => $profile, 'courses' => $coursesGrades]); return;
-
-//        print_r($profile);
+        self::renderPage(null, null, ['student' => $profile, 'courses' => $coursesGrades]);
+        return;;
       }
+
+    } else if (isset($_POST['student-transcript-download-submit'])) {
+      $studentScoresData = json_decode($_POST['student-scores-data'], true);
+      new TranscriptToPDF($studentScoresData);
     }
   }
 

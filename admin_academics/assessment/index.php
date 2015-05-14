@@ -80,7 +80,15 @@ class AssessmentController
   }
 }
 
-if ($_SERVER['QUERY_STRING'] === 'grade-students') {
+if ($_SERVER['QUERY_STRING'] === 'transcripts') {
+
+  if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    AssessmentTranscriptController::renderPage();
+
+  } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    AssessmentTranscriptController::post();
+  }
+} else {
   $assessment = new AssessmentGradeStudentController();
 
   if ($_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -90,12 +98,4 @@ if ($_SERVER['QUERY_STRING'] === 'grade-students') {
     $assessment->post();
   }
 
-} else if ($_SERVER['QUERY_STRING'] === 'transcripts') {
-
-  if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    AssessmentTranscriptController::renderPage();
-
-  } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    AssessmentTranscriptController::post();
-  }
 }
