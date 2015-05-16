@@ -50,6 +50,7 @@ echo "
       <th>S/N</th>
       <th>Code</th>
       <th>Title</th>
+      <th>Unit</th>
       <th class="student-courses-display-existing-score">Score</th>
       <th>Grade</th>
     </tr>
@@ -65,6 +66,7 @@ echo "
                 <td>{$count}</td>
                 <td>{$course['code']}</td>
                 <td>{$course['title']}</td>
+                <td>{$course['unit']}</td>
                 <td>{$course['score']}</td>
                 <td>{$course['grade']}</td>
             </tr>

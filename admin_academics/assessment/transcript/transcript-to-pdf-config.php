@@ -72,16 +72,6 @@ define('PDF_CREATOR', 'Federal College of Dental Technology And Therapy');
 define('PDF_AUTHOR', 'Federal College of Dental Technology And Therapy');
 
 /**
- * Header title.
- */
-define('PDF_HEADER_TITLE', 'Transcript of Academic Records');
-
-/**
- * Header description string.
- */
-define('PDF_HEADER_STRING', "Federal College of Dental Technology And Therapy\nwww.fedsdtten.com");
-
-/**
  * Document unit of measure [pt=point, mm=millimeter, cm=centimeter, in=inch].
  */
 define('PDF_UNIT', 'mm');

@@ -10,7 +10,8 @@ use Carbon\Carbon;
 class StudentCourses
 {
   /**
-   * @var array - [low, high, letter grade] a score between high and low inclusive will be awarded the grade letter
+   * @var array - [low, high, letter grade] a score between high and low
+   * inclusive will be awarded the grade letter
    */
   public static $SCORE_GRADE_MAPPING = [
     [70, 100, 'A'],

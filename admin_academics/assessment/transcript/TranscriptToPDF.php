@@ -3,144 +3,130 @@
 require(__DIR__ . '/transcript-to-pdf-config.php');
 require_once(__DIR__ . '/../../../helpers/tcpdf/tcpdf.php');
 
-class TranscriptToPDF
+class TranscriptToPDF extends TCPDF
 {
   /**
    * @constructor
    *
    * @param array $studentScoresData
    */
-  function __construct(array $studentScoresData)
+  public function __construct(array $studentScoresData)
   {
-    $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    parent::__construct(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
-    $pdf->SetHeaderData(
+    $this->setUpPage();
+
+    $this->cellWidths = [
+      10,             #sequence
+      22,             #course code
+      108,             #course title
+      10,             #course unit
+      16,             #score
+      15,             #grade
+    ];
+
+    $student = $studentScoresData['student'];
+    $coursesScores = $studentScoresData['courses'];
+    $regNo = $student['reg_no'];
+
+    $this->drawTableHeader();
+
+    $this->drawTableBody($coursesScores);
+
+    $this->Output("{$regNo}.pdf", 'd');
+  }
+
+  private function setUpPage()
+  {
+    $this->SetHeaderData(
       PDF_HEADER_LOGO,
       PDF_HEADER_LOGO_WIDTH,
-      PDF_HEADER_TITLE,
-      PDF_HEADER_STRING,
+      'Transcript of Academic Records',
+      "Federal College of Dental Technology And Therapy Enugu\nwww.fedsdtten.com",
       [0, 64, 255],
       [0, 64, 128]
     );
 
-    $pdf->setFooterData([0, 64, 0], [0, 64, 128]);
+    $this->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
 
-    $pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
-    $pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
+    $this->setFooterData([0, 64, 0], [0, 64, 128]);
 
-    $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+    $this->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
 
-    $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-    $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-    $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+    $this->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
-    $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+    $this->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+    $this->SetHeaderMargin(PDF_MARGIN_HEADER);
+    $this->SetFooterMargin(PDF_MARGIN_FOOTER);
 
-    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+    $this->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
-    $pdf->setFontSubsetting(true);
+    $this->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-    $pdf->SetFont('helvetica', '', 14, '', true);
+    $this->setFontSubsetting(true);
 
-    $pdf->AddPage();
+    $this->SetFont('helvetica', '', 11, '', true);
 
-    $student = $studentScoresData['student'];
-    $regNo = $student['reg_no'];
-
-    $studentInfo = self::renderStudentInfo($student);
-    $result = self::buildResult($studentScoresData['courses']);
-
-    $pdfBody = "
-      {$studentInfo}
-
-      <hr/>
-
-      <table class='table table-striped table-condense table-bordered student-transcript-table'>
-            <thead>
-                <tr>
-                  <th>S/N</th>
-                  <th>Code</th>
-                  <th>Title</th>
-                  <th class='student-courses-display-existing-score'>Score</th>
-                  <th>Grade</th>
-                </tr>
-            </thead>
-
-            <tbody>{$result}</tbody>
-      </table>";
-
-
-    $pdf->writeHTMLCell(0, 0, '', '', $pdfBody, 0, 1, 0, true, '', true);
-    $pdf->Output("{$regNo}.pdf", 'd');
+    $this->AddPage();
   }
 
-  /**
-   * Take student information and use it to write some html.
-   * The html will be written to pdf
-   *
-   * @param array $student
-   * @return string
-   */
-  private static function renderStudentInfo(array $student)
+  private function drawTableHeader()
   {
-    return "
-        <div class='media-body'>
-          <table class='table table-condense table-bordered'>
-              <tbody>
-                  <tr>
-                      <th>NAMES</th> <td>{$student['names']}</td>
-                  </tr>
+    $this->SetFillColor(200, 219, 255);
+    $this->SetTextColor(0);
+    $this->SetDrawColor(128, 0, 0);
+    $this->SetLineWidth(0.1);
 
-                  <tr>
-                      <th>REGISTRATION NO</th> <td>{$student['reg_no']}</td>
-                  </tr>
+    $this->SetFont('helvetica', 'B', 9, '', true);
 
-                  <tr>
-                      <th>DEPARTMENT</th> <td>{$student['dept_name']}</td>
-                  </tr>
+    $headers = [
+      'S/N',
+      'Code',
+      'Title',
+      'Unit',
+      'Score',
+      'Grade',
+    ];
 
-                  <tr>
-                      <th>LEVEL</th> <td>{$student['level']}</td>
-                  </tr>
+    $numHeaders = count($this->cellWidths);
 
-                  <tr>
-                      <th>YEAR OF ADMISSION</th> <td>{$student['academic_year']}</td>
-                  </tr>
-              </tbody>
-          </table>
-      </div>
-    ";
-  }
-
-  /**
-   *Turn the student information and courses scores into
-   * html @html_tag "tbody" string that will be inserted into an html table
-   * This table will then be in turn written to the pdf
-   *
-   * @param array $courses
-   *
-   * @return string - return string of table rows where each row respresents
-   * a course and the scores and grades obtained
-   */
-  private static function buildResult(array $courses)
-  {
-    $resultBody = '';
-
-    $count = 1;
-
-    foreach ($courses as $course) {
-      $resultBody .= "
-            <tr>
-                <td>{$count}</td>
-                <td>{$course['code']}</td>
-                <td>{$course['title']}</td>
-                <td>{$course['score']}</td>
-                <td>{$course['grade']}</td>
-            </tr>
-           ";
-      $count++;
+    for ($index = 0; $index < $numHeaders; $index++) {
+      $this->Cell(
+        $this->cellWidths[$index],
+        5,
+        $headers[$index],
+        1, 0, 'C', 1
+      );
     }
 
-    return $resultBody;
+    $this->Ln();
+  }
+
+  /**
+   * Draw table body with student results
+   *
+   * @param array $coursesScores
+   */
+  private function drawTableBody(array $coursesScores)
+  {
+    $this->SetFillColor(224, 235, 255);
+    $this->SetTextColor(0);
+    $this->SetFont('');
+    $fill = 0;
+    $seq = 1;
+
+    foreach ($coursesScores as $course) {
+      $this->Cell($this->cellWidths[0], 5, $seq++, 'LR', 0, 'R', $fill);
+      $this->Cell($this->cellWidths[1], 5, $course['code'], 'LR', 0, 'L', $fill);
+      $this->Cell($this->cellWidths[2], 5, $course['title'], 'LR', 0, 'L', $fill);
+      $this->Cell($this->cellWidths[3], 5, $course['unit'], 'LR', 0, 'C', $fill);
+      $this->Cell($this->cellWidths[4], 5, $course['score'], 'LR', 0, 'R', $fill);
+      $this->Cell($this->cellWidths[5], 5, $course['grade'], 'LR', 0, 'C', $fill);
+
+      $this->Ln();
+      $fill = !$fill;
+    }
+    $this->Cell(array_sum($this->cellWidths), 0, '', 'T');
+
   }
 }
