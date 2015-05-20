@@ -15,14 +15,10 @@ class CurrentSessionSemesterInfo
     $diff = 'unknown';
     $startDate = 'unknown';
     $endDate = 'unknown';
-    $alternative = false;
 
-    $theSession = AcademicAdminUtilities::getCurrentSession();
+    $session = AcademicSession::getCurrentSession();
 
-    if ($theSession) {
-      $session = $theSession['session'];
-      $alternative = $theSession['alternative'];
-
+    if ($session) {
       $end = $session['end_date'];
       $diff = $end->diff(Carbon::now())->days;
 
@@ -33,9 +29,9 @@ class CurrentSessionSemesterInfo
     $returnedVal['diff'] = $diff;
     $returnedVal['start'] = $startDate;
     $returnedVal['end'] = $endDate;
-    $returnedVal['session'] = $session['session'];
+    $returnedVal['session'] = $session ? $session['session'] : null;
 
-    return [$returnedVal, $alternative];
+    return $returnedVal;
   }
 
   public static function getCurrentSemester()
@@ -68,12 +64,12 @@ class CurrentSessionSemesterInfo
 }
 
 $currentSemesterInfo = CurrentSessionSemesterInfo::getCurrentSemester();
-list($currentSessionInfo, $sessionAlternative) = CurrentSessionSemesterInfo::getCurrentSession();
+$currentSessionInfo = CurrentSessionSemesterInfo::getCurrentSession();
 ?>
 
 <div class="session-semester-info row">
   <div class="alternative">
-    <?php if ($sessionAlternative) {
+    <?php if (!$currentSessionInfo['session']) {
       echo 'Academic session has ended but new session not set.';
     }
     ?>
@@ -100,12 +96,14 @@ list($currentSessionInfo, $sessionAlternative) = CurrentSessionSemesterInfo::get
   <div class="col-sm-6">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h2 class="panel-title"> <?php echo $currentSessionInfo['session'] ?> Session</h2>
+        <h2 class="panel-title">
+          <?php echo $currentSessionInfo['session'] ? $currentSemesterInfo['semester'] : 'Unknown' ?> Session
+        </h2>
       </div>
 
       <div class="panel-body">
         <div class="alternative">
-          <?php if ($sessionAlternative) {
+          <?php if (!$currentSemesterInfo['semester']) {
             echo 'Academic session has ended but new session not set.';
           }
           ?>

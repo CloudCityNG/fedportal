@@ -69,7 +69,7 @@
   <div class="row">
     <div class="current-session-form-btn col-sm-4 col-sm-offset-3">
       <button class="btn btn-default" type="submit" name="current-session-form-submit">
-        Edit Current Session
+        Update Current Session
       </button>
     </div>
   </div>

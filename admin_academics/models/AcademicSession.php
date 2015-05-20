@@ -209,7 +209,7 @@ class AcademicSession
     return null;
   }
 
-  public static function update_session(array $data)
+  public static function updateSession(array $data)
   {
 
     $query = "UPDATE session_table

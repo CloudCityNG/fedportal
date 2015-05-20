@@ -151,15 +151,21 @@ Class Semester
 
 
   /**
-   * @return array|mixed|null
+   * Get the current semester. But in order to get the current semester,
+   * current session must have been set and must be valid
+   *
+   * @param array $currentSession
+   * @return array|null
    */
-  public static function getCurrentSemester()
+  public static function getCurrentSemester(array $currentSession = null)
   {
-    $session = AcademicSession::getCurrentSession();
+    if (!$currentSession) {
+      $currentSession = AcademicSession::getCurrentSession();
 
-    if (!$session) {
-      self::logger()->addWarning('Current session not set. Current semester will not be available');
-      return null;
+      if (!$currentSession) {
+        self::logger()->addWarning('Current session not set. Current semester will not be available');
+        return null;
+      }
     }
 
     $today = date('Y-m-d', time());
@@ -167,11 +173,13 @@ Class Semester
     $query = "SELECT * FROM semester
               WHERE :today1 >= start_date
               AND :today2 <= end_date
+              AND session_id = :session_id
               ORDER BY start_date LIMIT 1";
 
     $query_param = [
       'today1' => $today,
-      'today2' => $today
+      'today2' => $today,
+      'session_id' => $currentSession['id']
     ];
 
     self::logger()->addInfo(
@@ -188,7 +196,7 @@ Class Semester
 
         $semester = self::dbDatesToCarbon($semester);
 
-        $semester['session'] = $session;
+        $semester['session'] = $currentSession;
 
         return $semester;
       }

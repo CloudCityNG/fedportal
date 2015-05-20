@@ -80,7 +80,7 @@ class AcademicSessionController
       'link' => 'new-session'
     ];
 
-    $theSession = AcademicAdminUtilities::getCurrentSession();
+    $theSession = AcademicAdminUtilities::getCurrentOrAlternativeSession();
 
     if ($theSession) {
       $currentSession = $theSession['session'];
@@ -100,7 +100,7 @@ class AcademicSessionController
   private static function updateSession($data)
   {
     try {
-      $session = AcademicSession::update_session($data);
+      $session = AcademicSession::updateSession($data);
 
       if ($session) {
         return [

@@ -13,7 +13,7 @@ class AcademicAdminUtilities
    *
    * @return array|null
    */
-  public static function getCurrentSession()
+  public static function getCurrentOrAlternativeSession()
   {
     try {
       $currentSession = AcademicSession::getCurrentSession();
