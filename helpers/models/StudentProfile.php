@@ -1,11 +1,7 @@
 <?php
 
 include_once(__DIR__ . '/../databases.php');
-
 include_once(__DIR__ . '/../app_settings.php');
-
-include_once(__DIR__ . '/../get_photos.php');
-
 include_once(__DIR__ . '/../../admin_academics/models/AcademicSession.php');
 
 
@@ -21,39 +17,29 @@ class StudentProfile
   public $photo;
   public $dept_code;
 
-  function __construct($reg_no)
+  function __construct($regNo)
   {
 
     $log = get_logger(self::$LOG_NAME);
 
-    $db = get_db();
+    $this->reg_no = $regNo;
 
-    $this->reg_no = $reg_no;
-
-    $this->photo = get_photo($reg_no, true);
+    $this->photo = self::getPhoto($regNo, true);
 
     $query = "SELECT first_name, surname, other_names, course
               FROM freshman_profile
               WHERE personalno = ?";
 
-    $names = '';
-
     try {
-      $stmt = $db->prepare($query);
+      $stmt = get_db()->prepare($query);
 
-      $stmt->execute([$reg_no]);
+      $stmt->execute([$regNo]);
 
-      $fetched_array = $stmt->fetch(PDO::FETCH_ASSOC);
+      $fetchedArray = $stmt->fetch();
 
-      $first_name = $fetched_array['first_name'];
+      $this->names = $fetchedArray['first_name'] . ' ' . $fetchedArray['surname'] . ' ' . $fetchedArray['other_names'];
 
-      if ($first_name) {
-        $names = "{$first_name} ";
-      }
-
-      $this->names = $names . $fetched_array['surname'] . ' ' . $fetched_array['other_names'];
-
-      $this->dept_code = $fetched_array['course'];
+      $this->dept_code = $fetchedArray['course'];
 
       $stmt->closeCursor();
 
@@ -62,7 +48,7 @@ class StudentProfile
       logPdoException(
         $e,
 
-        "Error while getting profile info for student $reg_no.",
+        "Error while getting profile info for student $regNo.",
 
         $log
       );
@@ -70,39 +56,67 @@ class StudentProfile
     }
   }
 
-  public static function student_exists($reg_no)
+  public static function getPhoto($regNo = null, $pathOnly = null)
+  {
+    $stmt = get_db()->prepare("SELECT nameofpic FROM pics WHERE personalno = ?");
+
+    if (!$regNo) {
+
+      if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+      }
+
+      if (isset($_SESSION['REG_NO'])) {
+        $regNo = $_SESSION['REG_NO'];
+      }
+    }
+
+    if ($stmt->execute([$regNo]) && $stmt->rowCount()) {
+
+      $imagePath = 'photo_files/' . $stmt->fetch(PDO::FETCH_NUM)[0];
+
+      $staticRootTrimmed = trim(STATIC_ROOT, "/\\");
+
+      $staticRootPos = strpos(__DIR__, $staticRootTrimmed);
+
+      $dirPathBeforeStaticRoot = substr(__DIR__, 0, $staticRootPos);
+
+      if (file_exists($dirPathBeforeStaticRoot . $staticRootTrimmed . '/' . $imagePath)) {
+        $imagePath = STATIC_ROOT . $imagePath;
+
+        return $pathOnly ? $imagePath : "<img src='$imagePath'/>";
+
+      }
+    }
+
+    return '';
+  }
+
+  public static function student_exists($regNo)
   {
     $log = get_logger(self::$LOG_NAME);
 
-    $db = get_db();
-
-    $log->addInfo("Attempting to confirm if student $reg_no exists in database");
+    $log->addInfo("Attempting to confirm if student $regNo exists in database");
 
     $query = "SELECT Count(*) FROM freshman_profile WHERE personalno = ?";
 
-    $query_param = [$reg_no];
+    $query_param = [$regNo];
 
-    $query_param_string = print_r($query_param, true);
-
-    $stmt = $db->prepare($query);
+    $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($query_param)) {
 
-      $log->addInfo("Query: \"$query\" successfully ran with param: \"$query_param_string\"");
+      $log->addInfo("Query: \"$query\" successfully ran with param: ", $query_param);
 
       if ($stmt->fetchColumn()) {
 
-        $log->addInfo("Student $reg_no exists in database.");
+        $log->addInfo("Student $regNo exists in database.");
 
         return true;
 
-      } else {
-
-        $log->addWarning("Student $reg_no not found in database.");
       }
-
     }
-
+    $log->addWarning("Student {$regNo} not found in database.");
     return false;
 
   }
@@ -118,10 +132,10 @@ class StudentProfile
 
   public function getCompleteCurrentDetails()
   {
-    return array_merge($this->to_array(), $this->get_current_level_dept());
+    return array_merge($this->toArray(), $this->get_current_level_dept());
   }
 
-  public function to_array()
+  private function toArray()
   {
     return [
       'names' => $this->names,
@@ -247,7 +261,7 @@ class StudentProfile
 
   function __toString()
   {
-    return json_encode($this->to_array());
+    return json_encode($this->toArray());
   }
 
 }

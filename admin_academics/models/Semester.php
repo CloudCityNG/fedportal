@@ -199,9 +199,13 @@ Class Semester
   }
 
   /**
-   * @param string|int $number
-   * @param string|int $session
-   * @return array|null
+   * Get a particular semester given its semester number and session code
+   * e.g get 2nd semester in 2014/2015 session.
+   *
+   * @param string|int $number - semester number, 1 or 2
+   * @param string|int $session - semester session e.g 2014/2015
+   * @return array|null - return semester data if found or null if no
+   * semester will the arguments
    */
   public static function getSemesterByNumberAndSession($number, $session)
   {
@@ -422,8 +426,11 @@ Class Semester
 
   /**
    * Either get all semesters in the database or get a limited number of semesters
+   * denoted by the param $howMany argument.
    *
-   * @param null|string|int $howMany - number of semesters to be retrieved. If 'null', get all semesters in database
+   * @param null|string|int $howMany - number of semesters to be retrieved.
+   * If 'null', get all semesters in database
+   *
    * @return array|null
    */
   public static function getSemesters($howMany = null)
@@ -493,6 +500,57 @@ Class Semester
   }
 
   /**
+   * Given an array of semester IDs, get the semester data from the database
+   * and optionally get session information
+   *
+   * @param array $semesterIds - an array containing the semester IDs
+   * @param bool $withSessions - whether to get session information
+   * @return array|null
+   */
+  public static function getSemesterByIds(array $semesterIds, $withSessions = false)
+  {
+    $x = '(';
+
+    foreach ($semesterIds as $id) {
+      $x .= "'" . $id . "', ";
+    }
+
+    $x = trim($x, ', ') . ')';
+
+    $query = "SELECT * FROM semester WHERE id IN $x";
+
+    self::logger()->addInfo('About to get semesters by array of id using query ' . $query);
+
+    $stmt = get_db()->query($query);
+
+    if ($stmt) {
+      $results = [];
+      if ($withSessions) {
+        while ($row = $stmt->fetch()) {
+          $row['session'] = AcademicSession::get_session_by_id($row['session_id']);
+          $results[] = $row;
+        }
+
+      } else {
+        $results = $stmt->fetchAll();
+      }
+
+      if (count($results)) {
+
+        self::logger()->addInfo('Semesters returned successfully, result is', $results);
+        return $results;
+      }
+    }
+
+    self::logger()->addWarning('Unable to get semesters using array of ids', $semesterIds);
+    return null;
+  }
+
+  /**
+   * Semester validator. When creating a semester, session id is required.
+   * But when updating a semester, session id may not be required. Which ever
+   * way, this method will validate the session  id if it is given.
+   *
    * @param array $data
    * @return array
    */

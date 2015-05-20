@@ -4,29 +4,39 @@ include_once(__DIR__ . '/databases.php');
 
 include_once(__DIR__ . '/app_settings.php');
 
-function get_photo($reg_no = null, $path_only = null)
+function get_photo($regNo = null, $pathOnly = null)
 {
-  $db = get_db();
 
-  $stmt = $db->prepare("SELECT nameofpic FROM pics WHERE personalno = ?");
+  $stmt = get_db()->prepare("SELECT nameofpic FROM pics WHERE personalno = ?");
 
-  if (!$reg_no) {
+  if (!$regNo) {
 
     if (session_status() === PHP_SESSION_NONE) {
       session_start();
     }
 
-    $reg_no = $_SESSION['REG_NO'];
+    $regNo = $_SESSION['REG_NO'];
   }
 
-  $stmt->execute([$reg_no]);
+  if ($stmt->execute([$regNo]) && $stmt->rowCount()) {
 
-  if ($stmt->rowCount()) {
+    $imagePath = 'photo_files/' . $stmt->fetch(PDO::FETCH_NUM)[0];
 
-    $image_path = STATIC_ROOT . 'photo_files/' . $stmt->fetch(PDO::FETCH_NUM)[0];
+    $staticRootTrimmed = trim(STATIC_ROOT, "/\\");
 
-    return $path_only ? $image_path : "<img src='$image_path'/>";
+    $staticRootPos = strpos(__DIR__, $staticRootTrimmed);
+
+    $dirPathBeforeStaticRoot = substr(__DIR__, 0, $staticRootPos);
+
+    if (file_exists($dirPathBeforeStaticRoot . $staticRootTrimmed . '/' . $imagePath)) {
+      $imagePath = STATIC_ROOT . $imagePath;
+
+    } else {
+      $imagePath = BLANK_IMAGE_PATH;
+    }
+
+    return $pathOnly ? $imagePath : "<img src='$imagePath'/>";
   }
 
-  return '';
+  return BLANK_IMAGE_PATH;
 }

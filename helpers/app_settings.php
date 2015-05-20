@@ -1,6 +1,7 @@
 <?php
 
 define('STATIC_ROOT', '/fedportal/');
+define('BLANK_IMAGE_PATH', STATIC_ROOT . 'photo_files/_blank.png');
 
 define('SESSION_TIME_OUT', 1800);
 define('SESSION_TIME_OUT_ALERT', 1500);

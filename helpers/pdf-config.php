@@ -10,7 +10,7 @@ define('K_TCPDF_EXTERNAL_CONFIG', true);
  * By default it is automatically calculated but you can also set it as a fixed string to improve performances.
  */
 
-define('K_PATH_MAIN', __DIR__ . '/../../../helpers/tcpdf/');
+define('K_PATH_MAIN', __DIR__ . '/tcpdf/');
 
 /**
  * URL path to tcpdf installation folder (http://localhost/tcpdf/).
@@ -28,18 +28,18 @@ define('K_PATH_FONTS', K_PATH_MAIN . 'fonts/');
  * Default images directory.
  * By default it is automatically set but you can also set it as a fixed string to improve performances.
  */
-define('K_PATH_IMAGES', __DIR__ . '/../../../photo_files/');
+define('K_PATH_IMAGES', __DIR__ . '/../photo_files/');
 
 /**
  * Deafult image logo used be the default Header() method.
  * Please set here your own logo or an empty string to disable it.
  */
-//define ('PDF_HEADER_LOGO', '');
+define('PDF_HEADER_LOGO', 'school-logo1.jpg');
 
 /**
  * Header logo image width in user units.
  */
-//define ('PDF_HEADER_LOGO_WIDTH', 0);
+define('PDF_HEADER_LOGO_WIDTH', 30);
 
 /**
  * Cache directory for temporary files (full path).
@@ -49,7 +49,7 @@ define('K_PATH_CACHE', sys_get_temp_dir() . '/');
 /**
  * Generic name for a blank image.
  */
-define('K_BLANK_IMAGE', '_blank.png');
+define('K_BLANK_IMAGE', K_PATH_IMAGES . '_blank.png');
 
 /**
  * Page format.
@@ -107,24 +107,9 @@ define('PDF_MARGIN_LEFT', 15);
 define('PDF_MARGIN_RIGHT', 15);
 
 /**
- * Default main font name.
- */
-define('PDF_FONT_NAME_MAIN', 'helvetica');
-
-/**
- * Default main font size.
- */
-define('PDF_FONT_SIZE_MAIN', 10);
-
-/**
- * Default data font name.
- */
-define('PDF_FONT_NAME_DATA', 'helvetica');
-
-/**
  * Default data font size.
  */
-define('PDF_FONT_SIZE_DATA', 8);
+define('PDF_FONT_SIZE_DATA', 10);
 
 /**
  * Default monospaced font name.
@@ -176,7 +161,3 @@ define('K_TCPDF_THROW_EXCEPTION_ERROR', false);
  * Default timezone for datetime functions
  */
 define('K_TIMEZONE', 'UTC');
-
-//============================================================+
-// END OF FILE
-//============================================================+

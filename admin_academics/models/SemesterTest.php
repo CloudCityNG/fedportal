@@ -104,9 +104,15 @@ function testGetCurrentSemester(){
   print_r(Semester::getCurrentSemester());
 }
 
-testGetCurrentSemester();
+function testGetSemesterByIds() {
+  return Semester::getSemesterByIds([2, 5], true);
+}
 
-print_r(testGetImmediatePastSemester());
+//print_r(testGetSemesterByIds());
+
+//testGetCurrentSemester();
+
+//print_r(testGetImmediatePastSemester());
 
 //print_r(test_validate_dates_start_date_after_latest_semester_date());
 

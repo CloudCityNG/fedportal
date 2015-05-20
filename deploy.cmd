@@ -47,3 +47,5 @@ robocopy %emptyFolder% %deployFolderTcPdfFolder% /s /mir
 rmdir %deployFolderTcPdfFolder% /s /q
 
 del /f /q %deployFolderLogFile%
+
+7z a -y  %deployFolder%.zip %deployFolder%
