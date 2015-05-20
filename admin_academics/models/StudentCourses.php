@@ -10,21 +10,21 @@ use Carbon\Carbon;
 class StudentCourses
 {
   /**
-   * @var array - [low, high, letter grade] a score between high and low
-   * inclusive will be awarded the grade letter
+   * @var array - [low, high, letter grade, point] a score between high and low
+   * inclusive will be awarded the grade letter and number point
    */
   public static $SCORE_GRADE_MAPPING = [
-    [70, 100, 'A'],
+    [80, 100, 'A', 4.0],
 
-    [60, 69, 'B'],
+    [70, 79, 'AB', 3.5],
 
-    [50, 59, 'C'],
+    [60, 69, 'B', 3.0],
 
-    [45, 49, 'D'],
+    [50, 59, 'BC', 2.5],
 
-    [40, 44, 'E'],
+    [45, 49, 'C', 2.0],
 
-    [0, 39, 'F']
+    [0, 44, 'F', 0.0]
   ];
 
   /**
@@ -110,6 +110,7 @@ class StudentCourses
 
     foreach ($data as $row) {
       $grade = null;
+      $point = null;
 
       if (isset($row['score'])) {
         $score = $row['score'];
@@ -123,6 +124,7 @@ class StudentCourses
 
             if ($min <= $score && $score <= $max) {
               $grade = $scoreGrade[2];
+              $point = $scoreGrade[3];
               break;
             }
           }
@@ -132,10 +134,12 @@ class StudentCourses
 
       if ($gradeNullScore && !$grade) {
         $grade = 'F';
+        $point = 0;
         $row['score'] = '0.00';
       }
 
       $row['grade'] = $grade;
+      $row['point'] = $point;
       $returnedVal[] = $row;
     }
 

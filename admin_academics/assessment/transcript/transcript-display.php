@@ -48,11 +48,12 @@ echo "
   <thead>
     <tr>
       <th>S/N</th>
-      <th>Code</th>
-      <th>Title</th>
-      <th>Unit</th>
+      <th>Course<br/>Code</th>
+      <th>Course Title</th>
+      <th>Credit<br/>Unit</th>
       <th class="student-courses-display-existing-score">Score</th>
       <th>Grade</th>
+      <th>Quality<br/>Point</th>
     </tr>
   </thead>
 
@@ -61,14 +62,18 @@ echo "
     $count = 1;
 
     foreach ($studentScoresData['courses'] as $course) {
+      $unit = number_format($course['unit'], 1);
+      $point = number_format(floatval($unit) * $course['point'], 2);
+
       echo "
             <tr>
                 <td>{$count}</td>
                 <td>{$course['code']}</td>
                 <td>{$course['title']}</td>
-                <td>{$course['unit']}</td>
+                <td>{$unit}</td>
                 <td>{$course['score']}</td>
                 <td>{$course['grade']}</td>
+                <td>{$point}</td>
             </tr>
            ";
       $count++;

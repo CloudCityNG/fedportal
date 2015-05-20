@@ -10,12 +10,11 @@ class TranscriptToPDF extends TCPDF
    */
   private $coursesScoresCellWidths = [
     14,             #sequence
-    70,            #course title
+    80,            #course title
     22,             #course code
     19,             #course unit
-    18,             #score
-    19,             #grade
-    15,             #quality point
+    27,             #score + grade
+    20,             #quality point
   ];
 
   /**
@@ -167,9 +166,8 @@ class TranscriptToPDF extends TCPDF
       'COURSE TITLE',
       'COURSE CODE',
       'CREDIT UNIT',
-      'SCORE',
-      'LETTER GRADE',
-      "POINT",
+      'GRADE OBTAINED',
+      "QUALITY POINT",
     ];
 
     $numHeaders = count($this->coursesScoresCellWidths);
@@ -198,10 +196,10 @@ class TranscriptToPDF extends TCPDF
   private function _drawTableBody(array $coursesScores)
   {
     $rowHeightSingle = 6;
-    $rowHeightDouble = 10;
+    $rowHeightDouble = 12;
     $border = 'LR';
     $nextPos = 0;
-    $maxLenCharsPerLine = 35;
+    $maxLenCharsPerLine = 45;
 
     $this->SetFillColor(224, 235, 255);
     $this->SetTextColor(0);
@@ -212,24 +210,24 @@ class TranscriptToPDF extends TCPDF
 
     foreach ($coursesScores as $course) {
       $title = $course['title'];
+      $unit = number_format($course['unit'], 1);
+      $point = number_format(floatval($unit) * $course['point'], 2);
 
       if (strlen($title) <= $maxLenCharsPerLine) {
         $this->Cell($this->coursesScoresCellWidths[0], $rowHeightSingle, $seq++, 'L', $nextPos, 'R', $fill);
         $this->Cell($this->coursesScoresCellWidths[1], $rowHeightSingle, $title, $border, $nextPos, 'L', $fill);
         $this->Cell($this->coursesScoresCellWidths[2], $rowHeightSingle, $course['code'], $border, $nextPos, 'L', $fill);
-        $this->Cell($this->coursesScoresCellWidths[3], $rowHeightSingle, $course['unit'], $border, $nextPos, 'C', $fill);
-        $this->Cell($this->coursesScoresCellWidths[4], $rowHeightSingle, $course['score'], $border, $nextPos, 'R', $fill);
-        $this->Cell($this->coursesScoresCellWidths[5], $rowHeightSingle, $course['grade'], $border, $nextPos, 'C', $fill);
-        $this->Cell($this->coursesScoresCellWidths[6], $rowHeightSingle, '', $border, $nextPos, 'C', $fill);
+        $this->Cell($this->coursesScoresCellWidths[3], $rowHeightSingle, $unit, $border, $nextPos, 'C', $fill);
+        $this->Cell($this->coursesScoresCellWidths[4], $rowHeightSingle, $course['score'] . ' '. $course['grade'], $border, $nextPos, 'R', $fill);
+        $this->Cell($this->coursesScoresCellWidths[5], $rowHeightSingle, $point, $border, $nextPos, 'C', $fill);
 
       } else {
         $this->MultiCell($this->coursesScoresCellWidths[0], $rowHeightDouble, $seq++, 'L', 'R', $fill, $nextPos);
         $this->MultiCell($this->coursesScoresCellWidths[1], $rowHeightDouble, $title, $border, 'L', $fill, $nextPos);
         $this->MultiCell($this->coursesScoresCellWidths[2], $rowHeightDouble, $course['code'], $border, 'L', $fill, $nextPos);
-        $this->MultiCell($this->coursesScoresCellWidths[3], $rowHeightDouble, $course['unit'], $border, 'C', $fill, $nextPos);
-        $this->MultiCell($this->coursesScoresCellWidths[4], $rowHeightDouble, $course['score'], $border, 'R', $fill, $nextPos);
-        $this->MultiCell($this->coursesScoresCellWidths[5], $rowHeightDouble, $course['grade'], $border, 'C', $fill, $nextPos);
-        $this->MultiCell($this->coursesScoresCellWidths[6], $rowHeightDouble, '', $border, 'C', $fill, $nextPos);
+        $this->MultiCell($this->coursesScoresCellWidths[3], $rowHeightDouble, $unit, $border, 'C', $fill, $nextPos);
+        $this->MultiCell($this->coursesScoresCellWidths[4], $rowHeightDouble, $course['score'] . ' '. $course['grade'], $border, 'R', $fill, $nextPos);
+        $this->MultiCell($this->coursesScoresCellWidths[5], $rowHeightDouble, $point, $border, 'C', $fill, $nextPos);
       }
 
       $this->Ln();

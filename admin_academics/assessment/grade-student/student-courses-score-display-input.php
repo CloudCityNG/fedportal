@@ -65,8 +65,9 @@
             <th>S/N</th>
             <th>Code</th>
             <th>Title</th>
-            <th class="student-courses-display-existing-score">Existing Score</th>
-            <th>New Score</th>
+            <th>Unit</th>
+            <th style="width: 20px;">Existing Score</th>
+            <th style="width: 142px;">New Score</th>
             <th>Grade</th>
           </tr>
         </thead>
@@ -81,6 +82,7 @@
                 <td>{$count}</td>
                 <td>{$course['code']}</td>
                 <td>{$course['title']}</td>
+                <td>{$course['unit']}</td>
 
                 <td>
                 <input disabled value='{$course['score']}' class='form-control existing-score' />
