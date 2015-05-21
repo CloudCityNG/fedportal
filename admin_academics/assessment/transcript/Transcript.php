@@ -20,17 +20,20 @@ class AssessmentTranscriptController extends AssessmentController
       } else {
 
         $regNo = $oldStudentTranscriptQueryData['reg-no'];
-        $coursesGrades = StudentCourses::getStudentCourses(['reg_no' => $regNo], true, true);
+        $coursesGrades = self::_groupCourses(
+          StudentCourses::getStudentCourses(['reg_no' => $regNo], true, true)
+        );
 
         $profile = (new StudentProfile($regNo))->getCompleteCurrentDetails();
 
-        self::renderPage(null, null, ['student' => $profile, 'courses' => $coursesGrades]);
+        self::renderPage(
+          null, null, ['student' => $profile, 'sessions_semesters_courses_grades' => $coursesGrades]
+        );
         return;
       }
 
     } else if (isset($_POST['student-transcript-download-submit'])) {
       $studentScoresData = json_decode($_POST['student-scores-data'], true);
-      //$studentScoresData['courses'] = self::_groupCourses($studentScoresData['courses']);
 
       new TranscriptToPDF($studentScoresData);
     }
@@ -52,7 +55,7 @@ class AssessmentTranscriptController extends AssessmentController
 
     $pageJsPath = path_to_link(__DIR__ . '/js/transcript.min.js');
 
-    $pageCssPath = path_to_link(__DIR__ . '/css/transcript.min.css');
+    $pageCssPath = path_to_link(__DIR__ . '/css/grade-student-transcript.min.css');
 
     require(__DIR__ . '/../../home/container.php');
   }
@@ -106,21 +109,6 @@ class AssessmentTranscriptController extends AssessmentController
       }
     }
 
-
-    //foreach ($coursesBySessionsBySemester as $sessionCode => $sessionSemestersAndCourses) {
-    //  echo $sessionCode;
-    //  echo "<br/><br/>";
-    //
-    //  foreach ($sessionSemestersAndCourses as $semesterNumber => $semesterCoursesAndData) {
-    //    echo $semesterNumber;
-    //    echo "<br/>";
-    //
-    //    print_r($semesterCoursesAndData);
-    //    echo "<br/><br/><br>";
-    //  }
-    //}
-    //
-    //exit;
     return $coursesBySessionsBySemester;
   }
 }

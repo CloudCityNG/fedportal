@@ -10,10 +10,10 @@ class TranscriptToPDF extends TCPDF
    */
   private $coursesScoresCellWidths = [
     14,             #sequence
-    80,            #course title
+    81,            #course title
     22,             #course code
     19,             #course unit
-    27,             #score + grade
+    25,             #score + grade
     20,             #quality point
   ];
 
@@ -47,11 +47,15 @@ class TranscriptToPDF extends TCPDF
 
     $student = $studentScoresData['student'];
 
-    $this->_drawStudentInfo($student);
+    foreach ($studentScoresData['sessions_semesters_courses_grades'] as $session => $semesters) {
+      $this->_drawStudentInfo($student);
 
-    $this->_drawTableHeader();
+      foreach ($semesters as $semesterNumber => $semesterDataAndCourses) {
 
-    $this->_drawTableBody($studentScoresData['courses']);
+        $this->_drawTableHeader($session, $semesterNumber);
+        $this->_drawTableBody($semesterDataAndCourses['courses']);
+      }
+    }
 
     $this->Output($student['reg_no'] . '.pdf', 'd');
   }
@@ -62,7 +66,7 @@ class TranscriptToPDF extends TCPDF
       PDF_HEADER_LOGO,
       PDF_HEADER_LOGO_WIDTH,
       'Transcript of Academic Records',
-      "Federal College of Dental Technology And Therapy Enugu\nwww.fedsdtten.edu.ng",
+      SCHOOL_NAME . "\n" . SCHOOL_ADDRESS . " (" . SCHOOL_WEBSITE . ')',
       [0, 64, 255],
       [0, 64, 128]
     );
@@ -100,6 +104,8 @@ class TranscriptToPDF extends TCPDF
       'data' => 75,
     ];
 
+    $this->Ln();
+
     $photo = $studentInfo['photo'];
     $this->Image($photo ? $photo : K_BLANK_IMAGE, '', '', $this->studentPhotoWidth, $this->studentPhotoHeight, '');
 
@@ -110,7 +116,7 @@ class TranscriptToPDF extends TCPDF
 
     $this->_setStudentInfoXOffset();
     $this->Cell(array_sum($columnWidths), 0, '', 'T');
-    $this->Ln(7);
+    $this->Ln(5);
   }
 
   /**
@@ -153,13 +159,21 @@ class TranscriptToPDF extends TCPDF
     $this->SetX($this->GetX() + $this->studentPhotoWidth + $this->studentPhotoWidthXOffset);
   }
 
-  private function _drawTableHeader()
+  /**
+   * @param string $session - the academic session code e.g 2014/2015
+   * @param string|int $semesterNumber - the semester number, 1 or 2
+   */
+  private function _drawTableHeader($session, $semesterNumber)
   {
+    $semesterText = $semesterNumber == 1 ? "FIRST SEMESTER - ({$session})" : 'SECOND SEMESTER';
+
     $this->SetFillColor(200, 219, 255);
     $this->SetTextColor(0);
     $this->SetDrawColor(128, 0, 0);
     $this->SetLineWidth(0.1);
     $this->SetFont('helvetica', 'B', $this->tableTextFont, '', true);
+
+    $this->cell(array_sum($this->coursesScoresCellWidths), '', $semesterText, '', 1, 'C');
 
     $headers = [
       'S/NO.',
@@ -197,7 +211,7 @@ class TranscriptToPDF extends TCPDF
   {
     $rowHeightSingle = 6;
     $rowHeightDouble = 12;
-    $border = 'LR';
+    $border = 'LRTB';
     $nextPos = 0;
     $maxLenCharsPerLine = 45;
 
@@ -214,26 +228,26 @@ class TranscriptToPDF extends TCPDF
       $point = number_format(floatval($unit) * $course['point'], 2);
 
       if (strlen($title) <= $maxLenCharsPerLine) {
-        $this->Cell($this->coursesScoresCellWidths[0], $rowHeightSingle, $seq++, 'L', $nextPos, 'R', $fill);
+        $this->Cell($this->coursesScoresCellWidths[0], $rowHeightSingle, $seq++, 'LTB', $nextPos, 'R', $fill);
         $this->Cell($this->coursesScoresCellWidths[1], $rowHeightSingle, $title, $border, $nextPos, 'L', $fill);
         $this->Cell($this->coursesScoresCellWidths[2], $rowHeightSingle, $course['code'], $border, $nextPos, 'L', $fill);
         $this->Cell($this->coursesScoresCellWidths[3], $rowHeightSingle, $unit, $border, $nextPos, 'C', $fill);
-        $this->Cell($this->coursesScoresCellWidths[4], $rowHeightSingle, $course['score'] . ' '. $course['grade'], $border, $nextPos, 'R', $fill);
+        $this->Cell($this->coursesScoresCellWidths[4], $rowHeightSingle, $course['score'] . ' ' . $course['grade'], $border, $nextPos, 'R', $fill);
         $this->Cell($this->coursesScoresCellWidths[5], $rowHeightSingle, $point, $border, $nextPos, 'C', $fill);
 
       } else {
-        $this->MultiCell($this->coursesScoresCellWidths[0], $rowHeightDouble, $seq++, 'L', 'R', $fill, $nextPos);
+        $this->MultiCell($this->coursesScoresCellWidths[0], $rowHeightDouble, $seq++, 'LTB', 'R', $fill, $nextPos);
         $this->MultiCell($this->coursesScoresCellWidths[1], $rowHeightDouble, $title, $border, 'L', $fill, $nextPos);
         $this->MultiCell($this->coursesScoresCellWidths[2], $rowHeightDouble, $course['code'], $border, 'L', $fill, $nextPos);
         $this->MultiCell($this->coursesScoresCellWidths[3], $rowHeightDouble, $unit, $border, 'C', $fill, $nextPos);
-        $this->MultiCell($this->coursesScoresCellWidths[4], $rowHeightDouble, $course['score'] . ' '. $course['grade'], $border, 'R', $fill, $nextPos);
+        $this->MultiCell($this->coursesScoresCellWidths[4], $rowHeightDouble, $course['score'] . ' ' . $course['grade'], $border, 'R', $fill, $nextPos);
         $this->MultiCell($this->coursesScoresCellWidths[5], $rowHeightDouble, $point, $border, 'C', $fill, $nextPos);
       }
 
       $this->Ln();
       $fill = !$fill;
     }
-    $this->Cell(array_sum($this->coursesScoresCellWidths), 0, '', 'T');
 
+    $this->Ln(10);
   }
 }

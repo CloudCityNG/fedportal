@@ -1,3 +1,64 @@
+<?php
+
+/**
+ * This function will be called for every academic semester. It will
+ *
+ * @param string $session - the academic session code e.g 2014/2015
+ * @param string|int $semesterNumber - the semester number, 1 or 2
+ * @param array $semesterDataAndCourses
+ *
+ * @return string - a table rendered with student's courses, scores and grades as well
+ * as session and semester information
+ */
+function renderCoursesData($session, $semesterNumber, array $semesterDataAndCourses)
+{
+  $semesterText = $semesterNumber == 1 ? "FIRST SEMESTER - ({$session})" : 'SECOND SEMESTER';
+
+  $tableStart = "
+    <table class='table table-striped table-condense table-bordered student-transcript-table'>
+        <caption class='transcript-display-table-caption'>{$semesterText}</caption>
+
+      <thead>
+        <tr>
+          <th>S/N</th>
+          <th>Course<br/>Code</th>
+          <th>Course Title</th>
+          <th>Credit<br/>Unit</th>
+          <th class='student-courses-display-existing-score'>Score</th>
+          <th>Grade</th>
+          <th>Quality<br/>Point</th>
+        </tr>
+      </thead>
+
+      <tbody>\n";
+
+  $coursesTableBody = '';
+  $count = 1;
+
+  foreach ($semesterDataAndCourses['courses'] as $course) {
+    $unit = number_format($course['unit'], 1);
+    $point = number_format(floatval($unit) * $course['point'], 2);
+
+    $coursesTableBody .= "
+            <tr>
+                <td>{$count}</td>
+                <td>{$course['code']}</td>
+                <td>{$course['title']}</td>
+                <td>{$unit}</td>
+                <td>{$course['score']}</td>
+                <td>{$course['grade']}</td>
+                <td>{$point}</td>
+            </tr>\n
+           ";
+
+    $count++;
+  }
+
+  return $tableStart . $coursesTableBody . "</tbody>\n</table>";
+}
+
+?>
+
 <hr/>
 
 <?php
@@ -44,43 +105,14 @@ echo "
 
 <hr/>
 
-<table class="table table-striped table-condense table-bordered student-transcript-table">
-  <thead>
-    <tr>
-      <th>S/N</th>
-      <th>Course<br/>Code</th>
-      <th>Course Title</th>
-      <th>Credit<br/>Unit</th>
-      <th class="student-courses-display-existing-score">Score</th>
-      <th>Grade</th>
-      <th>Quality<br/>Point</th>
-    </tr>
-  </thead>
+<?php
+foreach ($studentScoresData['sessions_semesters_courses_grades'] as $session => $semesters) {
 
-  <tbody>
-    <?php
-    $count = 1;
-
-    foreach ($studentScoresData['courses'] as $course) {
-      $unit = number_format($course['unit'], 1);
-      $point = number_format(floatval($unit) * $course['point'], 2);
-
-      echo "
-            <tr>
-                <td>{$count}</td>
-                <td>{$course['code']}</td>
-                <td>{$course['title']}</td>
-                <td>{$unit}</td>
-                <td>{$course['score']}</td>
-                <td>{$course['grade']}</td>
-                <td>{$point}</td>
-            </tr>
-           ";
-      $count++;
-    }
-    ?>
-  </tbody>
-</table>
+  foreach ($semesters as $semesterNumber => $semesterDataAndCourses) {
+    echo renderCoursesData($session, $semesterNumber, $semesterDataAndCourses);
+  }
+}
+?>
 
 <form action="" class="form-horizontal" role="form" id="transcript-download-form" method="post">
 

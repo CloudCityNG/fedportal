@@ -10,6 +10,10 @@ define('DB_NAME', 'fedportal');
 define('DB_USERNAME', 'fedportal');
 define('DB_PASSWORD', 'fedportal');
 
+define('SCHOOL_NAME', 'Federal College of Dental Technology And Therapy');
+define('SCHOOL_WEBSITE', 'www.fedsdtten.edu.ng');
+define('SCHOOL_ADDRESS', 'Trans-Ekulu, P.M.B. 01473, Enugu');
+
 include_once(__DIR__ . '/../vendor/autoload.php');
 
 use Monolog\Logger;
