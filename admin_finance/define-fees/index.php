@@ -19,7 +19,7 @@ foreach (AcademicLevels::get_all_levels() as $academic_level) {
 
 $departments = [];
 
-foreach (AcademicDepartment::get_academic_departments() as $entry) {
+foreach (AcademicDepartment::getAcademicDepartments() as $entry) {
   $departments[$entry['code']] = $entry['description'];
 }
 

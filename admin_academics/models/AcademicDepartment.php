@@ -5,49 +5,52 @@ require_once(__DIR__ . '/../../helpers/app_settings.php');
 
 Class AcademicDepartment
 {
-  private static $LOG_NAME = 'AcademicDepartmentModel';
-
-  public static function get_academic_departments()
+  public static function getAcademicDepartments()
   {
     $query = 'SELECT * FROM academic_departments';
 
-    $log = get_logger(self::$LOG_NAME);
-
-    $log->addInfo("About to get all departments with query: {$query}");
+    self::logger()->addInfo("About to get all departments with query: {$query}");
 
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute()) {
-      $returnedVal = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $returnedVal = $stmt->fetchAll();
 
-      $log->addInfo("Statement executed successfully, result is: ", $returnedVal);
+      self::logger()->addInfo("Statement executed successfully, result is: ", $returnedVal);
       return $returnedVal;
     }
 
-    $log->addWarning("Statement did not execute successfully.");
+    self::logger()->addWarning("Statement did not execute successfully.");
     return null;
   }
 
-  public static function get_dept_name_from_code($code)
+  private static function logger()
+  {
+    return get_logger('AcademicDepartmentModel');
+  }
+
+  public static function getDeptNameFromCode($code)
   {
     $query = 'SELECT description FROM academic_departments WHERE code = ?';
 
     $params = [$code];
 
-    $log = get_logger(self::$LOG_NAME);
-
-    $log->addInfo("About to get department name from its code with query: {$query} and params: ", $params);
+    self::logger()->addInfo("About to get department name from its code with query: {$query} and params: ", $params);
 
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($params)) {
-      $returnedVal = $stmt->fetch(PDO::FETCH_NUM)[0];
+      $returnedVal = $stmt->fetch(PDO::FETCH_NUM);
 
-      $log->addInfo("Statement executed successfully, result is: {$returnedVal}");
-      return $returnedVal;
+      if ($returnedVal) {
+        $returnedVal = $returnedVal[0];
+
+        self::logger()->addInfo("Statement executed successfully, result is: {$returnedVal}");
+        return $returnedVal;
+      }
     }
 
-    $log->addWarning("Statement did not execute successfully.");
+    self::logger()->addWarning("Statement did not execute successfully.");
     return null;
   }
 }

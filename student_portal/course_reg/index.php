@@ -48,7 +48,7 @@ class CourseRegController
 
     $dept_code = $profile->dept_code;
 
-    $dept_name = AcademicDepartment::get_dept_name_from_code($dept_code);
+    $dept_name = AcademicDepartment::getDeptNameFromCode($dept_code);
 
     $course_data = StudentCourses::getStudentCoursesForSemester([
       'reg_no' => $regNo,
@@ -224,7 +224,7 @@ class CourseRegistrationPostController
         'academic_year' => $this->academic_year,
         'level' => $this->level,
         'dept_code' => $this->dept_code,
-        'dept_name' => AcademicDepartment::get_dept_name_from_code($this->dept_code)
+        'dept_name' => AcademicDepartment::getDeptNameFromCode($this->dept_code)
       ]);
 
     } catch (PDOException $e) {

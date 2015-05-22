@@ -69,7 +69,7 @@ $receive_payment = new ReceivePaymentFromStudent($_POST);
                           <?php
                           $student = $receive_payment->student;
 
-                          $currents = $receive_payment->student->get_current_level_dept();
+                          $currents = $receive_payment->student->getCurrentLevelDept();
 
                           $dept_name = $currents['dept_name'];
 

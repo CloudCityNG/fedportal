@@ -8,7 +8,7 @@ class StudentProfileTest
   {
     $profile = new StudentProfile('abcde');
 
-    print_r($profile->get_current_level_dept());
+    print_r($profile->getCurrentLevelDept());
   }
 
   static function test_student_exists()

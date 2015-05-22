@@ -97,13 +97,13 @@ $currentSessionInfo = CurrentSessionSemesterInfo::getCurrentSession();
     <div class="panel panel-default">
       <div class="panel-heading">
         <h2 class="panel-title">
-          <?php echo $currentSessionInfo['session'] ? $currentSemesterInfo['semester'] : 'Unknown' ?> Session
+          <?php echo $currentSessionInfo['session'] ? $currentSessionInfo['session'] : 'Unknown' ?> Session
         </h2>
       </div>
 
       <div class="panel-body">
         <div class="alternative">
-          <?php if (!$currentSemesterInfo['semester']) {
+          <?php if (!$currentSessionInfo['session']) {
             echo 'Academic session has ended but new session not set.';
           }
           ?>
