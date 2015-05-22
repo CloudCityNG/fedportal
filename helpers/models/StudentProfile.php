@@ -87,6 +87,44 @@ class StudentProfile
     return get_logger('StudentProfileModel');
   }
 
+  /**
+   * Given a student's registration number, find the level and
+   * department the student was during the given session code.
+   *
+   * @param string $regNo - the student registration number
+   * @param string $sessionCode - the session code e.g 2014/2015
+   *
+   * @return array|null
+   */
+  public static function getCurrentForSession($regNo, $sessionCode)
+  {
+    $query = "SELECT * FROM student_currents WHERE reg_no = ? AND academic_year = ?";
+
+    $params = [$regNo, $sessionCode];
+
+    self::logger()->addInfo(
+      "About to get the level and department a student was during a particular academic year with query: {$query} " .
+      'and params: ', $params
+    );
+
+    $stmt = get_db()->prepare($query);
+
+    if ($stmt->execute($params)) {
+      $result = $stmt->fetch();
+
+      if ($result) {
+        self::logger()->addInfo('Statement executed successfully, result is ', $result);
+        return $result;
+      }
+    }
+
+    self::logger()->addWarning(
+      'Unable to get the level and department a student was during a particular academic year'
+    );
+
+    return null;
+  }
+
   public static function student_exists($regNo)
   {
     self::logger()->addInfo("Attempting to confirm if student $regNo exists in database");

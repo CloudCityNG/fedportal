@@ -2,6 +2,7 @@
 
 require_once(__DIR__ . '/../../../helpers/pdf-config.php');
 require_once(__DIR__ . '/../../../helpers/tcpdf/tcpdf.php');
+require_once(__DIR__ . '/../../../helpers/models/StudentProfile.php');
 
 class TranscriptToPDF extends TCPDF
 {
@@ -35,6 +36,13 @@ class TranscriptToPDF extends TCPDF
   private $tableTextFont = 11;
 
   /**
+   * The student registration number
+   *
+   * @var string
+   */
+  private $regNo;
+
+  /**
    * @constructor
    *
    * @param array $studentScoresData
@@ -46,6 +54,7 @@ class TranscriptToPDF extends TCPDF
     $this->_setUpPage();
 
     $student = $studentScoresData['student'];
+    $this->regNo = $student['reg_no'];
 
     foreach ($studentScoresData['sessions_semesters_courses_grades'] as $session => $semesters) {
       $this->_drawStudentInfo($student);
@@ -57,7 +66,7 @@ class TranscriptToPDF extends TCPDF
       }
     }
 
-    $this->Output($student['reg_no'] . '.pdf', 'd');
+    $this->Output($this->regNo . '.pdf', 'd');
   }
 
   private function _setUpPage()
@@ -165,7 +174,9 @@ class TranscriptToPDF extends TCPDF
    */
   private function _drawTableHeader($session, $semesterNumber)
   {
-    $semesterText = $semesterNumber == 1 ? "FIRST SEMESTER - ({$session})" : 'SECOND SEMESTER';
+    $levelDeptForSession = StudentProfile::getCurrentForSession($this->regNo, $session);
+
+    $semesterText = $semesterNumber == 1 ? "FIRST SEMESTER - {$levelDeptForSession['level']} ({$session})" : 'SECOND SEMESTER';
 
     $this->SetFillColor(200, 219, 255);
     $this->SetTextColor(0);
