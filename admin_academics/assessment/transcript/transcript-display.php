@@ -6,13 +6,15 @@
  * @param string $session - the academic session code e.g 2014/2015
  * @param string|int $semesterNumber - the semester number, 1 or 2
  * @param array $semesterDataAndCourses
- *
+ * @param string $level - student's level in a particular session e.g ND2
  * @return string - a table rendered with student's courses, scores and grades as well
  * as session and semester information
+ * @internal param array $currentLevelDept
+ *
  */
-function renderCoursesData($session, $semesterNumber, array $semesterDataAndCourses)
+function renderCoursesData($session, $semesterNumber, array $semesterDataAndCourses, $level)
 {
-  $semesterText = $semesterNumber == 1 ? "FIRST SEMESTER - ({$session})" : 'SECOND SEMESTER';
+  $semesterText = $semesterNumber == 1 ? "FIRST SEMESTER - ({$level}) ({$session})" : "SECOND SEMESTER - ({$level})";
 
   $tableStart = "
     <table class='table table-striped table-condense table-bordered student-transcript-table'>
@@ -106,10 +108,15 @@ echo "
 <hr/>
 
 <?php
-foreach ($studentScoresData['sessions_semesters_courses_grades'] as $session => $semesters) {
+foreach ($studentScoresData['sessions_semesters_courses_grades'] as $session => $sessionData) {
 
-  foreach ($semesters as $semesterNumber => $semesterDataAndCourses) {
-    echo renderCoursesData($session, $semesterNumber, $semesterDataAndCourses);
+  foreach ($sessionData['semesters'] as $semesterNumber => $semesterDataAndCourses) {
+    echo renderCoursesData(
+      $session,
+      $semesterNumber,
+      $semesterDataAndCourses,
+      $sessionData['current_level_dept']['level']
+    );
   }
 }
 ?>

@@ -1,5 +1,5 @@
 <?php
-
+//require_once(__DIR__ . '/../../login/auth.php');
 require(__DIR__ . '/TranscriptToPDF.php');
 
 class AssessmentTranscriptController extends AssessmentController
@@ -21,7 +21,8 @@ class AssessmentTranscriptController extends AssessmentController
 
         $regNo = $oldStudentTranscriptQueryData['reg-no'];
         $coursesGrades = self::_groupCourses(
-          StudentCourses::getStudentCourses(['reg_no' => $regNo], true, true)
+          StudentCourses::getStudentCourses(['reg_no' => $regNo], true, true),
+          $regNo
         );
 
         $profile = (new StudentProfile($regNo))->getCompleteCurrentDetails();
@@ -64,19 +65,31 @@ class AssessmentTranscriptController extends AssessmentController
    * Group student courses into sessions and semesters
    *
    * @param array $courses
+   *
+   * @param string $regNo - Registration number of the student whose transcript we wish to get
+   *
    * @return array - with the following structure:
    * [
-   *    'session_code' => [
-   *                        'semester_number' => [
-   *                                                'courses' => [courses...],
-   *                                                'semester_data' => [id=>id, created_at=> etc.]
-   *                                            ]
-   *                      ]
-   * ]
+   * 'session_code' => [
+   *                      'current_level_dept' => []
    *
+   *                      'semesters' => [
+   *
+   *                                        'semester_number' => [
+   *                                                                'courses' => [courses...],
+   *                                                                'semester_data' => [id=>id, created_at=> etc.],
+   *                                                                'gpa_data' => [
+   *                                                                                'sum_units' => ,
+   *                                                                                'sum_points' => ,
+   *                                                                                'gpa' =>
+   *                                                                              ]
+   *                                                            ]
+   *                                    ]
+   *                  ]
+   * ]
    * @private
    */
-  private static function _groupCourses(array $courses)
+  private static function _groupCourses(array $courses, $regNo)
   {
     $coursesBySemester = [];
 
@@ -90,22 +103,27 @@ class AssessmentTranscriptController extends AssessmentController
 
     $coursesBySessionsBySemester = [];
 
-    foreach (Semester::getSemesterByIds(array_keys($coursesBySemester), true) as $data) {
-      $session = $data['session'];
-      unset($data['session']);
+    foreach (Semester::getSemesterByIds(array_keys($coursesBySemester), true) as $semester) {
+      $session = $semester['session'];
+      unset($semester['session']);
 
       $sessionCode = $session['session'];
 
-      $semesterId = $data['id'];
-      $coursesBySemester[$semesterId]['semester_data'] = $data;
+      $semesterId = $semester['id'];
+      $semesterCoursesData = $coursesBySemester[$semesterId];
+      $semesterCoursesData['semester_data'] = $semester;
 
       if (!isset($coursesBySessionsBySemester[$sessionCode])) {
         $coursesBySessionsBySemester[$sessionCode] = [
-          $data['number'] => $coursesBySemester[$semesterId]
+          'current_level_dept' => StudentProfile::getCurrentForSession($regNo, $sessionCode),
+
+          'semesters' => [
+            $semester['number'] => $semesterCoursesData
+          ]
         ];
 
       } else {
-        $coursesBySessionsBySemester[$sessionCode][$data['number']] = $coursesBySemester[$semesterId];
+        $coursesBySessionsBySemester[$sessionCode]['semesters'][$semester['number']] = $semesterCoursesData;
       }
     }
 
