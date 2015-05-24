@@ -1,5 +1,5 @@
 <?php
-
+require_once(__DIR__ . '/../login/auth.php');
 require_once(__DIR__ . '/../../helpers/databases.php');
 require_once(__DIR__ . '/../../helpers/app_settings.php');
 

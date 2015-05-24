@@ -1,8 +1,25 @@
-.student-transcript-table > caption.transcript-display-table-caption {
+table.table.student-transcript-table {
+  border-bottom: 0;
+  border-left: 0;
+  margin-bottom: 5px;
+}
+table.table.student-transcript-table > caption.transcript-display-table-caption {
   text-align: center;
   font-weight: bolder;
   font-size: 16px;
   font-style: italic;
   color: #898989;
   padding: 0;
+}
+table.table.student-transcript-table > tbody > tr.total-row {
+  font-weight: bolder;
+}
+table.table.student-transcript-table > tbody > tr > .no-border {
+  border: 0;
+  background-color: #FFF;
+}
+.gpa {
+  margin-bottom: 25px;
+  width: 200px;
+  float: right;
 }

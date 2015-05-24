@@ -39,7 +39,6 @@ function renderCoursesData($session, $semesterNumber, array $semesterDataAndCour
 
   foreach ($semesterDataAndCourses['courses'] as $course) {
     $unit = number_format($course['unit'], 1);
-    $point = number_format(floatval($unit) * $course['point'], 2);
 
     $coursesTableBody .= "
             <tr>
@@ -49,14 +48,32 @@ function renderCoursesData($session, $semesterNumber, array $semesterDataAndCour
                 <td>{$unit}</td>
                 <td>{$course['score']}</td>
                 <td>{$course['grade']}</td>
-                <td>{$point}</td>
+                <td>{$course['quality_point']}</td>
             </tr>\n
            ";
 
     $count++;
   }
 
-  return $tableStart . $coursesTableBody . "</tbody>\n</table>";
+  $coursesTableBody .= "
+                <tr class='total-row'>
+                    <td class='no-border'></td>
+                    <td class='no-border'></td>
+                    <td>TOTAL</td>
+                    <td>{$semesterDataAndCourses['sum_units']}</td>
+                    <td></td>
+                    <td></td>
+                    <td>{$semesterDataAndCourses['sum_points']}</td>
+                </tr>
+             </tbody>
+          </table>
+
+          <div class='gpa'>
+            GPA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;{$semesterDataAndCourses['gpa']} <br/>
+            CGPA&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;{$semesterDataAndCourses['cgpa']}
+          </div>";
+
+  return $tableStart . $coursesTableBody;
 }
 
 ?>

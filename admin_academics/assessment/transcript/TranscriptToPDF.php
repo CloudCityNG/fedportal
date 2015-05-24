@@ -60,7 +60,7 @@ class TranscriptToPDF extends TCPDF
       foreach ($sessionData['semesters'] as $semesterNumber => $semesterDataAndCourses) {
 
         $this->_drawTableHeader($session, $semesterNumber, $sessionData['current_level_dept']['level']);
-        $this->_drawTableBody($semesterDataAndCourses['courses']);
+        $this->_drawTableBody($semesterDataAndCourses);
       }
     }
 
@@ -213,9 +213,9 @@ class TranscriptToPDF extends TCPDF
   /**
    * Draw table body with student results
    *
-   * @param array $coursesScores
+   * @param array $semesterDataAndCourses
    */
-  private function _drawTableBody(array $coursesScores)
+  private function _drawTableBody(array $semesterDataAndCourses)
   {
     $rowHeightSingle = 6;
     $border = 'LRTB';
@@ -229,9 +229,8 @@ class TranscriptToPDF extends TCPDF
     $fill = 0;
     $seq = 1;
 
-    foreach ($coursesScores as $course) {
+    foreach ($semesterDataAndCourses['courses'] as $course) {
       $unit = number_format($course['unit'], 1);
-      $point = number_format(floatval($unit) * $course['point'], 2);
 
       $grade = $course['grade'];
       $scoreGrade = $course['score'] . '  ' . (strlen($grade) === 2 ? $grade : $grade . '   ');
@@ -246,11 +245,32 @@ class TranscriptToPDF extends TCPDF
       $this->MultiCell($this->coursesScoresCellWidths[2], $rowHeight, $course['code'], $border, 'L', $fill, $nextPos);
       $this->MultiCell($this->coursesScoresCellWidths[3], $rowHeight, $unit, $border, 'C', $fill, $nextPos);
       $this->MultiCell($this->coursesScoresCellWidths[4], $rowHeight, $scoreGrade, $border, 'R', $fill, $nextPos);
-      $this->MultiCell($this->coursesScoresCellWidths[5], $rowHeight, $point, $border, 'C', $fill, $nextPos);
+      $this->MultiCell($this->coursesScoresCellWidths[5], $rowHeight, $course['quality_point'], $border, 'C', $fill, $nextPos);
 
       $this->Ln();
       $fill = !$fill;
     }
+
+    $this->SetFont('', 'B');
+
+    $this->Cell($this->coursesScoresCellWidths[0], 5, '', 0, '', $nextPos, 0);
+    $this->Cell($this->coursesScoresCellWidths[1], 5, 'TOTAL', $border, 'C', $nextPos, 0);
+    $this->Cell($this->coursesScoresCellWidths[2], 5, '', $border, '', $nextPos, 0);
+    $this->Cell($this->coursesScoresCellWidths[3], 5, $semesterDataAndCourses['sum_units'], $border, 'C', $nextPos, $fill);
+    $this->Cell($this->coursesScoresCellWidths[4], 5, '', $border, '', $nextPos, 0);
+    $this->Cell($this->coursesScoresCellWidths[5], 5, $semesterDataAndCourses['sum_points'], $border, 'C', $nextPos, $fill);
+
+    $this->Ln(7);
+    $this->SetX(150);
+    $this->Cell(15, 5, "GPA", 0, 'R', $nextPos, 0);
+    $this->Cell(10, 5, "=", 0, 'C', $nextPos, 0);
+    $this->Cell(10, 5, $semesterDataAndCourses['gpa'], 0, 'C', $nextPos, 0);
+
+    $this->Ln();
+    $this->SetX(150);
+    $this->Cell(15, 5, "CGPA", 0, 'R', $nextPos, 0);
+    $this->Cell(10, 5, "=", 0, 'C', $nextPos, 0);
+    $this->Cell(10, 5, $semesterDataAndCourses['cgpa'], 0, 'C', $nextPos, 0);
 
     $this->Ln(10);
   }

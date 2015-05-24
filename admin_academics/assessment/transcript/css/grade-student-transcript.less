@@ -1,4 +1,8 @@
-.student-transcript-table {
+table.table.student-transcript-table {
+  border-bottom: 0;
+  border-left: 0;
+  margin-bottom: 5px;
+
   & > caption.transcript-display-table-caption {
     text-align: center;
     font-weight: bolder;
@@ -7,4 +11,23 @@
     color: #898989;
     padding: 0;
   }
+
+  & > tbody {
+    & > tr {
+      &.total-row {
+        //font-size: large;
+        font-weight: bolder;
+      }
+      & > .no-border {
+        border: 0;
+        background-color: #FFF;
+      }
+    }
+  }
+}
+
+.gpa {
+  margin-bottom: 25px;
+  width: 200px;
+  float: right;
 }

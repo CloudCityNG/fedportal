@@ -102,6 +102,8 @@ class AssessmentTranscriptController extends AssessmentController
     }
 
     $coursesBySessionsBySemester = [];
+    $cumulativePoints = 0;
+    $cumulativeUnits = 0;
 
     foreach (Semester::getSemesterByIds(array_keys($coursesBySemester), true) as $semester) {
       $session = $semester['session'];
@@ -112,6 +114,7 @@ class AssessmentTranscriptController extends AssessmentController
       $semesterId = $semester['id'];
       $semesterCoursesData = $coursesBySemester[$semesterId];
       $semesterCoursesData['semester_data'] = $semester;
+      $semesterCoursesData = self::_addGpaInfo($semesterCoursesData, $cumulativePoints, $cumulativeUnits);
 
       if (!isset($coursesBySessionsBySemester[$sessionCode])) {
         $coursesBySessionsBySemester[$sessionCode] = [
@@ -128,5 +131,44 @@ class AssessmentTranscriptController extends AssessmentController
     }
 
     return $coursesBySessionsBySemester;
+  }
+
+  /**
+   * Compute semester GPA for the student
+   *
+   * @param array $semesterCoursesData
+   * @param $cumulativePoints
+   * @param $cumulativeUnits
+   * @return array
+   */
+  private static function _addGpaInfo(array $semesterCoursesData, &$cumulativePoints, &$cumulativeUnits)
+  {
+    $sumUnits = 0;
+    $sumQualityPoints = 0;
+
+    $courses = [];
+
+    foreach ($semesterCoursesData['courses'] as $data) {
+      $unit = floatval($data['unit']);
+      $point = floatval($data['point']);
+      $qualityPoint = $unit * $point;
+
+      $data['quality_point'] = number_format($qualityPoint, 2);
+      $courses[] = $data;
+
+      $sumUnits += $unit;
+      $sumQualityPoints += $qualityPoint;
+    }
+
+    $cumulativePoints += $sumQualityPoints;
+    $cumulativeUnits += $sumUnits;
+
+    $semesterCoursesData['courses'] = $courses;
+    $semesterCoursesData['sum_units'] = number_format($sumUnits, 2);
+    $semesterCoursesData['gpa'] = number_format($sumQualityPoints / $sumUnits, 2);
+    $semesterCoursesData['cgpa'] = number_format($cumulativePoints / $cumulativeUnits, 2);
+    $semesterCoursesData['sum_points'] = number_format($sumQualityPoints, 2);
+
+    return $semesterCoursesData;
   }
 }
