@@ -266,11 +266,13 @@ class TranscriptToPDF extends TCPDF
     $this->Cell(10, 5, "=", 0, 'C', $nextPos, 0);
     $this->Cell(10, 5, $semesterDataAndCourses['gpa'], 0, 'C', $nextPos, 0);
 
-    $this->Ln();
-    $this->SetX(150);
-    $this->Cell(15, 5, "CGPA", 0, 'R', $nextPos, 0);
-    $this->Cell(10, 5, "=", 0, 'C', $nextPos, 0);
-    $this->Cell(10, 5, $semesterDataAndCourses['cgpa'], 0, 'C', $nextPos, 0);
+    if (isset($semesterDataAndCourses['cgpa'])) {
+      $this->Ln();
+      $this->SetX(150);
+      $this->Cell(15, 5, "CGPA", 0, 'R', $nextPos, 0);
+      $this->Cell(10, 5, "=", 0, 'C', $nextPos, 0);
+      $this->Cell(10, 5, $semesterDataAndCourses['cgpa'], 0, 'C', $nextPos, 0);
+    }
 
     $this->Ln(10);
   }

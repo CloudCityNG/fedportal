@@ -55,6 +55,12 @@ function renderCoursesData($session, $semesterNumber, array $semesterDataAndCour
     $count++;
   }
 
+  $cgpaDisplay = '';
+
+  if(isset($semesterDataAndCourses['cgpa'])) {
+    $cgpaDisplay = "<br/>CGPA&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;{$semesterDataAndCourses['cgpa']}";
+  }
+
   $coursesTableBody .= "
                 <tr class='total-row'>
                     <td class='no-border'></td>
@@ -69,8 +75,8 @@ function renderCoursesData($session, $semesterNumber, array $semesterDataAndCour
           </table>
 
           <div class='gpa'>
-            GPA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;{$semesterDataAndCourses['gpa']} <br/>
-            CGPA&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;{$semesterDataAndCourses['cgpa']}
+            GPA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;{$semesterDataAndCourses['gpa']}
+            {$cgpaDisplay}
           </div>";
 
   return $tableStart . $coursesTableBody;
