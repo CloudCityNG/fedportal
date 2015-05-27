@@ -19,12 +19,14 @@ class TranscriptToPDF extends TCPDF
   /**
    * @var float
    */
-  private $studentPhotoWidth = 28.00;
+  private $studentPhotoWidth = 20.00;
 
   /**
    * @var float
    */
-  private $studentPhotoHeight = 24.00;
+  private $studentPhotoHeight = 19.85;
+
+  private $studentInfoCellHeight = 5;
 
   /**
    * @var float
@@ -54,13 +56,23 @@ class TranscriptToPDF extends TCPDF
     $student = $studentScoresData['student'];
     $this->regNo = $student['reg_no'];
 
-    foreach ($studentScoresData['sessions_semesters_courses_grades'] as $session => $sessionData) {
-      $this->_drawStudentInfo($student);
+    $sessionsSemestersCoursesGrades = $studentScoresData['sessions_semesters_courses_grades'];
+    $numSessions = count($sessionsSemestersCoursesGrades);
+
+    $yearsOfStudyArray = ['1st', '2nd', '3rd', '4th', '5th', '6th'];
+    $yearOfStudy = 0;
+
+    foreach ($sessionsSemestersCoursesGrades as $session => $sessionData) {
+      $level = $sessionData['current_level_dept']['level'];
+      $this->_drawStudentInfo($student, $level, $yearsOfStudyArray[$yearOfStudy++]);
 
       foreach ($sessionData['semesters'] as $semesterNumber => $semesterDataAndCourses) {
-
-        $this->_drawTableHeader($session, $semesterNumber, $sessionData['current_level_dept']['level']);
+        $this->_drawTableHeader($session, $semesterNumber, $level);
         $this->_drawTableBody($semesterDataAndCourses);
+      }
+
+      if (--$numSessions) {
+        $this->AddPage();
       }
     }
 
@@ -72,8 +84,8 @@ class TranscriptToPDF extends TCPDF
     $this->SetHeaderData(
       PDF_HEADER_LOGO,
       PDF_HEADER_LOGO_WIDTH,
-      'Transcript of Academic Records',
-      SCHOOL_NAME . "\n" . SCHOOL_ADDRESS . " (" . SCHOOL_WEBSITE . ')',
+      SCHOOL_NAME,
+      SCHOOL_ADDRESS . "\n" . SCHOOL_WEBSITE,
       [0, 64, 255],
       [0, 64, 128]
     );
@@ -103,23 +115,50 @@ class TranscriptToPDF extends TCPDF
 
   /**
    * @param array $studentInfo
+   * @param string $level - the student's level during the academic session e.g ND1
+   * @param $yearOfStudyText - how many years the student has spent in the college during the session
    */
-  private function _drawStudentInfo(array $studentInfo)
+  private function _drawStudentInfo(array $studentInfo, $level, $yearOfStudyText)
   {
     $columnWidths = [
-      'header' => 40,
-      'data' => 75,
+      'header' => 35,
+      'data' => 60,
     ];
+
+    $this->SetFont('', 'B', 10);
+
+    $durationYearOffset = 13;
+
+    $this->MultiCell(
+      array_sum($this->coursesScoresCellWidths),
+      15,
+      "STATEMENT OF RESULT\nFIRST/SECOND SEMESTER & RESIT",
+      0,
+      'C',
+      0,
+      0
+    );
 
     $this->Ln();
 
     $photo = $studentInfo['photo'];
     $this->Image($photo ? $photo : K_BLANK_IMAGE, '', '', $this->studentPhotoWidth, $this->studentPhotoHeight, '');
 
-    $this->_drawStudentInfoRow('NAME', $studentInfo['names'], 0, $columnWidths, 'T');
+    $this->_drawStudentInfoRow('STUDENT NAME', $studentInfo['names'], 0, $columnWidths, 'T');
+    $this->Ln();
     $this->_drawStudentInfoRow('REGISTRATION NO', $studentInfo['reg_no'], 1, $columnWidths);
+    $this->Ln();
     $this->_drawStudentInfoRow('DEPARTMENT', $studentInfo['dept_name'], 0, $columnWidths);
+
+    $this->SetX($this->GetX() + $durationYearOffset);
+    $this->Cell(30, $this->studentInfoCellHeight, 'DURATION OF COURSE:     4', 0);
+    $this->Ln();
+
     $this->_drawStudentInfoRow('YEAR OF ADMISSION', $studentInfo['academic_year'], 1, $columnWidths);
+
+    $this->SetX($this->GetX() + $durationYearOffset);
+    $this->Cell(30, $this->studentInfoCellHeight, "YEAR OF STUDY:                {$yearOfStudyText} ({$level})", 0);
+    $this->Ln();
 
     $this->_setStudentInfoXOffset();
     $this->Cell(array_sum($columnWidths), 0, '', 'T');
@@ -143,7 +182,7 @@ class TranscriptToPDF extends TCPDF
   private function _drawStudentInfoRow($header, $data, $fill, array $columnWidths, $topBorder = '')
   {
 
-    $this->SetFont('', '', 10);
+    $this->SetFont('', '', 8);
     $this->SetFillColor(224, 235, 255);
     $this->_setStudentInfoXOffset();
 
@@ -151,14 +190,12 @@ class TranscriptToPDF extends TCPDF
     $this->SetTextColor(0);
     $this->SetDrawColor(128, 0, 0);
     $this->SetLineWidth(0.001);
-    $this->Cell($columnWidths['header'], 6, $header, 'LT', 0, 'L', 1);
+    $this->Cell($columnWidths['header'], $this->studentInfoCellHeight, $header, 'LT', 0, 'L', 1);
 
 
     //draw student information
     $this->SetTextColor(0);
-    $this->Cell($columnWidths['data'], 6, $data, 'LR' . $topBorder, 0, 'L', $fill);
-
-    $this->Ln();
+    $this->Cell($columnWidths['data'], $this->studentInfoCellHeight, $data, 'LR' . $topBorder, 0, 'L', $fill);
   }
 
   private function _setStudentInfoXOffset()
@@ -198,7 +235,7 @@ class TranscriptToPDF extends TCPDF
 
       $this->MultiCell(
         $this->coursesScoresCellWidths[$index], //width
-        11,                                     //height
+        10,                                     //height
         $headers[$index],                       //text
         1,                                      //border
         'C',                                    //align
@@ -217,7 +254,7 @@ class TranscriptToPDF extends TCPDF
    */
   private function _drawTableBody(array $semesterDataAndCourses)
   {
-    $rowHeightSingle = 6;
+    $rowHeightSingle = 5;
     $border = 'LRTB';
     $nextPos = 0;
     $maxLenCharsPerLine = 46;
@@ -237,8 +274,8 @@ class TranscriptToPDF extends TCPDF
 
       $title = $course['title'];
       $rowHeightSingleOvershoot = intval(strlen($title) / $maxLenCharsPerLine);
-      $overshootHeightReducer = $rowHeightSingleOvershoot * 1.5;
-      $rowHeight = $rowHeightSingle * ($rowHeightSingleOvershoot + 1) - $overshootHeightReducer;
+      //$overshootHeightReducer = $rowHeightSingleOvershoot * 1.5;
+      $rowHeight = $rowHeightSingle * ($rowHeightSingleOvershoot + 1) - 0;
 
       $this->MultiCell($this->coursesScoresCellWidths[0], $rowHeight, $seq++, 'LTB', 'R', $fill, $nextPos);
       $this->MultiCell($this->coursesScoresCellWidths[1], $rowHeight, $title, $border, 'L', $fill, $nextPos);
