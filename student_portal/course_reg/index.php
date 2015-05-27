@@ -101,11 +101,11 @@ class CourseRegController
 
       $class = $row['class'];
 
-      if (array_key_exists($class, $result)) {
-        $result[$class][] = $data;
+      if (!isset($result[$class])) {
+        $result[$class] = [$data];
 
       } else {
-        $result[$class] = [$data];
+        $result[$class][] = $data;
       }
 
     }

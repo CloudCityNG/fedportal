@@ -1,6 +1,6 @@
 <div class="col-md-6 col-lg-6 col-sm-6 ond2-table">
   <table class="table table-striped table-condensed table-bordered ond2-table">
-    <caption>ND2</caption>
+    <caption>ND II</caption>
 
     <thead>
     <tr>
@@ -10,6 +10,7 @@
       <th>Credit Unit</th>
 
       <th>
+        <label class="sr-only" for="ond2-check-all">ND 2 Check All Box</label>
         <input type="checkbox" id="ond2-check-all"/>
       </th>
     </tr>
@@ -19,7 +20,7 @@
     <?php
     $course_seq = 1;
 
-    foreach ($courses_for_semester['OND2'] as $courses) {
+    foreach ($courses_for_semester['ND II'] as $courses) {
 
       $code = $courses['code'];
 

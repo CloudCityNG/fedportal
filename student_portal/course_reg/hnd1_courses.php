@@ -1,6 +1,6 @@
 <div class="col-md-6 col-lg-6 col-sm-6 hnd1-container">
   <table class="table table-striped table-condensed table-bordered hnd1-table">
-    <caption>HND1</caption>
+    <caption>HND I</caption>
 
     <thead>
     <tr>
@@ -10,6 +10,7 @@
       <th>Credit Unit</th>
 
       <th>
+        <label class="sr-only" for="hnd1-check-all">HND 1 CHECK ALL</label>
         <input type="checkbox" id="hnd1-check-all"/>
       </th>
     </tr>
@@ -20,7 +21,7 @@
 
     $course_seq = 1;
 
-    foreach ($courses_for_semester['HND1'] as $courses) {
+    foreach ($courses_for_semester['HND I'] as $courses) {
 
       $code = $courses['code'];
 

@@ -3,7 +3,7 @@
   <header class="panel-heading no-b">
     <h3 class="text-center">
       Course <b>Sign Up Form:
-        <?php echo "$dept_name ($semester" . ($semester == 1 ? 'st' : 'nd') . " Semester)"; ?>
+        <?php echo "{$dept_name} ({$semester}" . ($semester == 1 ? 'st' : 'nd') . " Semester {$academicYear} session)"; ?>
       </b>
     </h3>
   </header>

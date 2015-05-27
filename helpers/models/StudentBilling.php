@@ -13,15 +13,21 @@ class StudentBilling
 
   private static $LOG_NAME = 'StudentBillingModel';
 
-  public function insert_bill($reg_no, $academic_year, $level, $dept_code)
+  /**
+   * We create a billing record for student. This is usually done at the beginning of the session/academic year
+   * when students choose their level and sign up for courses.
+   *
+   * @param string $regNo - student's registration number for whom we are creating the bill
+   * @param string $academicYear
+   * @param $level
+   * @param $deptCode
+   * @return int|null
+   */
+  public function insert_bill($regNo, $academicYear, $level, $deptCode)
   {
-    /*
-     * We create a billing record for student. This is usually done at the beginning of the session/academic year
-     * when students choose their level and sign up for courses.
-     */
     $amount = StudentPayment::get_fee_for_dept_level_session([
-      'department' => $dept_code,
-      'academic_year' => $academic_year,
+      'department' => $deptCode,
+      'academic_year' => $academicYear,
       'academic_level' => $level,
     ]);
 
@@ -37,10 +43,10 @@ class StudentBilling
     $stmt = get_db()->prepare($query);
 
     $stmt->bindValue('new_amount', $amount, $amount ? PDO::PARAM_STR : PDO::PARAM_NULL);
-    $stmt->bindValue('reg_no', $reg_no);
-    $stmt->bindValue('year', $academic_year);
+    $stmt->bindValue('reg_no', $regNo);
+    $stmt->bindValue('year', $academicYear);
     $stmt->bindValue('level', $level);
-    $stmt->bindValue('dept', $dept_code);
+    $stmt->bindValue('dept', $deptCode);
 
     if ($stmt->execute()) {
       $result = $stmt->rowCount();

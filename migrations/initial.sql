@@ -8,11 +8,9 @@ CREATE TABLE IF NOT EXISTS `academic_departments` (
   COLLATE = utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `academic_levels` (
-  `id`          INT(11)                 NOT NULL AUTO_INCREMENT,
-  `code`        VARCHAR(5)
-                COLLATE utf8_unicode_ci NOT NULL,
-  `description` VARCHAR(255)
-                COLLATE utf8_unicode_ci          DEFAULT NULL,
+  `id`          INT(11)    NOT NULL AUTO_INCREMENT,
+  `code`        VARCHAR(5) NOT NULL,
+  `description` VARCHAR(255)        DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`)
 )
@@ -262,15 +260,12 @@ CREATE TABLE IF NOT EXISTS `student_billing` (
 
 
 CREATE TABLE IF NOT EXISTS `student_courses` (
-  `id`                 INT(11)                 NOT NULL AUTO_INCREMENT,
-  `academic_year_code` VARCHAR(10)
-                       COLLATE utf8_unicode_ci NOT NULL,
-  `reg_no`             VARCHAR(20)
-                       COLLATE utf8_unicode_ci NOT NULL,
-  `semester`           INT(11)                 NOT NULL,
-  `course_id`          INT(11)                 NOT NULL,
-  `level`              VARCHAR(4)
-                       COLLATE utf8_unicode_ci          DEFAULT NULL,
+  `id`                 INT(11)     NOT NULL AUTO_INCREMENT,
+  `academic_year_code` VARCHAR(10) NOT NULL,
+  `reg_no`             VARCHAR(20) NOT NULL,
+  `semester`           INT(11)     NOT NULL,
+  `course_id`          INT(11)     NOT NULL,
+  `level`              VARCHAR(4)           DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `reg_no_academic_year_code_semester_course_id` (`reg_no`, `academic_year_code`, `semester`, `course_id`)
 )
@@ -285,8 +280,7 @@ CREATE TABLE IF NOT EXISTS `student_currents` (
                   COLLATE utf8_unicode_ci NOT NULL,
   `academic_year` VARCHAR(9)
                   COLLATE utf8_unicode_ci NOT NULL,
-  `level`         VARCHAR(4)
-                  COLLATE utf8_unicode_ci NOT NULL,
+  `level`         VARCHAR(4)              NOT NULL,
   `dept_code`     VARCHAR(30)
                   COLLATE utf8_unicode_ci NOT NULL,
   `dept_name`     VARCHAR(150)

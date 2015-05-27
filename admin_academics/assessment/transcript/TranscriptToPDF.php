@@ -24,7 +24,7 @@ class TranscriptToPDF extends TCPDF
   /**
    * @var float
    */
-  private $studentPhotoHeight = 19.85;
+  private $studentPhotoHeight = 19.9;
 
   private $studentInfoCellHeight = 5;
 
@@ -131,7 +131,7 @@ class TranscriptToPDF extends TCPDF
 
     $this->MultiCell(
       array_sum($this->coursesScoresCellWidths),
-      15,
+      '',
       "STATEMENT OF RESULT\nFIRST/SECOND SEMESTER & RESIT",
       0,
       'C',
@@ -144,7 +144,7 @@ class TranscriptToPDF extends TCPDF
     $photo = $studentInfo['photo'];
     $this->Image($photo ? $photo : K_BLANK_IMAGE, '', '', $this->studentPhotoWidth, $this->studentPhotoHeight, '');
 
-    $this->_drawStudentInfoRow('STUDENT NAME', $studentInfo['names'], 0, $columnWidths, 'T');
+    $this->_drawStudentInfoRow('NAME OF STUDENT', $studentInfo['names'], 0, $columnWidths, 'T');
     $this->Ln();
     $this->_drawStudentInfoRow('REGISTRATION NO', $studentInfo['reg_no'], 1, $columnWidths);
     $this->Ln();
@@ -154,7 +154,7 @@ class TranscriptToPDF extends TCPDF
     $this->Cell(30, $this->studentInfoCellHeight, 'DURATION OF COURSE:     4', 0);
     $this->Ln();
 
-    $this->_drawStudentInfoRow('YEAR OF ADMISSION', $studentInfo['academic_year'], 1, $columnWidths);
+    $this->_drawStudentInfoRow('YEAR OF ADMISSION', $studentInfo['admission_session'], 1, $columnWidths);
 
     $this->SetX($this->GetX() + $durationYearOffset);
     $this->Cell(30, $this->studentInfoCellHeight, "YEAR OF STUDY:                {$yearOfStudyText} ({$level})", 0);
@@ -162,7 +162,7 @@ class TranscriptToPDF extends TCPDF
 
     $this->_setStudentInfoXOffset();
     $this->Cell(array_sum($columnWidths), 0, '', 'T');
-    $this->Ln(5);
+    $this->Ln();
   }
 
   /**
@@ -235,7 +235,7 @@ class TranscriptToPDF extends TCPDF
 
       $this->MultiCell(
         $this->coursesScoresCellWidths[$index], //width
-        10,                                     //height
+        9.9,                                     //height
         $headers[$index],                       //text
         1,                                      //border
         'C',                                    //align
@@ -297,20 +297,20 @@ class TranscriptToPDF extends TCPDF
     $this->Cell($this->coursesScoresCellWidths[4], 5, '', $border, '', $nextPos, 0);
     $this->Cell($this->coursesScoresCellWidths[5], 5, $semesterDataAndCourses['sum_points'], $border, 'C', $nextPos, $fill);
 
-    $this->Ln(7);
+    $this->Ln();
     $this->SetX(150);
-    $this->Cell(15, 5, "GPA", 0, 'R', $nextPos, 0);
-    $this->Cell(10, 5, "=", 0, 'C', $nextPos, 0);
-    $this->Cell(10, 5, $semesterDataAndCourses['gpa'], 0, 'C', $nextPos, 0);
+    $this->Cell(15, '', "GPA", 0, 'R', $nextPos, 0);
+    $this->Cell(10, '', "=", 0, 'C', $nextPos, 0);
+    $this->Cell(10, '', $semesterDataAndCourses['gpa'], 0, 'C', $nextPos, 0);
 
     if (isset($semesterDataAndCourses['cgpa'])) {
       $this->Ln();
       $this->SetX(150);
-      $this->Cell(15, 5, "CGPA", 0, 'R', $nextPos, 0);
-      $this->Cell(10, 5, "=", 0, 'C', $nextPos, 0);
-      $this->Cell(10, 5, $semesterDataAndCourses['cgpa'], 0, 'C', $nextPos, 0);
+      $this->Cell(15, '', "CGPA", 0, 'R', $nextPos, 0);
+      $this->Cell(10, '', "=", 0, 'C', $nextPos, 0);
+      $this->Cell(10,'', $semesterDataAndCourses['cgpa'], 0, 'C', $nextPos, 0);
     }
 
-    $this->Ln(10);
+    $this->Ln();
   }
 }

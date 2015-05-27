@@ -119,7 +119,7 @@ echo "
                   </tr>
 
                   <tr>
-                      <th>YEAR OF ADMISSION</th> <td>{$student['academic_year']}</td>
+                      <th>YEAR OF ADMISSION</th> <td>{$student['admission_session']}</td>
                   </tr>
               </tbody>
           </table>

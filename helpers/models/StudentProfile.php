@@ -14,15 +14,20 @@ class StudentProfile
   public $photo;
   public $dept_code;
 
+  /**
+   * Session in which the student was admitted.
+   *
+   * @var
+   */
+  public $admissionSession;
+
   function __construct($regNo)
   {
     $this->reg_no = $regNo;
 
     $this->photo = self::getPhoto($regNo, true);
 
-    $query = "SELECT first_name, surname, other_names, course
-              FROM freshman_profile
-              WHERE personalno = ?";
+    $query = "SELECT *FROM freshman_profile WHERE personalno = ?";
 
     try {
       $stmt = get_db()->prepare($query);
@@ -34,6 +39,7 @@ class StudentProfile
       $this->names = $fetchedArray['first_name'] . ' ' . $fetchedArray['other_names'] . ' ' . $fetchedArray['surname'];
 
       $this->dept_code = $fetchedArray['course'];
+      $this->admissionSession = $fetchedArray['currentsession'];
 
       $stmt->closeCursor();
 
@@ -161,6 +167,14 @@ class StudentProfile
     return $bill->get_owing($this->reg_no);
   }
 
+  /**
+   * Get data about the time student was admitted to college
+   */
+  public function getAdmissionYear()
+  {
+    $query = "";
+  }
+
   public function getCompleteCurrentDetails()
   {
     $currentLevelDept = $this->getCurrentLevelDept();
@@ -278,7 +292,9 @@ class StudentProfile
 
       'reg_no' => $this->reg_no,
 
-      'photo' => $this->photo
+      'photo' => $this->photo,
+
+      'admission_session' => $this->admissionSession
     ];
   }
 

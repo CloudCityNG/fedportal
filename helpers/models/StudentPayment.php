@@ -102,6 +102,7 @@ class StudentPayment
    */
   public static function get_fee_for_dept_level_session(array $data)
   {
+
     $query = "SELECT fee FROM school_fees
               WHERE department = :department
               AND academic_year = :academic_year

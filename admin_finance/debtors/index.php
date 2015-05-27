@@ -59,7 +59,7 @@ require_once(__DIR__ . '/../login/auth.php');
 
                     $owing = number_format($debtor->owing, 2);
 
-                    $currents = $debtor->get_current_level_dept();
+                    $currents = $debtor->getCurrentLevelDept();
 
                     $level = $currents['level'];
 
