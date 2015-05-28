@@ -16,18 +16,40 @@
 
   <table class="img-and-name">
     <tbody>
-    <tr>
-      <td>
-        <img src="<?php echo get_photo($regNo, true); ?>" alt="<?php echo $student['names']; ?>"/>
-      </td>
+      <tr>
+        <td>
+          <img src="<?php echo get_photo($regNo, true); ?>" alt="<?php echo $student['names']; ?>"/>
+        </td>
 
-      <td class="names">
-        <span>
-          <strong>NAMES:</strong> <?php echo strtoupper($student['names']); ?>
-          <p><strong>MATRIC NO:</strong> <?php echo $regNo; ?> </p>
-        </span>
-      </td>
-    </tr>
+        <td class="names">
+          <div>
+            <p>
+              <strong>
+                NAME OF STUDENT:&nbsp;&nbsp;
+              </strong>
+              <?php echo strtoupper($student['names']); ?>
+            </p>
+
+            <p>
+              <strong>REGISTRATION NO:&nbsp;&nbsp;</strong> <?php echo $regNo; ?>
+            </p>
+
+            <p>
+              <strong>
+                LEVEL:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </strong>
+              <?php echo $currentLevel; ?>
+            </p>
+
+            <p>
+              <strong>
+                SESSION:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </strong>
+              <?php echo "{$semester_text} semester {$academicYear} session"; ?>
+            </p>
+          </div>
+        </td>
+      </tr>
     </tbody>
   </table>
 
@@ -35,59 +57,59 @@
     <table class="table table-striped table-condensed table-bordered view-print-course-table">
 
       <thead>
-      <tr>
-        <th>#</th>
-        <th>Course Code</th>
-        <th>Course Title</th>
-        <th>Credit Unit</th>
-        <th>Lecturer Sign</th>
-      </tr>
+        <tr>
+          <th>#</th>
+          <th>Course Code</th>
+          <th>Course Title</th>
+          <th>Credit Unit</th>
+          <th>Lecturer Sign</th>
+        </tr>
       </thead>
 
       <tbody>
-      <?php
-      $course_seq = 1;
+        <?php
+        $course_seq = 1;
 
-      foreach ($course_data as $courses) {
-        $code = $courses['code'];
-        $title = $courses['title'];
-        $unit = sprintf('%.2f', $courses['unit']);
+        foreach ($course_data as $courses) {
+          $code = $courses['code'];
+          $title = $courses['title'];
+          $unit = sprintf('%.2f', $courses['unit']);
 
-        echo "<tr>\n" .
+          echo "<tr>\n" .
 
-          "<td>$course_seq</td>\n" .
+            "<td>$course_seq</td>\n" .
 
-          "<td>$code</td>\n" .
+            "<td>$code</td>\n" .
 
-          "<td>$title</td>\n" .
+            "<td>$title</td>\n" .
 
-          "<td class='text-center'>$unit</td>\n" .
+            "<td class='text-center'>$unit</td>\n" .
 
-          '<td></td>' .
+            '<td></td>' .
 
-          "</tr>";
+            "</tr>";
 
-        $course_seq++;
-      }
-      ?>
+          $course_seq++;
+        }
+        ?>
       </tbody>
     </table>
 
     <table class="table table-bordered signature-table">
       <tbody>
-      <tr>
-        <th>HOD'S CONFIRMATION</th>
+        <tr>
+          <th>HOD'S CONFIRMATION</th>
 
-        <td></td>
+          <td></td>
 
-        <th>ACADEMIC ADVISER</th>
+          <th>ACADEMIC ADVISER</th>
 
-        <td></td>
+          <td></td>
 
-        <th>DEPUTY RECTOR</th>
+          <th>DEPUTY RECTOR</th>
 
-        <td></td>
-      </tr>
+          <td></td>
+        </tr>
       </tbody>
     </table>
   </div>

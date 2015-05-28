@@ -167,14 +167,6 @@ class StudentProfile
     return $bill->get_owing($this->reg_no);
   }
 
-  /**
-   * Get data about the time student was admitted to college
-   */
-  public function getAdmissionYear()
-  {
-    $query = "";
-  }
-
   public function getCompleteCurrentDetails()
   {
     $currentLevelDept = $this->getCurrentLevelDept();

@@ -46,6 +46,8 @@ class CourseRegController
 
     $profile = new StudentProfile($regNo);
 
+    $currentLevel = $profile->getCurrentLevelDept($academicYear)['level'];
+
     $dept_code = $profile->dept_code;
 
     $dept_name = AcademicDepartment::getDeptNameFromCode($dept_code);

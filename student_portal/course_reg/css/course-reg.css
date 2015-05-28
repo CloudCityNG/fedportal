@@ -56,13 +56,15 @@
   width: 500px;
   height: 100%;
 }
-.img-and-name .names > span {
+.img-and-name .names > div {
   position: absolute;
-  bottom: 15px;
+  bottom: 1px;
   padding-left: 20px;
   color: #356BAF;
-  font-weight: bolder;
-  font-size: 20px;
+  font-size: 17px;
+}
+.img-and-name .names > div > p {
+  margin-bottom: 0;
 }
 .view-print-course-table th {
   text-align: center;
