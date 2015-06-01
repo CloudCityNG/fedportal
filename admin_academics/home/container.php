@@ -75,18 +75,18 @@
           </div>
         </div>
 
-        <div class="side-nav collapsed">
-          <span class="title">Courses</span>
-
-          <div class="links">
-            <span class="link">View Course</span>
-
-            <div class="link" id="add-course"
-                 data-template-url="<?php echo STATIC_ROOT . 'admin_academics/courses/' ?>">
-              Add Course
-            </div>
-          </div>
-        </div>
+        <!--<div class="side-nav collapsed">-->
+        <!--  <span class="title">Courses</span>-->
+        <!---->
+        <!--  <div class="links">-->
+        <!--    <span class="link">View Course</span>-->
+        <!---->
+        <!--    <div class="link" id="add-course"-->
+        <!--         data-template-url="--><?php //echo STATIC_ROOT . 'admin_academics/courses/' ?><!--">-->
+        <!--      Add Course-->
+        <!--    </div>-->
+        <!--  </div>-->
+        <!--</div>-->
       </div>
 
       <div class="col-sm-9 content-area-main">

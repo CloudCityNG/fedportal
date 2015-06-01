@@ -35,12 +35,48 @@ class TranscriptToPDF extends TCPDF
 
   private $tableTextFont = 11;
 
+  private $yearsOfStudyArray = ['1st', '2nd', '3rd', '4th', '5th', '6th'];
+
   /**
    * The student registration number
    *
    * @var string
    */
   private $regNo;
+
+  /**
+   * Absolute file system path to student photo image
+   *
+   * @var string
+   */
+  private $photo;
+
+  /**
+   * @var string
+   */
+  private $studentNames;
+
+  /**
+   * Name of the student's department
+   *
+   * @var string
+   */
+  private $deptName;
+
+  /**
+   * Session in which student was admitted into college e.g 2012/2013
+   *
+   * @var string
+   */
+  private $admissionSession;
+
+  /**
+   * An array containing data about courses student had signed for grouped
+   * first by sessions and then semesters within session
+   *
+   * @var array
+   */
+  private $sessionsSemestersCoursesGrades;
 
   /**
    * @constructor
@@ -51,20 +87,31 @@ class TranscriptToPDF extends TCPDF
   {
     parent::__construct(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
-    $this->_setUpPage();
-
     $student = $studentScoresData['student'];
     $this->regNo = $student['reg_no'];
+    $this->photo = $student['photo'];
+    $this->studentNames = $student['names'];
+    $this->deptName = $student['dept_name'];
+    $this->admissionSession = $student['admission_session'];
 
-    $sessionsSemestersCoursesGrades = $studentScoresData['sessions_semesters_courses_grades'];
-    $numSessions = count($sessionsSemestersCoursesGrades);
+    $this->sessionsSemestersCoursesGrades = $studentScoresData['sessions_semesters_courses_grades'];
+  }
 
-    $yearsOfStudyArray = ['1st', '2nd', '3rd', '4th', '5th', '6th'];
+  public function renderTranscript()
+  {
+    $this->_globalSetUpPage();
+
+    $this->_drawFrontSummaryPage();
+
+    $this->AddPage();
+
+    $numSessions = count($this->sessionsSemestersCoursesGrades);
+
     $yearOfStudy = 0;
 
-    foreach ($sessionsSemestersCoursesGrades as $session => $sessionData) {
+    foreach ($this->sessionsSemestersCoursesGrades as $session => $sessionData) {
       $level = $sessionData['current_level_dept']['level'];
-      $this->_drawStudentInfo($student, $level, $yearsOfStudyArray[$yearOfStudy++]);
+      $this->_drawStudentInfo($level, $this->yearsOfStudyArray[$yearOfStudy++]);
 
       foreach ($sessionData['semesters'] as $semesterNumber => $semesterDataAndCourses) {
         $this->_drawTableHeader($session, $semesterNumber, $level);
@@ -79,7 +126,7 @@ class TranscriptToPDF extends TCPDF
     $this->Output($this->regNo . '.pdf', 'd');
   }
 
-  private function _setUpPage()
+  private function _globalSetUpPage()
   {
     $this->SetHeaderData(
       PDF_HEADER_LOGO,
@@ -109,16 +156,92 @@ class TranscriptToPDF extends TCPDF
     $this->setFontSubsetting(true);
 
     $this->SetFont('helvetica', '', 8, '', true);
-
-    $this->AddPage();
   }
 
   /**
-   * @param array $studentInfo
+   * draw the front summary page containing the student names and year by year CGPA
+   */
+  private function _drawFrontSummaryPage()
+  {
+    $this->AddPage();
+
+    $this->SetFont('', 'B', 25);
+
+    $this->Ln(10);
+    $this->Cell('', '', 'STUDENT GRADUATING RESULT', 0, 1, 'C');
+
+    $this->SetFont('', '', 15);
+    $this->Ln(10);
+
+    $defaultCellPadding = $this->getCellPaddings();
+
+    $this->_writeFrontSummaryHeaderCell('NAME OF STUDENT');
+    $this->_writeFrontSummaryDataCell($this->studentNames);
+
+    $this->_writeFrontSummaryHeaderCell('REGISTRATION NUMBER');
+    $this->_writeFrontSummaryDataCell($this->regNo);
+
+    $this->_writeFrontSummaryHeaderCell('DEPARTMENT');
+    $this->_writeFrontSummaryDataCell($this->deptName);
+
+    $numSessions = count($this->sessionsSemestersCoursesGrades);
+    $yearOfStudy = 0;
+    $cgpa = '0.00';
+
+    foreach ($this->sessionsSemestersCoursesGrades as $session => $sessionData) {
+      $this->_writeFrontSummaryHeaderCell(strtoupper($this->yearsOfStudyArray[$yearOfStudy++]) . ' YEAR');
+      $cgpa = $sessionData['cgpa'];
+      $this->_writeFrontSummaryDataCell($cgpa);
+    }
+
+    $this->_writeFrontSummaryHeaderCell('ADDITIONAL YEAR');
+    $this->_writeFrontSummaryDataCell('NIL');
+
+    $this->_writeFrontSummaryHeaderCell('GRADUATING CGPA');
+    $this->_writeFrontSummaryDataCell($cgpa);
+
+    $this->_writeFrontSummaryHeaderCell('RESULT');
+    $this->_writeFrontSummaryDataCell('PASS');
+
+    $this->_writeFrontSummaryHeaderCell('EFFECTIVE DATE');
+    $this->_writeFrontSummaryDataCell('28TH MAY, 2015');
+
+    $this->setCellPaddings(
+      $defaultCellPadding['L'],
+      $defaultCellPadding['T'],
+      $defaultCellPadding['R'],
+      $defaultCellPadding['B']
+    );
+  }
+
+  /**
+   * @param string $text
+   */
+  private function _writeFrontSummaryHeaderCell($text)
+  {
+    $this->SetFont('', 'B');
+    $this->setCellPaddings('', '', '', 2);
+    $this->Cell(70, 10, $text . ':', 0, 0, 'R');
+  }
+
+  /**
+   * The front summary page has a header column and data column. This method writes
+   * a cell of the data column as html.
+   *
+   * @param mixed $text
+   */
+  private function _writeFrontSummaryDataCell($text)
+  {
+    $this->SetFont('', '');
+    $this->setCellPaddings(8, '', '', '');
+    $this->writeHTMLCell('', 10, $this->GetX(), $this->GetY() + 1.5, "<u>{$text}</u>", 0, 1, 0, true, 'L');
+  }
+
+  /**
    * @param string $level - the student's level during the academic session e.g ND1
    * @param $yearOfStudyText - how many years the student has spent in the college during the session
    */
-  private function _drawStudentInfo(array $studentInfo, $level, $yearOfStudyText)
+  private function _drawStudentInfo($level, $yearOfStudyText)
   {
     $columnWidths = [
       'header' => 35,
@@ -141,20 +264,19 @@ class TranscriptToPDF extends TCPDF
 
     $this->Ln();
 
-    $photo = $studentInfo['photo'];
-    $this->Image($photo ? $photo : K_BLANK_IMAGE, '', '', $this->studentPhotoWidth, $this->studentPhotoHeight, '');
+    $this->Image($this->photo ? $this->photo : K_BLANK_IMAGE, '', '', $this->studentPhotoWidth, $this->studentPhotoHeight, '');
 
-    $this->_drawStudentInfoRow('NAME OF STUDENT', $studentInfo['names'], 0, $columnWidths, 'T');
+    $this->_drawStudentInfoRow('NAME OF STUDENT', $this->studentNames, 0, $columnWidths, 'T');
     $this->Ln();
-    $this->_drawStudentInfoRow('REGISTRATION NO', $studentInfo['reg_no'], 1, $columnWidths);
+    $this->_drawStudentInfoRow('REGISTRATION NO', $this->regNo, 1, $columnWidths);
     $this->Ln();
-    $this->_drawStudentInfoRow('DEPARTMENT', $studentInfo['dept_name'], 0, $columnWidths);
+    $this->_drawStudentInfoRow('DEPARTMENT', $this->deptName, 0, $columnWidths);
 
     $this->SetX($this->GetX() + $durationYearOffset);
     $this->Cell(30, $this->studentInfoCellHeight, 'DURATION OF COURSE:     4', 0);
     $this->Ln();
 
-    $this->_drawStudentInfoRow('YEAR OF ADMISSION', $studentInfo['admission_session'], 1, $columnWidths);
+    $this->_drawStudentInfoRow('YEAR OF ADMISSION', $this->admissionSession, 1, $columnWidths);
 
     $this->SetX($this->GetX() + $durationYearOffset);
     $this->Cell(30, $this->studentInfoCellHeight, "YEAR OF STUDY:                {$yearOfStudyText} ({$level})", 0);
@@ -274,7 +396,6 @@ class TranscriptToPDF extends TCPDF
 
       $title = $course['title'];
       $rowHeightSingleOvershoot = intval(strlen($title) / $maxLenCharsPerLine);
-      //$overshootHeightReducer = $rowHeightSingleOvershoot * 1.5;
       $rowHeight = $rowHeightSingle * ($rowHeightSingleOvershoot + 1) - 0;
 
       $this->MultiCell($this->coursesScoresCellWidths[0], $rowHeight, $seq++, 'LTB', 'R', $fill, $nextPos);
@@ -308,7 +429,7 @@ class TranscriptToPDF extends TCPDF
       $this->SetX(150);
       $this->Cell(15, '', "CGPA", 0, 'R', $nextPos, 0);
       $this->Cell(10, '', "=", 0, 'C', $nextPos, 0);
-      $this->Cell(10,'', $semesterDataAndCourses['cgpa'], 0, 'C', $nextPos, 0);
+      $this->Cell(10, '', $semesterDataAndCourses['cgpa'], 0, 'C', $nextPos, 0);
     }
 
     $this->Ln();

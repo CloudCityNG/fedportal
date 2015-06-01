@@ -10,9 +10,15 @@ define('DB_NAME', 'fedportal');
 define('DB_USERNAME', 'fedportal');
 define('DB_PASSWORD', 'fedportal');
 
-define('SCHOOL_NAME', 'Federal College of Dental Technology And Therapy');
+define('SCHOOL_NAME', 'Federal School of Dental Technology And Therapy');
 define('SCHOOL_WEBSITE', 'www.fedsdtten.edu.ng');
 define('SCHOOL_ADDRESS', 'Trans-Ekulu, P.M.B. 01473, Enugu');
+
+//auth sessions
+define('STUDENT_PORTAL_AUTH_KEY', 'REG_NO');
+define('ACADEMIC_ADMIN_AUTH_KEY', 'ADMIN-ACADEMICS');
+define('ACADEMIC_ADMIN_AUTH_VALUE', 'ADMIN-ACADEMICS');
+define('LAST_ACTIVITY_AUTH_PREFIX_KEY', 'LAST-ACTIVITY-');
 
 include_once(__DIR__ . '/../vendor/autoload.php');
 
@@ -72,7 +78,7 @@ function path_to_link($path)
  */
 function sessionAgeValid($appSessionName)
 {
-  $lastActivitySessionName = 'LAST-ACTIVITY-' . $appSessionName;
+  $lastActivitySessionName = LAST_ACTIVITY_AUTH_PREFIX_KEY . $appSessionName;
 
   if (isset($_SESSION[$lastActivitySessionName]) &&
     (time() - $_SESSION[$lastActivitySessionName] > SESSION_TIME_OUT)

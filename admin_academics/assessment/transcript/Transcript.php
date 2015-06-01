@@ -36,7 +36,8 @@ class AssessmentTranscriptController extends AssessmentController
     } else if (isset($_POST['student-transcript-download-submit'])) {
       $studentScoresData = json_decode($_POST['student-scores-data'], true);
 
-      new TranscriptToPDF($studentScoresData);
+      $transcriptToPDF = new TranscriptToPDF($studentScoresData);
+      $transcriptToPDF->renderTranscript();
     }
   }
 
@@ -71,7 +72,9 @@ class AssessmentTranscriptController extends AssessmentController
    * @return array - with the following structure:
    * [
    * 'session_code' => [
-   *                      'current_level_dept' => []
+   *                      'current_level_dept' => [],
+   *
+   *                      'cgpa' => number,
    *
    *                      'semesters' => [
    *
@@ -89,7 +92,7 @@ class AssessmentTranscriptController extends AssessmentController
    *
    * @private
    */
-  private static function _groupCourses(array $courses, $regNo)
+  private static function  _groupCourses(array $courses, $regNo)
   {
     $coursesBySemester = [];
 
@@ -102,7 +105,6 @@ class AssessmentTranscriptController extends AssessmentController
     }
 
     $coursesBySessionsBySemester = [];
-    $sessionCumulative = [];
 
     foreach (Semester::getSemesterByIds(array_keys($coursesBySemester), true) as $semester) {
       $session = $semester['session'];
@@ -137,13 +139,21 @@ class AssessmentTranscriptController extends AssessmentController
       $semesters = $sessionData['semesters'];
       ksort($semesters);
 
+      $semesterNumber = null;
+      $cgpa = null;
+
       foreach ($semesters as $semesterNumber => $semesterData) {
         if ($semesterNumber == '2' && isset($semesters['1'])) {
           $gpa2 = floatval($semesters['2']['gpa']);
           $gpa1 = floatval($semesters['1']['gpa']);
-          $semesters['2']['cgpa'] = number_format(($gpa2 + $gpa1) / 2, 2);
+
+          $cgpa = number_format(($gpa2 + $gpa1) / 2, 2);
+
+          $semesters['2']['cgpa'] = $cgpa;
         }
       }
+
+      $coursesBySessionsBySemester[$sessionCode]['cgpa'] = $cgpa ? $cgpa : $semesters[$semesterNumber]['gpa'];
 
       $coursesBySessionsBySemester[$sessionCode]['semesters'] = $semesters;
     }

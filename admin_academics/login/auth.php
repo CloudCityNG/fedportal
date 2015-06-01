@@ -10,17 +10,17 @@ function adminAcademicsAuth()
 
   $login = STATIC_ROOT . 'admin_academics/login/';
 
-  if (!isset($_SESSION['ADMIN-FINANCE'])) {
+  if (!isset($_SESSION[ACADEMIC_ADMIN_AUTH_KEY])) {
     header("location: {$login}");
     exit;
   }
 
-  if (!trim($_SESSION['ADMIN-FINANCE'])) {
+  if (!trim($_SESSION[ACADEMIC_ADMIN_AUTH_KEY])) {
     header("location: {$login}");
     exit;
   }
 
-  if (!sessionAgeValid('ADMIN-FINANCE')) {
+  if (!sessionAgeValid(ACADEMIC_ADMIN_AUTH_KEY)) {
     header("location: {$login}");
     exit;
   }

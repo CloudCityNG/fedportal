@@ -4,7 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
   session_start();
 }
 
-unset($_SESSION['ADMIN']);
+unset($_SESSION['ADMIN-ACADEMICS']);
 
 require_once(__DIR__ . '/../../helpers/app_settings.php');
 

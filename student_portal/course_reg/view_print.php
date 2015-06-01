@@ -8,7 +8,7 @@
 
 <div class="view-print-courses">
 
-  <h4 class="text-center college-name">THE FEDERAL COLLEGE OF DENTAL TECHNOLOGY &amp; THERAPY ENUGU</h4>
+  <h4 class="text-center college-name"><?php echo strtoupper(SCHOOL_NAME) ?></h4>
 
   <h4 class="text-center">
     <strong>COURSE REGISTRATION FORM</strong> - DEPARTMENT OF <?php echo $dept_name; ?>
