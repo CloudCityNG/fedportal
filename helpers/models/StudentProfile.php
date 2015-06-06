@@ -2,6 +2,7 @@
 
 require_once(__DIR__ . '/../databases.php');
 require_once(__DIR__ . '/../app_settings.php');
+require_once(__DIR__ . '/../SqlLogger.php');
 require_once(__DIR__ . '/../../admin_academics/models/AcademicSession.php');
 
 /**
@@ -9,47 +10,100 @@ require_once(__DIR__ . '/../../admin_academics/models/AcademicSession.php');
  */
 class StudentProfile
 {
+  /**
+   * Name of student, in the form: first_name [optional middle_name] last_name
+   * @var string
+   */
   public $names;
+
+  /**
+   * student matriculation or registration number
+   * @var string
+   */
   public $reg_no;
+
+  /**
+   * absolute path to student
+   * @var string - the URL of the student image
+   */
   public $photo;
+
+  /**
+   * The code for the student department, and not the name of the department
+   * @var string
+   */
   public $dept_code;
 
   /**
-   * Session in which the student was admitted.
+   * academic session in which the student was admitted e.g 2013/2014.
    *
-   * @var
+   * @var string
    */
   public $admissionSession;
+
+  /**
+   * Users of this class can check this variable to know if student's registration number they supplied
+   * to the constructor is valid before they access other public methods and fields of this class
+   *
+   * @var bool
+   */
+  public $regNoValid = false;
 
   function __construct($regNo)
   {
     $this->reg_no = $regNo;
 
-    $this->photo = self::getPhoto($regNo, true);
+    $this->initProfile();
+  }
 
+  private function initProfile()
+  {
     $query = "SELECT *FROM freshman_profile WHERE personalno = ?";
+    $param = [$this->reg_no];
 
-    try {
-      $stmt = get_db()->prepare($query);
+    $logMessage = SqlLogger::makeLogMessage("get student bio data/profile", $query, $param);
 
-      $stmt->execute([$regNo]);
+    $stmt = get_db()->prepare($query);
+
+    if ($stmt->execute($param)) {
+      SqlLogger::logStatementSuccess(self::logger(), $logMessage);
 
       $fetchedArray = $stmt->fetch();
 
-      $this->names = $fetchedArray['first_name'] . ' ' . $fetchedArray['other_names'] . ' ' . $fetchedArray['surname'];
+      if ($fetchedArray) {
+        SqlLogger::logDataRetrieved(self::logger(), $logMessage, $fetchedArray);
 
-      $this->dept_code = $fetchedArray['course'];
-      $this->admissionSession = $fetchedArray['currentsession'];
+        $this->regNoValid = true;
+
+        $this->names = $fetchedArray['first_name'] . ' ' . $fetchedArray['other_names'] . ' ' . $fetchedArray['surname'];
+        $this->dept_code = $fetchedArray['course'];
+        $this->admissionSession = $fetchedArray['currentsession'];
+        $this->photo = self::getPhoto($this->reg_no, true);
+      }
 
       $stmt->closeCursor();
-
-    } catch (PDOException $e) {
-
-      logPdoException($e, "Error while getting profile info for student $regNo.", self::logger());
     }
   }
 
-  public static function getPhoto($regNo = null, $pathOnly = null)
+  /**
+   * @return \Monolog\Logger
+   */
+  private static function logger()
+  {
+    return get_logger("StudentProfileModel");
+  }
+
+  /**
+   * @param null|string $regNo - student registration or matriculation number.
+   * If not given, we try to get it from browser session. Getting the registration number from browser's session
+   * is because this is a legacy code. This is not recommended.
+   *
+   * @param bool $pathOnly - if true, we return the html image tag with the URL to student's image as the src attribute
+   * otherwise we return only the URL
+   *
+   * @return string - the URL to the student's image or the the html image tag with the URL
+   */
+  public static function getPhoto($regNo = null, $pathOnly = false)
   {
     $stmt = get_db()->prepare("SELECT nameofpic FROM pics WHERE personalno = ?");
 
@@ -86,14 +140,6 @@ class StudentProfile
   }
 
   /**
-   * @return \Monolog\Logger
-   */
-  private static function logger()
-  {
-    return get_logger('StudentProfileModel');
-  }
-
-  /**
    * Given a student's registration number, find the level and
    * department the student was during the given session code.
    *
@@ -105,56 +151,86 @@ class StudentProfile
   public static function getCurrentForSession($regNo, $sessionCode)
   {
     $query = "SELECT * FROM student_currents WHERE reg_no = ? AND academic_year = ?";
-
     $params = [$regNo, $sessionCode];
 
-    self::logger()->addInfo(
-      "About to get the level and department a student was during a particular academic year with query: {$query} " .
-      'and params: ', $params
+    $logMessage = SqlLogger::makeLogMessage(
+      'get the level and department a student was during a particular academic year',
+      $query,
+      $params
     );
 
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($params)) {
+      SqlLogger::logStatementSuccess(self::logger(), $logMessage);
+
       $result = $stmt->fetch();
 
       if ($result) {
-        self::logger()->addInfo('Statement executed successfully, result is ', $result);
+        SqlLogger::logDataRetrieved(self::logger(), $logMessage, $result);
         return $result;
       }
     }
 
-    self::logger()->addWarning(
-      'Unable to get the level and department a student was during a particular academic year'
+    SqlLogger::logNoData(self::logger(), $logMessage);
+    return null;
+  }
+
+  /**
+   * Get all academic sessions in which a student has registered for courses
+   *
+   * @param string $regNo - the student registration/matriculation number
+   * @return array|null
+   */
+  public static function getRegisteredSessions($regNo)
+  {
+    $query = "SELECT * FROM student_currents WHERE  reg_no = '{$regNo}'";
+
+    $logMessage = SqlLogger::makeLogMessage(
+      'get all academic sessions in which a student signed up for courses',
+      $query
     );
 
+    $stmt = get_db()->query($query);
+
+    if ($stmt) {
+      SqlLogger::logStatementSuccess(self::logger(), $logMessage);
+
+      $result = $stmt->fetchAll();
+
+      if (count($result)) {
+        SqlLogger::logDataRetrieved(self::logger(), $logMessage, $result);
+        return $result;
+      }
+    }
+
+    SqlLogger::logNoData(self::logger(), $logMessage);
     return null;
   }
 
   public static function student_exists($regNo)
   {
-    self::logger()->addInfo("Attempting to confirm if student $regNo exists in database");
-
     $query = "SELECT Count(*) FROM freshman_profile WHERE personalno = ?";
 
-    $query_param = [$regNo];
+    $param = [$regNo];
+
+    $logMessage = SqlLogger::makeLogMessage(
+      'confirm if student exists in database', $query, $param
+    );
 
     $stmt = get_db()->prepare($query);
 
-    if ($stmt->execute($query_param)) {
+    if ($stmt->execute($param)) {
 
-      self::logger()->addInfo("Query: \"$query\" successfully ran with param: ", $query_param);
+      SqlLogger::logStatementSuccess(self::logger(), $logMessage);
 
       if ($stmt->fetchColumn()) {
-
-        self::logger()->addInfo("Student $regNo exists in database.");
-
+        SqlLogger::logDataRetrieved(self::logger(), $logMessage, [true]);
         return true;
-
       }
     }
 
-    self::logger()->addWarning("Student {$regNo} not found in database.");
+    SqlLogger::logNoData(self::logger(), $logMessage);
     return false;
   }
 

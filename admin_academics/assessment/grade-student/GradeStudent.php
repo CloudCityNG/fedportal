@@ -3,7 +3,6 @@
 require_once(__DIR__ . '/../../models/Semester.php');
 require_once(__DIR__ . '/../../models/AcademicSession.php');
 require_once(__DIR__ . '/../../models/StudentCourses.php');
-require_once(__DIR__ . '/../../../student_portal/models/StudentProfile1.php');
 
 class AssessmentGradeStudentController extends AssessmentController
 {
@@ -20,7 +19,7 @@ class AssessmentGradeStudentController extends AssessmentController
   private static function sendStudentCoursesToClient()
   {
     $oldStudentCourseQueryData = $_POST['student-course-query'];
-    $valid = self::validatePostedRegNo($oldStudentCourseQueryData);
+    $valid = self::getStudentProfile($oldStudentCourseQueryData);
 
     if (isset($valid['errors'])) {
 
@@ -35,7 +34,6 @@ class AssessmentGradeStudentController extends AssessmentController
       );
       return;
     }
-
 
     $regNo = $valid['reg-no'];
 
@@ -63,7 +61,8 @@ class AssessmentGradeStudentController extends AssessmentController
       return;
     }
 
-    $profile = (new StudentProfile($regNo))->getCompleteCurrentDetails();
+    $student = $valid['student'];
+    $profile = $student->getCompleteCurrentDetails();
     $profile['semester'] = $oldStudentCourseQueryData['semester'];
 
     self::renderPage(

@@ -148,6 +148,46 @@ class StudentCourses
   }
 
   /**
+   * Get all the semester IDs in which a student signed up for courses
+   *
+   * @param string $regNo - student registration/matriculation number
+   * @return array|null
+   */
+  public static function getSemesters($regNo)
+  {
+    $query = "SELECT DISTINCT(semester_id) FROM student_courses WHERE reg_no = ?";
+    $param = [$regNo];
+
+    $queryLogMessage = "query: {$query} and param " . print_r($param, true);
+
+    $purpose = "Get all the semester IDs in which a student signed up for courses";
+
+    self::logger()->addInfo(
+      "About to {$purpose} using {$queryLogMessage}"
+    );
+
+    $stmt = get_db()->prepare($query);
+
+    if ($stmt->execute($param)) {
+      self::logger()->addInfo("{$purpose}: {$queryLogMessage}: statement executed successfully");
+
+      $result = [];
+
+      while ($row = $stmt->fetch()) {
+        $result[] = $row['semester_id'];
+      }
+
+      if (count($result)) {
+        self::logger()->addInfo("{$purpose}: {$queryLogMessage}: result is: ", $result);
+        return $result;
+      }
+    }
+
+    self::logger()->addWarning("{$purpose}: {$queryLogMessage}: no data found.");
+    return null;
+  }
+
+  /**
    * Given a student, her level and semester details, create several courses for her
    *
    * @param array $courseIds

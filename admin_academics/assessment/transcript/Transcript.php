@@ -9,7 +9,7 @@ class AssessmentTranscriptController extends AssessmentController
     if (isset($_POST['student-transcript-query-submit'])) {
       $oldStudentTranscriptQueryData = $_POST['student-transcript-query'];
 
-      $valid = self::validatePostedRegNo($oldStudentTranscriptQueryData);
+      $valid = self::getStudentProfile($oldStudentTranscriptQueryData);
 
       if (isset($valid['errors'])) {
         self::renderPage(
@@ -25,7 +25,7 @@ class AssessmentTranscriptController extends AssessmentController
           $regNo
         );
 
-        $profile = (new StudentProfile($regNo))->getCompleteCurrentDetails();
+        $profile = $valid['student']->getCompleteCurrentDetails();
 
         self::renderPage(
           null, null, ['student' => $profile, 'sessions_semesters_courses_grades' => $coursesGrades]
@@ -133,10 +133,18 @@ class AssessmentTranscriptController extends AssessmentController
       }
     }
 
+    /**
+     * academic sessions must be displayed in client in ascending order
+     */
     ksort($coursesBySessionsBySemester);
 
     foreach ($coursesBySessionsBySemester as $sessionCode => $sessionData) {
       $semesters = $sessionData['semesters'];
+
+      /**
+       * semesters must be displayed within session in ascending order of semester number
+       * in client i.e 1st semester before 2nd semester
+       */
       ksort($semesters);
 
       $semesterNumber = null;

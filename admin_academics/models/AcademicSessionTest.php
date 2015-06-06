@@ -7,4 +7,10 @@ function testGetAlternativeCurrentSession()
   print_r(AcademicSession::getAlternativeCurrentSession());
 }
 
-testGetAlternativeCurrentSession();
+//testGetAlternativeCurrentSession();
+
+function testGetSessionsFromIds(){
+  print_r(AcademicSession::getSessionsFromIds([21]));
+}
+
+//testGetSessionsFromIds();

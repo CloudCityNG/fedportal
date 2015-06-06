@@ -1,7 +1,6 @@
 <?php
 require_once(__DIR__ . '/../../helpers/app_settings.php');
-
-include_once(__DIR__ . '/../../helpers/get_photos.php');
+require_once(__DIR__ . '/../../helpers/get_photos.php');
 
 $photo = get_photo(null, true);
 
@@ -67,7 +66,7 @@ $photo_path = $photo ? $photo : STATIC_ROOT . 'includes/img/faceless.jpg';
         </ul>
       </li>
       <li>
-        <a href="<?php echo STATIC_ROOT . 'student_portal/course_reg/' ?>">
+        <a href="<?php echo STATIC_ROOT . 'student_portal/view_info/' ?>">
           View &amp; Print Information
         </a>
       </li>
@@ -101,7 +100,7 @@ $photo_path = $photo ? $photo : STATIC_ROOT . 'includes/img/faceless.jpg';
       </a>
       <ul class="dropdown-menu animated fadeInRight">
         <li>
-          <a href="<?php echo STATIC_ROOT . 'student_portal/login/logout.php'?>">Logout</a>
+          <a href="<?php echo STATIC_ROOT . 'student_portal/login/logout.php' ?>">Logout</a>
         </li>
 
         <li>

@@ -91,3 +91,18 @@ function sessionAgeValid($appSessionName)
 
   return true;
 }
+
+/**
+ * Take a php array and convert to array suitable for use in database query
+ *
+ * @param array $phpArray - of the form [0: mixed, 1: mixed, 3: mixed....]
+ * @return string - of the form ('string', 'string', 'string', ..)
+ */
+function toDbArray(array $phpArray)
+{
+  $returned = '(';
+  foreach ($phpArray as $el) {
+    $returned .= "'{$el}', ";
+  }
+  return trim($returned, ' ,') . ')';
+}

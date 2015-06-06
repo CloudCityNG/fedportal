@@ -26,3 +26,10 @@ function test_bulk_create()
 }
 
 //test_bulk_create();
+
+function testGetSemesters()
+{
+  print_r(StudentCourses::getSemesters(123456));
+}
+
+testGetSemesters();

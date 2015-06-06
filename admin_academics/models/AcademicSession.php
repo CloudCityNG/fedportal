@@ -2,6 +2,7 @@
 
 require_once(__DIR__ . '/../../helpers/databases.php');
 require_once(__DIR__ . '/../../helpers/app_settings.php');
+require_once(__DIR__ . '/../../helpers/SqlLogger.php');
 require_once(__DIR__ . '/../../vendor/autoload.php');
 
 use Carbon\Carbon;
@@ -47,7 +48,19 @@ class AcademicSession
     return get_logger('AcademicSessionModel');
   }
 
-  private static function dbDatesToCarbon($data)
+  /**
+   * the session_table has 4 date columns
+   * 1. start_date
+   * 2. end_date
+   * 3. created_at
+   * 4. updated_at
+   *
+   * Turn the dates from the form in which it was retrieved from database to Carbon objects
+   *
+   * @param array $data
+   * @return array
+   */
+  private static function dbDatesToCarbon(array $data)
   {
     foreach (['start_date', 'end_date', 'created_at', 'updated_at'] as $column) {
       if (isset($data[$column])) {
@@ -240,8 +253,10 @@ class AcademicSession
   /**
    * @param array $data
    * @return array
+   *
+   * @private
    */
-  public static function userDatesToBbDate(array $data)
+  private static function userDatesToBbDate(array $data)
   {
     foreach (['start_date', 'end_date'] as $column) {
       if (isset($data[$column])) {
@@ -251,27 +266,34 @@ class AcademicSession
     return $data;
   }
 
+  /**
+   * Given an ID which represents the ID of a session in the database, get the session informaton
+   *
+   * @param $id - the database academic session ID
+   * @return null|array - array of a row of academic session or null if there is no academic session with given ID
+   */
   public static function get_session_by_id($id)
   {
     $query = "SELECT * FROM session_table WHERE id = ?";
-
     $param = [$id];
 
-    self::logger()->addInfo("About to get session by executing query: {$query} and param: ", $param);
+    $logMessage = SqlLogger::makeLogMessage('get a session from its ID', $query, $param);
 
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($param)) {
+      SqlLogger::logStatementSuccess(self::logger(), $logMessage);
+
       $result = $stmt->fetch();
 
       if ($result) {
-        self::logger()->addInfo("Query ran successfully, result is ", $result);
+        SqlLogger::logDataRetrieved(self::logger(), $logMessage, $result);
 
         return self::dbDatesToCarbon($result);
       }
     }
 
-    self::logger()->addError("Query failed to run.");
+    SqlLogger::logNoData(self::logger(), $logMessage);
     return null;
   }
 
@@ -298,6 +320,35 @@ class AcademicSession
 
     self::logger()->addWarning("Query did not run successfully");
 
+    return null;
+  }
+
+  /**
+   * Given an array of session IDs, get the session information that correspond to the IDs
+   *
+   * @param array $sessionIds - the array of session IDs of the form [1, 2, 3, 4]
+   * @return array|null
+   */
+  public static function getSessionsFromIds(array $sessionIds)
+  {
+    $sessionDbIds = toDbArray($sessionIds);
+    $query = "select * from session_table where id in {$sessionDbIds}";
+
+    $logMsg = SqlLogger::makeLogMessage("get session data from array of IDs", $query);
+
+    $stmt = get_db()->query($query);
+
+    if ($stmt) {
+      SqlLogger::logStatementSuccess(self::logger(), $logMsg);
+      $results = $stmt->fetchAll();
+
+      if (count($results)) {
+        SqlLogger::logDataRetrieved(self::logger(), $logMsg, $results);
+        return self::dbDatesToCarbon($results);
+      }
+    }
+
+    SqlLogger::logNoData(self::logger(), $logMsg);
     return null;
   }
 }

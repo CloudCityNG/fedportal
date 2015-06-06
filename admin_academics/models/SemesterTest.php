@@ -100,13 +100,22 @@ function testGetImmediatePastSemester()
   return Semester::getImmediatePastSemester();
 }
 
-function testGetCurrentSemester(){
+function testGetCurrentSemester()
+{
   print_r(Semester::getCurrentSemester());
 }
 
-function testGetSemesterByIds() {
+function testGetSemesterByIds()
+{
   return Semester::getSemesterByIds([2, 5], true);
 }
+
+function testGetSessionIDsFromSemesterIDs()
+{
+  print_r(Semester::getSessionIDsFromSemesterIDs([20]));
+}
+
+//testGetSessionIDsFromSemesterIDs();
 
 //print_r(testGetSemesterByIds());
 

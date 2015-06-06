@@ -1,6 +1,7 @@
 <?php
 
 require_once(__DIR__ . '/../login/auth.php');
+require_once(__DIR__ . '/../../student_portal/models/StudentProfile1.php');
 require(__DIR__ . '/grade-student/GradeStudent.php');
 require(__DIR__ . '/transcript/Transcript.php');
 
@@ -51,7 +52,7 @@ class AssessmentController
    * @param array $data - post data to be validated
    * @return array - in the form ['messages' => array[string1, ...], 'posted' => bool]
    */
-  protected static function validatePostedRegNo(array $data)
+  protected static function getStudentProfile(array $data)
   {
     $errorMessages = [];
 
@@ -65,9 +66,9 @@ class AssessmentController
       $errorMessages[] = 'Student registration number can not be empty.';
     }
 
-    $student = StudentProfile1::getStudentByRegNo($regNo);
+    $student = new StudentProfile($regNo);
 
-    if (!$student) {
+    if (!$student->regNoValid) {
       $errorMessages[] = "Student with registration number '{$regNo}' does not exist";
       return [
         'errors' => $errorMessages,

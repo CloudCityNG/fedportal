@@ -2,6 +2,7 @@
 
 require_once(__DIR__ . '/../../helpers/databases.php');
 require_once(__DIR__ . '/../../helpers/app_settings.php');
+require_once(__DIR__ . '/../../helpers/SqlLogger.php');
 require_once(__DIR__ . '/AcademicSession.php');
 require_once(__DIR__ . '/../../vendor/autoload.php');
 
@@ -473,6 +474,38 @@ Class Semester
   }
 
   /**
+   * @param array $semesterIds - like [mixed, mixed, ....]
+   * @return array|null
+   */
+  public static function getSessionIDsFromSemesterIDs(array $semesterIds)
+  {
+    $semesterIdsDbArray = toDbArray($semesterIds);
+    $query = "SELECT DISTINCT(session_id) FROM semester WHERE id IN {$semesterIdsDbArray}";
+
+    $logMessage = SqlLogger::makeLogMessage('get session IDs from array of semester IDs', $query);
+
+    $stmt = get_db()->query($query);
+
+    if ($stmt) {
+      SqlLogger::logStatementSuccess(self::logger(), $logMessage);
+
+      $result = [];
+
+      while ($row = $stmt->fetch()) {
+        $result[] = $row['session_id'];
+      }
+
+      if (count($result)) {
+        SqlLogger::logDataRetrieved(self::logger(), $logMessage, $result);
+        return self::dbDatesToCarbon($result);
+      }
+    }
+
+    SqlLogger::logNoData(self::logger(), $logMessage);
+    return null;
+  }
+
+  /**
    * Given session id, get the semesters registered with that session
    *
    * @param string|int $sessionId
@@ -557,7 +590,7 @@ Class Semester
   /**
    * Semester validator. When creating a semester, session id is required.
    * But when updating a semester, session id may not be required. Which ever
-   * way, this method will validate the session  id if it is given.
+   * way, this method will validate the session id if it is given.
    *
    * @param array $data
    * @return array

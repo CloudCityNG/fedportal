@@ -51,7 +51,9 @@ module.exports = function(grunt) {
               'libs/offscreen.js',
               'libs/main.js',
               'libs/bootstrap-validator.js',
-              'libs/number-format.js'
+              'libs/number-format.js',
+              'libs/js/jquery.cookie.js',
+              'libs/js/jquery.treeview.js'
             ]
           }
 
@@ -136,6 +138,7 @@ module.exports = function(grunt) {
               'libs/formValidation/css/formValidation.min.css',
               'libs/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
               'libs/css/jquery-ui.css',
+              'libs/css/jquery.treeview.css',
               'libs/css/skins/palette.css'
             ]
           }

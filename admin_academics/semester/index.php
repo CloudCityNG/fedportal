@@ -77,21 +77,21 @@ class SemesterController
     ];
   }
 
-  private static function validatePost($post, $newSession = false)
+  private static function validatePost($post, $isNewSemester = false)
   {
+    $valid = Semester::validateNumberColumn($post, $isNewSemester);
+
+    if (!$valid['valid']) {
+      return $valid['messages'];
+    }
+
     $valid = Semester::validateSessionIdColumn($post);
 
     if (!$valid['valid']) {
       return $valid['messages'];
     }
 
-    $valid = Semester::validateDates($post, $newSession);
-
-    if (!$valid['valid']) {
-      return $valid['messages'];
-    }
-
-    $valid = Semester::validateNumberColumn($post, $newSession);
+    $valid = Semester::validateDates($post, $isNewSemester);
 
     if (!$valid['valid']) {
       return $valid['messages'];
