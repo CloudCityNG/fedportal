@@ -20,6 +20,11 @@ if (!$academicSessions) {
 
     foreach ($sessionData['semesters'] as $semesterNumber => $semesterData) {
       $semesterText = Semester::renderSemesterNumber($semesterNumber);
+      $semesterId = $semesterData['id'];
+
+      $queryStringSemester = "semester_id={$semesterId}&semester_number={$semesterNumber}&session={$sessionCode}";
+      $printCourseFormUrl = "{$viewPrintUrl}?action={$infoActions['print-course-form']}&{$queryStringSemester}";
+      $viewResultUrl = "{$viewPrintUrl}?action={$infoActions['view-results']}&{$queryStringSemester}";
 
       $sessionView .= "
       <ul class='student-portal-view-info-semester-container'>
@@ -28,7 +33,7 @@ if (!$academicSessions) {
           <ul>
             <li>
               <span class='file'>{$space}
-                <a class='student-portal-view-semester-info-link' target='_blank'>
+                <a href='{$printCourseFormUrl}' class='student-portal-view-semester-info-link' target='_blank'>
                   Print Course Form
                 </a>
               </span>
@@ -36,7 +41,7 @@ if (!$academicSessions) {
 
             <li>
               <span class='file'>{$space}
-                <a class='student-portal-view-semester-info-link' target='_blank'>
+                <a href='$viewResultUrl' class='student-portal-view-semester-info-link' target='_blank'>
                   View Results
                 </a>
               </span>

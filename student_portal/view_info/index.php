@@ -3,31 +3,48 @@ require_once(__DIR__ . '/../../helpers/app_settings.php');
 require_once(__DIR__ . '/../login/auth.php');
 require_once(__DIR__ . '/../../helpers/models/StudentProfile.php');
 require_once(__DIR__ . '/../../admin_academics/models/StudentCourses.php');
+require(__DIR__ . '/CourseFormPDF.php');
 
 class ViewInfoController
 {
 
+  private static $PRINT_COURSE_FORM = 'print-course-form';
+  private static $VIEW_RESULTS = 'view-results';
   /**
    * @var string - registration/matriculation number of student
    */
   private $regNo;
-
   /**
    * Array of semester IDs (database IDs) for which student has registered for courses. Defaults to null
    * if student has no registered courses.
    * @var null|array
    */
   private $semesterIds = null;
-
   /**
    * @var array|null - Academic sessions in which a student signed up for courses. Defaults to null if
-   * student has no registered courses
+   * student has no registered courses. It of the form:
+   * 'sessionCode' => [
+   *    'current_level_dept' => [],
+   *    'session' => ['id' => string, 'session' => string, 'start_at' => Carbon],
+   *    'semesters' => [
+   *        'semester_number' => []
+   *    ]
+   *  ]
    */
-  private $registeredSessions = null;
+  private $sessionsSemestersData = null;
+
+  /**
+   * @var string
+   */
+  private $studentProfile;
 
   public function __construct()
   {
     $this->regNo = $_SESSION[STUDENT_PORTAL_AUTH_KEY];
+    $studentProfile = new StudentProfile($this->regNo);
+    $this->studentProfile = $studentProfile->getCompleteCurrentDetails();
+    $this->studentProfile['photo'] = $studentProfile->photo;
+    $this->studentProfile['reg_no'] = $this->regNo;
     $this->setSemesterIds();
     $this->setRegisteredSessions();
   }
@@ -75,18 +92,18 @@ class ViewInfoController
         $semestersWithSessions = Semester::getSemesterByIds($this->semesterIds, true);
 
         if ($semestersWithSessions) {
-          $this->registeredSessions = [];
+          $this->sessionsSemestersData = [];
 
           foreach ($semestersWithSessions as $semester) {
             $session = $semester['session'];
+            $semesterNumber = $semester['number'];
 
             unset($semester['session']);
 
             $sessionCode = $session['session'];
 
-            $semesterNumber = $semester['number'];
-            if (!isset($this->registeredSessions[$sessionCode])) {
-              $this->registeredSessions[$sessionCode] = [
+            if (!isset($this->sessionsSemestersData[$sessionCode])) {
+              $this->sessionsSemestersData[$sessionCode] = [
                 'current_level_dept' => StudentProfile::getCurrentForSession($this->regNo, $sessionCode),
                 'session' => $session,
                 'semesters' => [
@@ -95,16 +112,16 @@ class ViewInfoController
               ];
 
             } else {
-              $this->registeredSessions[$sessionCode]['semesters'][$semesterNumber] = $semester;
+              $this->sessionsSemestersData[$sessionCode]['semesters'][$semesterNumber] = $semester;
             }
           }
 
-          ksort($this->registeredSessions);
+          ksort($this->sessionsSemestersData);
 
-          foreach ($this->registeredSessions as $sessionCode => $data) {
+          foreach ($this->sessionsSemestersData as $sessionCode => $data) {
             $semesters = $data['semesters'];
             ksort($semesters);
-            $this->registeredSessions[$sessionCode]['semesters'] = $semesters;
+            $this->sessionsSemestersData[$sessionCode]['semesters'] = $semesters;
           }
 
         }
@@ -124,10 +141,65 @@ class ViewInfoController
 
   public function get()
   {
-    $academicSessions = $this->registeredSessions;
+    $academicSessions = $this->sessionsSemestersData;
+
+    parse_str($_SERVER['QUERY_STRING'], $query);
+
+    if (count($query)) {
+      $semesterId = $query['semester_id'];
+      $semesterNumber = $query['semester_number'];
+      $sessionCode = $query['session'];
+
+      switch ($query['action']) {
+        case self::$PRINT_COURSE_FORM:
+          $this->printCourseForm($semesterId, $semesterNumber, $sessionCode);
+          return;
+
+        case self::$VIEW_RESULTS:
+          $this->viewResults($semesterId, $semesterNumber, $sessionCode);
+          return;
+      }
+    }
+
+    $infoActions = [
+      self::$PRINT_COURSE_FORM => self::$PRINT_COURSE_FORM,
+      self::$VIEW_RESULTS => self::$VIEW_RESULTS
+    ];
+
+    $viewPrintUrl = path_to_link(__DIR__);
     $cssPath = path_to_link(__DIR__ . '/css/view-info.min.css');
     $jsPath = path_to_link(__DIR__ . '/js/view-info.min.js');
     require('view.php');
+  }
+
+  /**
+   * put courses student has registered for the $semesterId argument in pdf and send to browser
+   * @param string|int $semesterId
+   * @param string|int $semesterNumber
+   * @param string $sessionCode
+   */
+  private function printCourseForm($semesterId, $semesterNumber, $sessionCode)
+  {
+    $courses = StudentCourses::getStudentCoursesForSemester(['reg_no' => $this->regNo, 'semester_id' => $semesterId]);
+
+    $data = [
+      'courses' => $courses,
+      'semester_number' => $semesterNumber,
+      'session_data' => $this->sessionsSemestersData[$sessionCode]
+    ];
+
+    $form = new CourseFormPDF();
+    $form->renderPage($this->studentProfile, $data);
+  }
+
+  /**
+   * @param $semesterId
+   * @param $semesterNumber
+   * @param $sessionCode
+   */
+  private function viewResults($semesterId, $semesterNumber, $sessionCode)
+  {
+
   }
 
   public function post()

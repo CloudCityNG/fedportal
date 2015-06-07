@@ -9,7 +9,7 @@ class TranscriptToPDF extends TCPDF
    */
   private $coursesScoresCellWidths = [
     14,             #sequence
-    81,            #course title
+    81,             #course title
     22,             #course code
     19,             #course unit
     25,             #score + grade
@@ -268,8 +268,10 @@ class TranscriptToPDF extends TCPDF
 
     $this->_drawStudentInfoRow('NAME OF STUDENT', $this->studentNames, 0, $columnWidths, 'T');
     $this->Ln();
+
     $this->_drawStudentInfoRow('REGISTRATION NO', $this->regNo, 1, $columnWidths);
     $this->Ln();
+
     $this->_drawStudentInfoRow('DEPARTMENT', $this->deptName, 0, $columnWidths);
 
     $this->SetX($this->GetX() + $durationYearOffset);
