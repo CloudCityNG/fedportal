@@ -1,23 +1,10 @@
 @media screen and (min-width: 980px) {
-  .condense-if-big {
+  .view-registered-courses {
     width: 930px;
-    margin: auto auto 10px;
+    margin: auto auto 500px;
   }
 }
-.view-print-courses {
-  border: 1px solid #C4C4D6;
-  padding: 1px 20px 0 20px;
-}
-@media screen and (min-width: 980px) {
-  .view-print-courses {
-    width: 930px;
-    margin: auto auto 10px;
-  }
-}
-.college-name {
-  margin-top: 0;
-}
-.already-registered {
+.view-registered-courses > .view-registered-courses-info {
   margin-bottom: 30px;
   background: #858585;
   padding: 12px 0 5px 0;
@@ -25,46 +12,19 @@
   text-align: center;
   font-weight: bolder;
 }
-@media screen and (min-width: 980px) {
-  .already-registered {
-    width: 930px;
-    margin: auto auto 10px;
-  }
+.view-registered-courses > .view-registered-courses-info > a {
+  text-decoration: underline;
+  color: #353AE5;
 }
-.printer-friendly {
-  cursor: pointer;
+.view-registered-courses > .view-registered-courses-info > a:hover {
+  color: #0006FF;
 }
-.printer-friendly:hover {
-  color: #c6c6c6;
-}
-.back-to-main {
-  cursor: pointer;
-  color: #8F35AF;
-  text-align: center;
-  margin-top: 20px;
-  font-size: 14px;
+.view-registered-courses-course-data {
+  border: 1px solid #C4C4D6;
+  padding: 1px 20px 0 20px;
 }
 .img-and-name {
   margin-bottom: 15px;
-}
-.img-and-name img {
-  max-height: 100px;
-  min-height: 100px;
-}
-.img-and-name .names {
-  position: relative;
-  width: 500px;
-  height: 100%;
-}
-.img-and-name .names > div {
-  position: absolute;
-  bottom: 1px;
-  padding-left: 20px;
-  color: #356BAF;
-  font-size: 17px;
-}
-.img-and-name .names > div > p {
-  margin-bottom: 0;
 }
 .view-print-course-table th {
   text-align: center;
@@ -83,9 +43,6 @@
 }
 .view-print-course-table td:nth-child(2) {
   text-align: center;
-}
-.signature-table th {
-  width: 15%;
 }
 form.courses-tables-form .level {
   margin: 10px 0 35px 0;

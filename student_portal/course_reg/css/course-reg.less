@@ -1,77 +1,37 @@
-.condense-if-big {
+.view-registered-courses {
   @media screen and (min-width: 980px) {
     width: 930px;
-    margin: auto auto 10px;
+    margin: auto auto 500px;
+  }
+
+  & > .view-registered-courses-info {
+    margin-bottom: 30px;
+    background: #858585;
+    padding: 12px 0 5px 0;
+    color: #8F35AF;
+    text-align: center;
+    font-weight: bolder;
+
+    & > a {
+      text-decoration: underline;
+      color: #353AE5;
+
+      &:hover {
+        color: #0006FF;
+      }
+    }
   }
 }
 
-.view-print-courses {
-
-  .condense-if-big;
+.view-registered-courses-course-data {
 
   border: 1px solid #C4C4D6;
   padding: 1px 20px 0 20px;
 
 }
 
-.college-name {
-  margin-top: 0;
-}
-
-.already-registered {
-
-  .condense-if-big;
-
-  margin-bottom: 30px;
-  background: #858585;
-  padding: 12px 0 5px 0;
-  color: #8F35AF;
-  text-align: center;
-  font-weight: bolder;
-}
-
-.printer-friendly {
-  cursor: pointer;
-
-  &:hover {
-    color: #c6c6c6;
-  }
-}
-
-.back-to-main {
-  cursor: pointer;
-  color: #8F35AF;
-  text-align: center;
-  margin-top: 20px;
-  font-size: 14px;
-}
-
 .img-and-name {
-
   margin-bottom: 15px;
-
-  & img {
-    max-height: 100px;
-    min-height: 100px;
-  }
-
-  & .names {
-    position: relative;
-    width: 500px;
-    height: 100%;
-
-    &>div {
-      position: absolute;
-      bottom: 1px;
-      padding-left: 20px;
-      color: #356BAF;
-      font-size: 17px;
-
-      &>p{
-        margin-bottom: 0;
-      }
-    }
-  }
 }
 
 .view-print-course-table {
@@ -101,13 +61,6 @@
     &:nth-child(2) {
       text-align: center;
     }
-  }
-}
-
-.signature-table {
-
-  & th {
-    width: 15%;
   }
 }
 
