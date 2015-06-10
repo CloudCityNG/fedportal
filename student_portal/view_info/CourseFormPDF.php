@@ -20,7 +20,7 @@ class CourseFormPDF extends TCPDF
    */
   private $regNo;
 
-  private $studentPhotoWidth = 29.00;
+  private $studentPhotoWidth = 35.00;
   private $studentPhotoHeight = 27.9;
 
   private $studentInfoCellHeight = 7;
@@ -216,7 +216,7 @@ class CourseFormPDF extends TCPDF
       'COURSE CODE',
       'COURSE TITLE',
       'CREDIT UNIT',
-      'LECTURER SIGN',
+      "LECTURER'S SIGN",
     ];
 
     $numHeaders = count($this->coursesCellWidths);

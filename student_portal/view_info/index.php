@@ -10,16 +10,12 @@ class ViewInfoController
 
   private static $PRINT_COURSE_FORM = 'print-course-form';
   private static $VIEW_RESULTS = 'view-results';
+
   /**
    * @var string - registration/matriculation number of student
    */
   private $regNo;
-  /**
-   * Array of semester IDs (database IDs) for which student has registered for courses. Defaults to null
-   * if student has no registered courses.
-   * @var null|array
-   */
-  private $semesterIds = null;
+
   /**
    * @var array|null - Academic sessions in which a student signed up for courses. Defaults to null if
    * student has no registered courses. It of the form:
@@ -45,7 +41,7 @@ class ViewInfoController
     $this->studentProfile = $studentProfile->getCompleteCurrentDetails();
     $this->studentProfile['photo'] = $studentProfile->photo;
     $this->studentProfile['reg_no'] = $this->regNo;
-    $this->setSemesterIds();
+    $this->getSemesterIds();
     $this->setRegisteredSessions();
   }
 
@@ -53,12 +49,12 @@ class ViewInfoController
    * set the value of the @field $semesterIds
    * @see StudentCourses::getSemesters
    */
-  private function setSemesterIds()
+  private function getSemesterIds()
   {
     $errorMessage = "error occurred while getting semester IDs for which student '{$this->regNo}' signed up for courses";
 
     try {
-      $this->semesterIds = StudentCourses::getSemesters($this->regNo);
+      return StudentCourses::getSemesters($this->regNo);
 
     } catch (PDOException $e) {
       logPdoException(
@@ -70,6 +66,8 @@ class ViewInfoController
     } catch (Exception $e) {
       self::logGeneralError($e, $errorMessage);
     }
+
+    return null;
   }
 
   private static function logger()
@@ -87,9 +85,11 @@ class ViewInfoController
   {
     $errorMessage = "error occurred while retrieving academic sessions for which student '{$this->regNo}' registered for courses.";
 
-    if ($this->semesterIds) {
+    $semesterIds = $this->getSemesterIds();
+
+    if ($semesterIds) {
       try {
-        $semestersWithSessions = Semester::getSemesterByIds($this->semesterIds, true);
+        $semestersWithSessions = Semester::getSemesterByIds($semesterIds, true);
 
         if ($semestersWithSessions) {
           $this->sessionsSemestersData = [];
