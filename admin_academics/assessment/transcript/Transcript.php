@@ -1,6 +1,6 @@
 <?php
-//require_once(__DIR__ . '/../../login/auth.php');
 require(__DIR__ . '/TranscriptToPDF.php');
+require_once(__DIR__ . '/../../models/StudentCoursesUtilities.php');
 
 class AssessmentTranscriptController extends AssessmentController
 {
@@ -117,7 +117,7 @@ class AssessmentTranscriptController extends AssessmentController
 
       $semesterCoursesData['semester_data'] = $semester;
 
-      $semesterCoursesData = self::_addGpaInfo($semesterCoursesData);
+      $semesterCoursesData = StudentCoursesUtilities::addGpaInfo($semesterCoursesData);
 
       if (!isset($coursesBySessionsBySemester[$sessionCode])) {
         $coursesBySessionsBySemester[$sessionCode] = [
@@ -167,40 +167,5 @@ class AssessmentTranscriptController extends AssessmentController
     }
 
     return $coursesBySessionsBySemester;
-  }
-
-  /**
-   * Compute semester GPA for the student
-   *
-   * @param array $semesterCoursesData
-   * @return array
-   *
-   * @private
-   */
-  private static function _addGpaInfo(array $semesterCoursesData)
-  {
-    $sumUnits = 0;
-    $sumQualityPoints = 0;
-
-    $courses = [];
-
-    foreach ($semesterCoursesData['courses'] as $data) {
-      $unit = floatval($data['unit']);
-      $point = floatval($data['point']);
-      $qualityPoint = $unit * $point;
-
-      $data['quality_point'] = number_format($qualityPoint, 2);
-      $courses[] = $data;
-
-      $sumUnits += $unit;
-      $sumQualityPoints += $qualityPoint;
-    }
-
-    $semesterCoursesData['courses'] = $courses;
-    $semesterCoursesData['sum_units'] = number_format($sumUnits, 2);
-    $semesterCoursesData['gpa'] = number_format($sumQualityPoints / $sumUnits, 2);
-    $semesterCoursesData['sum_points'] = number_format($sumQualityPoints, 2);
-
-    return $semesterCoursesData;
   }
 }

@@ -64,6 +64,7 @@ class StudentCourses
               WHERE reg_no = :reg_no";
 
     if (isset($data['semester_id'])) $query .= ' AND semester_id = :semester_id';
+    if (isset($data['publish'])) $query .= ' AND publish = :publish';
 
     self::logger()->addInfo("About to get student courses with query: {$query} and params: ", $data);
 

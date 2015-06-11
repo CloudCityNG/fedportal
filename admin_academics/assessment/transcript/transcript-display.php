@@ -1,89 +1,3 @@
-<?php
-
-/**
- * This function will be called for every academic semester. It will
- *
- * @param string $session - the academic session code e.g 2014/2015
- * @param string|int $semesterNumber - the semester number, 1 or 2
- * @param array $semesterDataAndCourses
- * @param string $level - student's level in a particular session e.g ND2
- * @return string - a table rendered with student's courses, scores and grades as well
- * as session and semester information
- * @internal param array $currentLevelDept
- *
- */
-function renderCoursesData($session, $semesterNumber, array $semesterDataAndCourses, $level)
-{
-  $semesterText = $semesterNumber == 1 ? "FIRST SEMESTER - ({$level}) ({$session})" : "SECOND SEMESTER - ({$level})";
-
-  $tableStart = "
-    <table class='table table-striped table-condense table-bordered student-transcript-table'>
-        <caption class='transcript-display-table-caption'>{$semesterText}</caption>
-
-      <thead>
-        <tr>
-          <th>S/N</th>
-          <th>Course<br/>Code</th>
-          <th>Course Title</th>
-          <th>Credit<br/>Unit</th>
-          <th class='student-courses-display-existing-score'>Score</th>
-          <th>Grade</th>
-          <th>Quality<br/>Point</th>
-        </tr>
-      </thead>
-
-      <tbody>\n";
-
-  $coursesTableBody = '';
-  $count = 1;
-
-  foreach ($semesterDataAndCourses['courses'] as $course) {
-    $unit = number_format($course['unit'], 1);
-
-    $coursesTableBody .= "
-            <tr>
-                <td>{$count}</td>
-                <td>{$course['code']}</td>
-                <td>{$course['title']}</td>
-                <td>{$unit}</td>
-                <td>{$course['score']}</td>
-                <td>{$course['grade']}</td>
-                <td>{$course['quality_point']}</td>
-            </tr>\n
-           ";
-
-    $count++;
-  }
-
-  $cgpaDisplay = '';
-
-  if(isset($semesterDataAndCourses['cgpa'])) {
-    $cgpaDisplay = "<br/>CGPA&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;{$semesterDataAndCourses['cgpa']}";
-  }
-
-  $coursesTableBody .= "
-                <tr class='total-row'>
-                    <td class='no-border'></td>
-                    <td class='no-border'></td>
-                    <td>TOTAL</td>
-                    <td>{$semesterDataAndCourses['sum_units']}</td>
-                    <td></td>
-                    <td></td>
-                    <td>{$semesterDataAndCourses['sum_points']}</td>
-                </tr>
-             </tbody>
-          </table>
-
-          <div class='gpa'>
-            GPA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;{$semesterDataAndCourses['gpa']}
-            {$cgpaDisplay}
-          </div>";
-
-  return $tableStart . $coursesTableBody;
-}
-
-?>
-
 <hr/>
 
 <?php
@@ -134,7 +48,7 @@ echo "
 foreach ($studentScoresData['sessions_semesters_courses_grades'] as $session => $sessionData) {
 
   foreach ($sessionData['semesters'] as $semesterNumber => $semesterDataAndCourses) {
-    echo renderCoursesData(
+    echo StudentCoursesUtilities::renderCoursesData(
       $session,
       $semesterNumber,
       $semesterDataAndCourses,

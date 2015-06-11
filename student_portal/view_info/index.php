@@ -3,6 +3,7 @@ require_once(__DIR__ . '/../../helpers/app_settings.php');
 require_once(__DIR__ . '/../login/auth.php');
 require_once(__DIR__ . '/../../helpers/models/StudentProfile.php');
 require_once(__DIR__ . '/../../admin_academics/models/StudentCourses.php');
+require_once(__DIR__ . '/../../admin_academics/models/StudentCoursesUtilities.php');
 require(__DIR__ . '/CourseFormPDF.php');
 
 class ViewInfoController
@@ -10,12 +11,16 @@ class ViewInfoController
 
   private static $PRINT_COURSE_FORM = 'print-course-form';
   private static $VIEW_RESULTS = 'view-results';
-
   /**
    * @var string - registration/matriculation number of student
    */
   private $regNo;
-
+  /**
+   * Array of semester IDs (database IDs) for which student has registered for courses. Defaults to null
+   * if student has no registered courses.
+   * @var null|array
+   */
+  private $semesterIds = null;
   /**
    * @var array|null - Academic sessions in which a student signed up for courses. Defaults to null if
    * student has no registered courses. It of the form:
@@ -30,7 +35,8 @@ class ViewInfoController
   private $sessionsSemestersData = null;
 
   /**
-   * @var string
+   * @see StudentProfile::getCompleteCurrentDetails
+   * @var array
    */
   private $studentProfile;
 
@@ -41,7 +47,7 @@ class ViewInfoController
     $this->studentProfile = $studentProfile->getCompleteCurrentDetails();
     $this->studentProfile['photo'] = $studentProfile->photo;
     $this->studentProfile['reg_no'] = $this->regNo;
-    $this->getSemesterIds();
+    $this->setSemesterIds();
     $this->setRegisteredSessions();
   }
 
@@ -49,12 +55,12 @@ class ViewInfoController
    * set the value of the @field $semesterIds
    * @see StudentCourses::getSemesters
    */
-  private function getSemesterIds()
+  private function setSemesterIds()
   {
     $errorMessage = "error occurred while getting semester IDs for which student '{$this->regNo}' signed up for courses";
 
     try {
-      return StudentCourses::getSemesters($this->regNo);
+      $this->semesterIds = StudentCourses::getSemesters($this->regNo);
 
     } catch (PDOException $e) {
       logPdoException(
@@ -66,8 +72,6 @@ class ViewInfoController
     } catch (Exception $e) {
       self::logGeneralError($e, $errorMessage);
     }
-
-    return null;
   }
 
   private static function logger()
@@ -85,11 +89,9 @@ class ViewInfoController
   {
     $errorMessage = "error occurred while retrieving academic sessions for which student '{$this->regNo}' registered for courses.";
 
-    $semesterIds = $this->getSemesterIds();
-
-    if ($semesterIds) {
+    if ($this->semesterIds) {
       try {
-        $semestersWithSessions = Semester::getSemesterByIds($semesterIds, true);
+        $semestersWithSessions = Semester::getSemesterByIds($this->semesterIds, true);
 
         if ($semestersWithSessions) {
           $this->sessionsSemestersData = [];
@@ -141,8 +143,6 @@ class ViewInfoController
 
   public function get()
   {
-    $academicSessions = $this->sessionsSemestersData;
-
     parse_str($_SERVER['QUERY_STRING'], $query);
 
     if (count($query)) {
@@ -161,15 +161,7 @@ class ViewInfoController
       }
     }
 
-    $infoActions = [
-      self::$PRINT_COURSE_FORM => self::$PRINT_COURSE_FORM,
-      self::$VIEW_RESULTS => self::$VIEW_RESULTS
-    ];
-
-    $viewPrintUrl = path_to_link(__DIR__);
-    $cssPath = path_to_link(__DIR__ . '/css/view-info.min.css');
-    $jsPath = path_to_link(__DIR__ . '/js/view-info.min.js');
-    require('view.php');
+    $this->renderPage();
   }
 
   /**
@@ -193,13 +185,106 @@ class ViewInfoController
   }
 
   /**
+   * Make student courses and their grades viewable by students
+   *
    * @param $semesterId
    * @param $semesterNumber
    * @param $sessionCode
    */
   private function viewResults($semesterId, $semesterNumber, $sessionCode)
   {
+    $courses = null;
+    $error = null;
 
+    try {
+      $courses = StudentCourses::getStudentCoursesForSemester(
+        ['semester_id' => $semesterId, 'reg_no' => $this->regNo, 'publish' => 1], true, true
+      );
+
+    } catch (PDOException $e) {
+      logPdoException(
+        $e,
+        'Exception occurred while attempting to get courses for semester ID ' . $semesterId . ' and student ' . $this->regNo,
+        self::logger()
+      );
+
+      $error = 'DATABASE ERROR';
+
+    } catch (Exception $e) {
+      self::logGeneralError($e);
+      $error = 'UNKNOWN ERROR';
+    }
+
+    $level = null;
+
+    try {
+      $currents = StudentProfile::getCurrentForSession($this->regNo, $sessionCode);
+
+      if ($currents) {
+        $level = $currents['level'];
+      }
+
+    } catch (PDOException $e) {
+      logPdoException(
+        $e,
+        'Exception occurred while attempting to get level for semester ID ' . $semesterId . ' and student ' . $this->regNo,
+        self::logger()
+      );
+
+      $error = 'DATABASE ERROR';
+
+    } catch (Exception $e) {
+      self::logGeneralError($e);
+
+      $error = 'UNKNOWN ERROR';
+    }
+
+    $semesterText = Semester::renderSemesterNumber($semesterNumber);
+
+    if (!$courses) {
+      $error = "
+        <h3>
+        No results available for {$sessionCode} session and {$semesterText} semester or unknown semester ID '{$semesterId}'!
+        </h3>
+      ";
+
+    } elseif (!$level) {
+      $error = "<h3>No student level/class data for {$sessionCode} session or unknown session '{$sessionCode}'!</h3>";
+    }
+
+    if ($error) {
+      $this->renderPage(['view_results_courses_data_view' => $error]);
+
+    } else {
+      $resultDisplayTable = StudentCoursesUtilities::renderCoursesData(
+        $sessionCode,
+        $semesterNumber,
+        StudentCoursesUtilities::addGpaInfo(['courses' => $courses]),
+        $level
+      );
+
+      $this->renderPage([
+        'view_results_courses_data_view' => $resultDisplayTable
+      ]);
+    }
+  }
+
+  /**
+   * @param array|null $renderPageArgs
+   */
+  private function renderPage(array $renderPageArgs = null)
+  {
+    $academicSessions = $this->sessionsSemestersData;
+
+    $infoActions = [
+      self::$PRINT_COURSE_FORM => self::$PRINT_COURSE_FORM,
+      self::$VIEW_RESULTS => self::$VIEW_RESULTS
+    ];
+
+    $viewPrintUrl = path_to_link(__DIR__);
+    $cssPath = path_to_link(__DIR__ . '/css/view-info.min.css');
+    $jsPath = path_to_link(__DIR__ . '/js/view-info.min.js');
+    require('view.php');
   }
 
   public function post()

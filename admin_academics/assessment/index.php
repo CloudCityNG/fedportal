@@ -1,7 +1,6 @@
 <?php
 
 require_once(__DIR__ . '/../login/auth.php');
-require_once(__DIR__ . '/../../student_portal/models/StudentProfile1.php');
 require(__DIR__ . '/grade-student/GradeStudent.php');
 require(__DIR__ . '/transcript/Transcript.php');
 
