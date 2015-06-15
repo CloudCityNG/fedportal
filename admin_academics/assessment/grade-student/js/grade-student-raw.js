@@ -6,7 +6,9 @@
   var tenMostRecentSemesters = JSON.parse($('#tenMostRecentSemesters-container').text());
 
   $('#semester').autocomplete(
-    require('../../utilities/js/admin-academics-utilities.js').sessionAutoComplete(tenMostRecentSemesters, 'label')
+    require('./../../../utilities/js/admin-academics-utilities.js').sessionSemesterAutoComplete(
+      tenMostRecentSemesters, 'label'
+    )
   );
 
   $('#student-course-query-form').formValidation(

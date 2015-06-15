@@ -1,4 +1,4 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"C:\\wamp\\www\\fedportal\\admin_academics\\assessment\\js\\assessment-raw.js":[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"C:\\wamp\\www\\fedportal\\admin_academics\\assessment\\grade-student\\js\\grade-student-raw.js":[function(require,module,exports){
 /*jshint camelcase:false*/
 
 "use strict";
@@ -7,7 +7,9 @@
   var tenMostRecentSemesters = JSON.parse($('#tenMostRecentSemesters-container').text());
 
   $('#semester').autocomplete(
-    require('../../utilities/js/admin-academics-utilities.js').sessionAutoComplete(tenMostRecentSemesters, 'label')
+    require('./../../../utilities/js/admin-academics-utilities.js').sessionSemesterAutoComplete(
+      tenMostRecentSemesters, 'label'
+    )
   );
 
   $('#student-course-query-form').formValidation(
@@ -124,16 +126,18 @@
   }
 })();
 
-},{"../../utilities/js/admin-academics-utilities.js":"C:\\wamp\\www\\fedportal\\admin_academics\\utilities\\js\\admin-academics-utilities.js"}],"C:\\wamp\\www\\fedportal\\admin_academics\\utilities\\js\\admin-academics-utilities.js":[function(require,module,exports){
+},{"./../../../utilities/js/admin-academics-utilities.js":"C:\\wamp\\www\\fedportal\\admin_academics\\utilities\\js\\admin-academics-utilities.js"}],"C:\\wamp\\www\\fedportal\\admin_academics\\utilities\\js\\admin-academics-utilities.js":[function(require,module,exports){
 "use strict";
 
 /**
  *
  * @param {Array} source
- * @param {String} fieldToDisplay
+ * @param {String} fieldToDisplay - the field from the source that will be set as value
+ * of form control been auto-completed
+ *
  * @returns {{minLength: number, source: Array, select: Function}}
  */
-function sessionAutoComplete(source, fieldToDisplay) {
+function sessionSemesterAutoComplete(source, fieldToDisplay) {
   return {
     minLength: 1,
 
@@ -141,7 +145,7 @@ function sessionAutoComplete(source, fieldToDisplay) {
 
     select: function(evt, ui) {
       var
-        $el = $(this),
+        $el      = $(this),
         $related = $($el.data('related-input-id'));
 
       $related.val(ui.item.id);
@@ -165,7 +169,7 @@ function sessionAutoComplete(source, fieldToDisplay) {
 }
 
 module.exports = {
-  sessionAutoComplete: sessionAutoComplete
+  sessionSemesterAutoComplete: sessionSemesterAutoComplete
 };
 
-},{}]},{},["C:\\wamp\\www\\fedportal\\admin_academics\\assessment\\js\\assessment-raw.js","C:\\wamp\\www\\fedportal\\admin_academics\\utilities\\js\\admin-academics-utilities.js"]);
+},{}]},{},["C:\\wamp\\www\\fedportal\\admin_academics\\assessment\\grade-student\\js\\grade-student-raw.js","C:\\wamp\\www\\fedportal\\admin_academics\\utilities\\js\\admin-academics-utilities.js"]);

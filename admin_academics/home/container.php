@@ -1,4 +1,6 @@
-<?php require(__DIR__ . '/getNavClass.php');?>
+<?php
+require(__DIR__ . '/getNavClass.php');
+?>
 
 <!doctype html>
 <html class="no-js" lang="">
@@ -72,6 +74,11 @@
                href="<?php echo path_to_link(__DIR__ . '/../assessment/') . '?transcripts' ?>">
               Transcripts
             </a>
+
+            <a class="link <?php echo getNavClass($currentPage, 'link', 'publish-results') ?>"
+               href="<?php echo path_to_link(__DIR__ . '/../assessment/') . '?publish-results' ?>">
+              Publish Results
+            </a>
           </div>
         </div>
 
@@ -82,7 +89,9 @@
         <!--    <span class="link">View Course</span>-->
         <!---->
         <!--    <div class="link" id="add-course"-->
-        <!--         data-template-url="--><?php //echo STATIC_ROOT . 'admin_academics/courses/' ?><!--">-->
+        <!--         data-template-url="-->
+        <phpx
+        //echo STATIC_ROOT . 'admin_academics/courses/' ?><!--">-->
         <!--      Add Course-->
         <!--    </div>-->
         <!--  </div>-->

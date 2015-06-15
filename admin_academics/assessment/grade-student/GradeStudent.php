@@ -100,38 +100,6 @@ class AssessmentGradeStudentController extends AssessmentController
     require(__DIR__ . '/../../home/container.php');
   }
 
-  /**
-   * Jquery UI autocomplete plugin requires the source to be an object with keys 'label' and 'value'
-   * @return array
-   * @internal param int|string $howMany
-   */
-  private static function getSemestersForJSAutoComplete()
-  {
-    $semesters = [];
-
-    try {
-      $semesters = Semester::getSemesters(10);
-
-      if ($semesters) {
-
-        $semesters = array_map(function ($aSemester) {
-          $aSemester['label'] = $aSemester['session']['session'] . ' - ' .
-            Semester::renderSemesterNumber($aSemester['number']) . ' semester';
-
-          $aSemester['value'] = $aSemester['id'];
-          return $aSemester;
-        }, $semesters);
-      }
-
-    } catch (PDOException $e) {
-
-      logPdoException(
-        $e, 'Error occurred while retrieving the two most recent academic sessions', self::logger());
-    }
-
-    return $semesters;
-  }
-
   private static function logger()
   {
     return get_logger('AssessmentGradeStudentController');

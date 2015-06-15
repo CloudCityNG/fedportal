@@ -74,7 +74,7 @@
       <div class="col-sm-5">
         <input
           class="form-control semester-session" name="new_semester[session]"
-          id="new-semester-session" maxlength="9" required
+          id="new-semester-session" maxlength="9"
           value="<?php echo $oldNewSemester ? $oldNewSemester['session'] : '' ?>"
           data-related-input-id="#new-semester-session-id">
 

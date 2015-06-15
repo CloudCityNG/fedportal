@@ -1,8 +1,8 @@
 <?php
-
 require_once(__DIR__ . '/../login/auth.php');
 require(__DIR__ . '/grade-student/GradeStudent.php');
 require(__DIR__ . '/transcript/Transcript.php');
+require(__DIR__ . '/publish-results/PublishResults.php');
 
 class AssessmentController
 {
@@ -79,24 +79,75 @@ class AssessmentController
       'reg-no' => $regNo
     ];
   }
+
+  /**
+   * Jquery UI autocomplete plugin requires the source to be an object with keys 'label' and 'value'
+   * @return array
+   */
+  protected static function getSemestersForJSAutoComplete()
+  {
+    $semesters = [];
+
+    try {
+      $semesters = Semester::getSemesters(10);
+
+      if ($semesters) {
+
+        $semesters = array_map(function ($aSemester) {
+          $aSemester['label'] = $aSemester['session']['session'] . ' - ' .
+            Semester::renderSemesterNumber($aSemester['number']) . ' semester';
+
+          $aSemester['value'] = $aSemester['id'];
+          return $aSemester;
+        }, $semesters);
+      }
+
+    } catch (PDOException $e) {
+
+      logPdoException(
+        $e, 'Error occurred while retrieving the two most recent academic sessions', self::logger());
+    }
+
+    return $semesters;
+  }
 }
 
-if ($_SERVER['QUERY_STRING'] === 'transcripts') {
+switch ($_SERVER['QUERY_STRING']) {
+  case 'transcripts': {
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+      AssessmentTranscriptController::renderPage();
 
-  if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    AssessmentTranscriptController::renderPage();
-
-  } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    AssessmentTranscriptController::post();
-  }
-} else {
-  $assessment = new AssessmentGradeStudentController();
-
-  if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    AssessmentGradeStudentController::renderPage();
-
-  } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $assessment->post();
+    } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      AssessmentTranscriptController::post();
+    }
+    break;
   }
 
+  case 'grade-students': {
+    $assessment = new AssessmentGradeStudentController();
+
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+      AssessmentGradeStudentController::renderPage();
+
+    } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $assessment->post();
+    }
+    break;
+  }
+
+  case 'publish-results': {
+    $publisher = new PublishResultsController();
+
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+      $publisher->renderPage();
+
+    } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $publisher->post();
+    }
+    break;
+  }
+
+  default:
+    $home = path_to_link(__DIR__ . '/../home');
+    header("Location: {$home}");
 }

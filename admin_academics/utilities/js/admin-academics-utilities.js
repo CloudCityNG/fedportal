@@ -8,7 +8,7 @@
  *
  * @returns {{minLength: number, source: Array, select: Function}}
  */
-function sessionAutoComplete(source, fieldToDisplay) {
+function sessionSemesterAutoComplete(source, fieldToDisplay) {
   return {
     minLength: 1,
 
@@ -40,5 +40,5 @@ function sessionAutoComplete(source, fieldToDisplay) {
 }
 
 module.exports = {
-  sessionAutoComplete: sessionAutoComplete
+  sessionSemesterAutoComplete: sessionSemesterAutoComplete
 };

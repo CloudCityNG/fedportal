@@ -204,7 +204,7 @@ $('.semester-session').autocomplete(
  *
  * @returns {{minLength: number, source: Array, select: Function}}
  */
-function sessionAutoComplete(source, fieldToDisplay) {
+function sessionSemesterAutoComplete(source, fieldToDisplay) {
   return {
     minLength: 1,
 
@@ -236,7 +236,7 @@ function sessionAutoComplete(source, fieldToDisplay) {
 }
 
 module.exports = {
-  sessionAutoComplete: sessionAutoComplete
+  sessionSemesterAutoComplete: sessionSemesterAutoComplete
 };
 
 },{}]},{},["C:\\wamp\\www\\fedportal\\admin_academics\\semester\\js\\semester-raw.js","C:\\wamp\\www\\fedportal\\admin_academics\\utilities\\js\\admin-academics-utilities.js"]);

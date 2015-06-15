@@ -104,6 +104,19 @@ module.exports = function(grunt) {
           }
         },
 
+        'admin-academics-assessment-publish-scores': {
+          options: {
+            watch: true,
+            keepAlive: true
+          },
+          files: {
+            'admin_academics/assessment/publish-results/js/publish-results.js': [
+              'admin_academics/assessment/publish-results/js/publish-results-raw.js',
+              'admin_academics/utilities/js/admin-academics-utilities.js'
+            ]
+          }
+        },
+
         'admin-academics-semester': {
           options: {
             watch: true,
