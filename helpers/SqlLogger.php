@@ -2,6 +2,36 @@
 
 class SqlLogger
 {
+
+  /**
+   * @var string - of the form:
+   * purpose => [query: 'the database SQL prepared statement to be executed'], [params: 'the SQL query parameters']
+   * @see @constructor
+   */
+  private $logMessage = '';
+
+  /**
+   * @var \Monolog\Logger - logger instance that will be used for logging
+   */
+  private $logger;
+
+  /**
+   * @see @method makeLogMessage
+   *
+   * @param \Monolog\Logger $logger
+   * @param $purpose
+   * @param $query
+   * @param array|null $params
+   *
+   * @constructor
+   */
+  public function __construct(\Monolog\Logger $logger, $purpose, $query, array $params = null)
+  {
+    $paramPart = $params ? ', [params: ' . print_r($params, true) . ']' : '';
+    $this->logMessage = "{$purpose} =>  [query: {$query}]{$paramPart}";
+    $this->logger = $logger;
+  }
+
   /**
    * Every method that does database query will use a general log message format that looks like:
    * purpose => [query: 'the database SQL prepared statement to be executed'], [params: 'the SQL query parameters']
@@ -19,16 +49,9 @@ class SqlLogger
     return "{$purpose} =>  [query: {$query}]{$paramPart}";
   }
 
-  /**
-   * When a database query succeeds, log a success message
-   *
-   * @param \Monolog\Logger $logger - the logger to be used for logging
-   * @param string $logMessage - an optional log message, most likely the returned string from @method makeLogMessage
-   */
-  public static function logStatementSuccess(\Monolog\Logger $logger, $logMessage = '')
+  public function dataRetrieved(array $databaseResult)
   {
-    $logMessage = $logMessage ? "{$logMessage}: " : '';
-    $logger->addInfo("{$logMessage}: statement executed successfully");
+    self::logDataRetrieved($this->logger, $this->logMessage, $databaseResult);
   }
 
   /**
@@ -44,6 +67,11 @@ class SqlLogger
     $logger->addInfo("{$logMessage}result is: ", $databaseResult);
   }
 
+  public function noData()
+  {
+    self::logNoData($this->logger, $this->logMessage);
+  }
+
   /**
    * When a database query fails or no result is returned by the database, we log this fact
    *
@@ -53,5 +81,27 @@ class SqlLogger
   public static function logNoData(\Monolog\Logger $logger, $logMessage)
   {
     $logger->addWarning("{$logMessage}: no data from database or database error.");
+  }
+
+  public function statementSuccess(array $bindParams = null)
+  {
+    self::logStatementSuccess($this->logger, $this->logMessage, $bindParams);
+  }
+
+  /**
+   * When a database query succeeds, log a success message
+   *
+   * @param \Monolog\Logger $logger - the logger to be used for logging
+   * @param string $logMessage - an optional log message, most likely the returned string from @method makeLogMessage
+   * @param array $bindParams - optional - used only if sql statement was executed with bind parameters
+   */
+  public static function logStatementSuccess(\Monolog\Logger $logger, $logMessage = '', array $bindParams = null)
+  {
+    $logMessage = $logMessage ? "{$logMessage}: " : '';
+    $msg = "{$logMessage}: statement executed successfully";
+
+    if ($bindParams) $msg .= ' using bind params: ' . print_r($bindParams, true);
+
+    $logger->addInfo($msg);
   }
 }
