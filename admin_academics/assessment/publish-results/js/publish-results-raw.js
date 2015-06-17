@@ -22,3 +22,9 @@
   );
 
 })();
+
+$('.publish-edit-trigger').click(function() {
+  var $el = $(this).hide();
+  $el.prev().prop('disabled', false).prop('checked', false);
+  $el.next().show();
+});

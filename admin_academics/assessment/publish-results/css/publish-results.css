@@ -4,7 +4,7 @@
 .already-published > .glyphicon-ok {
   color: #00B4FF;
 }
-.publish-edit-trigger {
+.publish-trigger {
   cursor: pointer;
   margin-left: 20px;
 }

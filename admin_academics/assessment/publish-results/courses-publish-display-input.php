@@ -40,12 +40,13 @@
           foreach ($coursesToClient['courses'] as $course) {
             $id = $course['id'];
             $published = $course['publish'];
-            $publishedClass = $published ? 'ok' : 'remove';
+            $publishedIconClass = $published ? 'ok' : 'remove';
+            $publishedClass = $published ? 'published' : '';
             $publishedDisabled = $published ? 'disabled' : '';
             $publishedChecked = $published ? 'checked' : '';
 
             $editTrigger = $published ?
-              "<span class='glyphicon glyphicon-edit publish-edit-trigger'></span>" : '';
+              "<span class='glyphicon glyphicon-edit publish-edit-trigger  publish-trigger'></span>" : '';
 
             echo "
             <tr>
@@ -54,17 +55,22 @@
                 <td>{$course['title']}</td>
 
                 <td align='center' class='already-published'>
-                  <span class='glyphicon glyphicon-{$publishedClass}'></span>
+                  <span class='glyphicon glyphicon-{$publishedIconClass}'></span>
                 </td>
 
                 <td>
-                  <input type='checkbox' name='course_id[{$id}]' {$publishedDisabled} {$publishedChecked} />
+                  <input type='checkbox' name='course_id[{$id}]' {$publishedDisabled} {$publishedChecked}
+                    class='{$publishedClass}'/>
                   {$editTrigger}
+                  <span style='display: none;' class='glyphicon glyphicon-eye-open publish-view-only publish-trigger'></span>
                 </td>
             </tr>
            ";
             $count++;
           }
+
+          $coursesToClientDataJSONEncoded = json_encode($coursesToClient);
+          echo "<input type='hidden' value='{$coursesToClientDataJSONEncoded}' name='courses-data' />";
           ?>
         </tbody>
       </table>
