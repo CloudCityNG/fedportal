@@ -34,7 +34,7 @@ class PublishResultsController extends AssessmentController
       'messages' => ["No student has registered for courses for the given inputs: {$sessionSemesterText}!"]
     ];
     $courses = null;
-    $courseIds = null;
+    $studentCourses = null;
 
     try {
       $courses = Courses1::getCoursesForSemesterDeptLevel([
@@ -44,12 +44,12 @@ class PublishResultsController extends AssessmentController
       ]);
 
       if ($courses) {
-        $courseIds = array_map(function ($course) {
+        $studentCourses = array_map(function ($course) {
           return $course['id'];
         }, $courses);
 
-        $courseIds = StudentCourses::courseIdsAndSemesterExist(
-          ['course_ids' => $courseIds, 'semester_id' => $post['semester_id']]
+        $studentCourses = StudentCourses::courseIdsAndSemesterExist(
+          ['course_ids' => $studentCourses, 'semester_id' => $post['semester_id']]
         );
       }
 
@@ -68,22 +68,27 @@ class PublishResultsController extends AssessmentController
       self::logGeneralError($e, self::logger());
     }
 
-    if ($errors || !$courses || !$courseIds) {
+    if ($errors || !$courses || !$studentCourses) {
       self::renderPage($queryErrors);
       return;
     }
 
     $coursesToClient = [];
+    $studentCoursesIds = array_keys($studentCourses);
 
     foreach ($courses as $course) {
-      if (in_array($course['id'], $courseIds)) {
+      $id = $course['id'];
+
+      if (in_array($id, $studentCoursesIds)) {
+        $course['publish'] = $studentCourses[$id];
         $coursesToClient[] = $course;
       }
     }
 
     self::renderPage(null, null, [
       'courses' => $coursesToClient,
-      'semester' => $sessionSemesterText
+      'semester' => $sessionSemesterText,
+      'semester_id' => $post['semester_id']
     ]);
   }
 
@@ -187,10 +192,19 @@ class PublishResultsController extends AssessmentController
 
   private function processPublishScoreForm()
   {
-    $coursesToPublishPost = null;
+    $semester_id = $_POST['semester_id'];
+    $coursesToPublishPost = isset($_POST['course_id']) ? $_POST['course_id'] : null;
 
-    if(isset($_POST['course_id'])) {
-      $coursesToPublishPost = $_POST['course_id'];
+    if (!$coursesToPublishPost) {
     }
+
+    //TODO: write code to un-publish scores
+    $coursesIds = array_keys($coursesToPublishPost);
+
+    StudentCourses::publishScores($coursesIds, $semester_id);
+
+    $this->renderPage([
+      'posted' => true, 'messages' => [count($coursesIds) . ' scores published successfully!']
+    ]);
   }
 }

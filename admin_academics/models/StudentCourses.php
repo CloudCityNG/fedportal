@@ -266,7 +266,7 @@ class StudentCourses
     if ($stmt->execute($data)) {
       SqlLogger::logStatementSuccess(self::logger(), $logMessage);
       $result = $stmt->fetchColumn();
-      SqlLogger::logDataRetrieved(self::logger(), $logMessage, $result);
+      SqlLogger::logDataRetrieved(self::logger(), $logMessage, [$result]);
     }
 
     SqlLogger::logNoData(self::logger(), $logMessage);
@@ -329,7 +329,9 @@ class StudentCourses
   {
     $courseIdsDbArray = toDbArray($data['course_ids']);
 
-    $query = "select DISTINCT course_id from student_courses WHERE course_id in {$courseIdsDbArray} and semester_id = ?";
+    $query = "select DISTINCT course_id, publish from student_courses
+              WHERE course_id IN {$courseIdsDbArray}
+              AND semester_id = ?";
 
     $param = [$data['semester_id']];
 
@@ -347,7 +349,7 @@ class StudentCourses
 
       $returnedVal = [];
 
-      while ($row = $stmt->fetch()) $returnedVal[] = $row['course_id'];
+      while ($row = $stmt->fetch()) $returnedVal[$row['course_id']] = $row['publish'];
 
       if (count($returnedVal)) {
         $logger->dataRetrieved($returnedVal);
@@ -357,5 +359,29 @@ class StudentCourses
 
     $logger->noData();
     return null;
+  }
+
+  /**
+   * @param array $courseIds
+   * @param string|number $semesterId
+   * @return bool
+   */
+  public static function publishScores(array $courseIds, $semesterId)
+  {
+    $courseIdsDBArray = toDbArray($courseIds);
+    $query = "update student_courses set publish = 1 WHERE course_id in {$courseIdsDBArray} and semester_id = ?";
+    $param = [$semesterId];
+
+    $logger = new SqlLogger(self::logger(), 'publish or un-publish student scores', $query, $param);
+
+    $stmt = get_db()->prepare($query);
+
+    if ($stmt->execute($param)) {
+      $logger->statementSuccess();
+      return true;
+    }
+
+    $logger->noData();
+    return false;
   }
 }

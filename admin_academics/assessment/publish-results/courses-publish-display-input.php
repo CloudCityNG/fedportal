@@ -13,6 +13,8 @@
         data-fv-icon-invalid="glyphicon glyphicon-remove"
         data-fv-icon-validating="glyphicon glyphicon-refresh">
 
+    <input type="hidden" name="semester_id" value="<?php echo $coursesToClient['semester_id']; ?>"/>
+
     <fieldset>
       <legend>
         Courses and scores to publish: <span style="color: #8F9FCE;">"<?php echo $coursesToClient['semester'] ?>"</span>
@@ -37,6 +39,13 @@
 
           foreach ($coursesToClient['courses'] as $course) {
             $id = $course['id'];
+            $published = $course['publish'];
+            $publishedClass = $published ? 'ok' : 'remove';
+            $publishedDisabled = $published ? 'disabled' : '';
+            $publishedChecked = $published ? 'checked' : '';
+
+            $editTrigger = $published ?
+              "<span class='glyphicon glyphicon-edit publish-edit-trigger'></span>" : '';
 
             echo "
             <tr>
@@ -44,10 +53,13 @@
                 <td>{$course['code']}</td>
                 <td>{$course['title']}</td>
 
-                <td align='center'> <span class='glyphicon glyphicon-remove'></span> </td>
+                <td align='center' class='already-published'>
+                  <span class='glyphicon glyphicon-{$publishedClass}'></span>
+                </td>
 
                 <td>
-                  <input type='checkbox' name='course_id[{$id}]'/>
+                  <input type='checkbox' name='course_id[{$id}]' {$publishedDisabled} {$publishedChecked} />
+                  {$editTrigger}
                 </td>
             </tr>
            ";

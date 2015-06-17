@@ -1,0 +1,10 @@
+.already-published > .glyphicon-remove {
+  color: #FF4F4F;
+}
+.already-published > .glyphicon-ok {
+  color: #00B4FF;
+}
+.publish-edit-trigger {
+  cursor: pointer;
+  margin-left: 20px;
+}
