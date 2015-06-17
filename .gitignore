@@ -1,4 +1,3 @@
-out_log.log
 photo_files
 .idea
 insertpin1.php
@@ -15,3 +14,4 @@ libs/formValidation
 libs/bootstrap-datepicker
 libs/bootstrap
 libs/fonts
+out_logs

@@ -35,7 +35,9 @@ function get_logger($name)
 
   $log = new Logger($name);
 
-  $log->pushHandler(new StreamHandler(__DIR__ . '/../out_log.log', Logger::DEBUG));
+  $logDir = __DIR__ . '/../out_logs';
+  if (!file_exists($logDir)) mkdir($logDir);
+  $log->pushHandler(new StreamHandler($logDir . '/out_log.log', Logger::DEBUG));
 
   return $log;
 }
