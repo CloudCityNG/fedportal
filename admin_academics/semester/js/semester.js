@@ -75,7 +75,7 @@ $(document.body).on(
 var twoMostRecentSessions = JSON.parse($('#two-most-recent-sessions').text());
 
 $('.semester-session').autocomplete(
-  require('../../utilities/js/admin-academics-utilities.js').sessionAutoComplete(twoMostRecentSessions, 'session')
+  require('./../../utilities/js/admin-academics-utilities.js').sessionSemesterAutoComplete(twoMostRecentSessions, 'session')
 );
 
 (function currentSemesterForm() {
@@ -193,7 +193,7 @@ $('.semester-session').autocomplete(
   );
 })();
 
-},{"../../utilities/js/admin-academics-utilities.js":"C:\\wamp\\www\\fedportal\\admin_academics\\utilities\\js\\admin-academics-utilities.js"}],"C:\\wamp\\www\\fedportal\\admin_academics\\utilities\\js\\admin-academics-utilities.js":[function(require,module,exports){
+},{"./../../utilities/js/admin-academics-utilities.js":"C:\\wamp\\www\\fedportal\\admin_academics\\utilities\\js\\admin-academics-utilities.js"}],"C:\\wamp\\www\\fedportal\\admin_academics\\utilities\\js\\admin-academics-utilities.js":[function(require,module,exports){
 "use strict";
 
 /**
