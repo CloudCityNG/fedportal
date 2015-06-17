@@ -4,31 +4,31 @@ if (count($argv) < 2) {
   throw new Exception('You must supply a name for your migration');
 }
 
-$file_name = $argv[1];
+$fileName = $argv[1];
 
 $pattern = '=[/?*;:{}\\\\]=';
 
-if (preg_match($pattern, $file_name)) {
+if (preg_match($pattern, $fileName)) {
   throw new InvalidArgumentException("Migration name is not valid.");
 }
 
-require_once(__DIR__ . '/../vendor/autoload.php');
+require(__DIR__ . '/../vendor/autoload.php');
 
 use Carbon\Carbon;
 
 $now = Carbon::now();
-$date_part = $now->format('Ymd') . $now->getTimestamp();
+$datePart = $now->format('Ymd') . $now->getTimestamp();
 
-$file_name = substr($date_part . "__{$file_name}", 0, 53);
+$fileName = substr($datePart . "__{$fileName}", 0, 53);
 
-$class_name = 'A' . $date_part;
+$className = 'A' . $datePart;
 
-$stub = "<?php\n\n\nClass {$class_name}\n{\n  " .
+$stub = "<?php\n\n\nClass {$className}\n{\n  " .
   "public function up(PDO \$db) \n  {\n  }\n\n  " .
   "public function down(PDO \$db) \n  {\n  } \n}";
 
-$file_obj = fopen(__DIR__ . "/scripts/{$file_name}.php", 'w');
+$fileObj = fopen(__DIR__ . "/scripts/{$fileName}.php", 'w');
 
-fwrite($file_obj, $stub);
+fwrite($fileObj, $stub);
 
-fclose($file_obj);
+fclose($fileObj);
