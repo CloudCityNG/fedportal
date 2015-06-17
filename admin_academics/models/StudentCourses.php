@@ -2,6 +2,7 @@
 
 require_once(__DIR__ . '/../../helpers/databases.php');
 require_once(__DIR__ . '/../../helpers/app_settings.php');
+require_once(__DIR__ . '/../../helpers/SqlLogger.php');
 require_once(__DIR__ . '/../../vendor/autoload.php');
 require_once(__DIR__ . '/Semester.php');
 
@@ -66,23 +67,25 @@ class StudentCourses
     if (isset($data['semester_id'])) $query .= ' AND semester_id = :semester_id';
     if (isset($data['publish'])) $query .= ' AND publish = :publish';
 
-    self::logger()->addInfo("About to get student courses with query: {$query} and params: ", $data);
+    $logger = new SqlLogger(self::logger(), 'get student courses', $query);
 
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($data)) {
+      $logger->statementSuccess();
+
       $result = $stmt->fetchAll();
 
       if (count($result)) {
         if ($withLetterGrades) $result = self::addLetterGrades($result, $gradeNullScore);
 
-        self::logger()->addInfo("Statement executed successfully. Courses are: ", $result);
+        $logger->dataRetrieved($result);
 
         return $result;
       }
     }
 
-    self::logger()->addWarning("Courses for student can not be retrieved.");
+    $logger->noData();
     return null;
   }
 
@@ -159,18 +162,13 @@ class StudentCourses
     $query = "SELECT DISTINCT(semester_id) FROM student_courses WHERE reg_no = ?";
     $param = [$regNo];
 
-    $queryLogMessage = "query: {$query} and param " . print_r($param, true);
-
-    $purpose = "Get all the semester IDs in which a student signed up for courses";
-
-    self::logger()->addInfo(
-      "About to {$purpose} using {$queryLogMessage}"
-    );
+    $logger = new SqlLogger(
+      self::logger(), 'get all the semester IDs in which a student signed up for courses', $query, $param);
 
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($param)) {
-      self::logger()->addInfo("{$purpose}: {$queryLogMessage}: statement executed successfully");
+      $logger->statementSuccess();
 
       $result = [];
 
@@ -179,12 +177,12 @@ class StudentCourses
       }
 
       if (count($result)) {
-        self::logger()->addInfo("{$purpose}: {$queryLogMessage}: result is: ", $result);
+        $logger->dataRetrieved($result);
         return $result;
       }
     }
 
-    self::logger()->addWarning("{$purpose}: {$queryLogMessage}: no data found.");
+    $logger->noData();
     return null;
   }
 
@@ -207,8 +205,10 @@ class StudentCourses
               VALUES (:reg_no, :semester_id,
                       :course_id, :level, :created_at, :updated_at)";
 
-    self::logger()->addInfo(
-      "About to create several courses for one student in one semester with query: {$query} and params: ",
+    $logger = new SqlLogger(
+      self::logger(),
+      'create several courses for one student in one semester',
+      $query,
       [$courseIds, $studentDetails]
     );
 
@@ -229,6 +229,7 @@ class StudentCourses
 
     foreach ($courseIds as $courseId) {
       $stmt->execute();
+      $logger->statementSuccess([$courseId]);
 
       $returnedVal[] = array_merge(
         $studentDetails,
@@ -241,7 +242,7 @@ class StudentCourses
       );
     }
 
-    self::logger()->addInfo("Student courses successfully created, the courses are: ", $returnedVal);
+    $logger->dataRetrieved($returnedVal);
     return $returnedVal;
   }
 
@@ -256,18 +257,20 @@ class StudentCourses
     $query = "SELECT COUNT(*) FROM student_courses
               WHERE semester_id = :semester_id AND reg_no = :reg_no";
 
-    self::logger()->addInfo(
-      "About to find out if student has signed up courses for given semester with query: {$query} and params: ",
-      $data
+    $logMessage = SqlLogger::makeLogMessage(
+      'find out if student has signed up courses for given semester', $query, $data
     );
 
     $stmt = get_db()->prepare($query);
-    $stmt->execute($data);
 
-    $result = $stmt->fetchColumn();
-    self::logger()->addInfo("Result is: {$result}");
+    if ($stmt->execute($data)) {
+      SqlLogger::logStatementSuccess(self::logger(), $logMessage);
+      $result = $stmt->fetchColumn();
+      SqlLogger::logDataRetrieved(self::logger(), $logMessage, $result);
+    }
 
-    return $result;
+    SqlLogger::logNoData(self::logger(), $logMessage);
+    return null;
   }
 
   /**
@@ -280,7 +283,7 @@ class StudentCourses
   {
     $query = "UPDATE student_courses SET score = :score WHERE id = :id";
 
-    self::logger()->addInfo("About to grade student by executing query: {$query}, and params: ", $data);
+    $logger = new SqlLogger(self::logger(), 'grade student', $data);
 
     $stmt = get_db()->prepare($query);
 
@@ -294,6 +297,7 @@ class StudentCourses
 
     foreach ($data as $id => $score) {
       if ($stmt->execute()) {
+        $logger->statementSuccess([$id, $score]);
         $returnedVal[$id] = $score;
       }
     }
@@ -302,13 +306,56 @@ class StudentCourses
     $countReturnedVal = count($returnedVal);
 
     if ($countReturnedVal === $countData) {
-      self::logger()->addInfo('All scores successfully updated for [student_course_id => score] ', $returnedVal);
+      $logger->dataRetrieved($returnedVal);
       return $returnedVal;
     }
 
-    self::logger()->addWarning(
-      "Unable to update some all or scores for student courses. {$countData} courses given but only {$countReturnedVal} updated"
+    $logger->noData();
+    return null;
+  }
+
+  /**
+   * Given an array of course IDs, query the database for student courses that match the course IDs in
+   * the given semester ID
+   *
+   * @param array $data - of the form:
+   * [
+   *  'course_ids' => [numeric, numeric, numeric],
+   *  'semester_id' => numeric
+   * ]
+   * @return array|null
+   */
+  public static function courseIdsAndSemesterExist(array $data)
+  {
+    $courseIdsDbArray = toDbArray($data['course_ids']);
+
+    $query = "select DISTINCT course_id from student_courses WHERE course_id in {$courseIdsDbArray} and semester_id = ?";
+
+    $param = [$data['semester_id']];
+
+    $logger = new SqlLogger(
+      self::logger(),
+      'get courses whose IDs are in array of supplied course IDs and semester ID matches supplied semester ID',
+      $query,
+      $param
     );
+
+    $stmt = get_db()->prepare($query);
+
+    if ($stmt->execute($param)) {
+      $logger->statementSuccess();
+
+      $returnedVal = [];
+
+      while ($row = $stmt->fetch()) $returnedVal[] = $row['course_id'];
+
+      if (count($returnedVal)) {
+        $logger->dataRetrieved($returnedVal);
+        return $returnedVal;
+      }
+    }
+
+    $logger->noData();
     return null;
   }
 }

@@ -2,37 +2,55 @@
 
 require_once(__DIR__ . '/../../helpers/databases.php');
 require_once(__DIR__ . '/../../helpers/app_settings.php');
+require_once(__DIR__ . '/../../helpers/SqlLogger.php');
 
 class Courses1
 {
 
   private static $LOG_NAME = 'CoursesModel';
 
-  public static function get_courses_for_semester_and_dept(array $data)
+  /**
+   * Get the courses that can be taken in a particular department in a particular semester, and optionally in a level
+   *
+   * @param array $data - an array that holds the department code and semester number (1 or 2), of the form:
+   * [
+   *  'department' => string, 'semester' => number|string, 'level' => string
+   * ]
+   * the 'level' key will only be given if we need to restrict returned courses to particular level
+   *
+   * @return array|null
+   */
+  public static function getCoursesForSemesterDeptLevel(array $data)
   {
     $query = "SELECT * FROM course_table
               WHERE department = :department
               AND semester = :semester";
 
-    $log = get_logger(self::$LOG_NAME);
+    if (isset($data['level'])) $query .= ' AND class = :level';
 
-    $log->addInfo(
-      "About to get courses for a particular dept. in a particular semester with query: {$query} and params: ",
-      $data
+    $logMessage = SqlLogger::makeLogMessage(
+      'get courses for a particular department in a particular semester and optionally, level', $query, $data
     );
 
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($data)) {
-      $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      SqlLogger::logStatementSuccess(self::logger(), $logMessage);
 
-      $log->addInfo("Statement executed successfully, courses are: ", $result);
+      $result = $stmt->fetchAll();
 
-      return $result;
+      if (count($result)) {
+        SqlLogger::logDataRetrieved(self::logger(), $logMessage, $result);
+        return $result;
+      }
     }
 
-    $log->addWarning("Statement did not execute successfully.");
-
+    SqlLogger::logNoData(self::logger(), $logMessage);
     return null;
+  }
+
+  private static function logger()
+  {
+    return get_logger('CourseModel');
   }
 }

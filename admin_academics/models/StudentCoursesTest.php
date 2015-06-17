@@ -32,4 +32,11 @@ function testGetSemesters()
   print_r(StudentCourses::getSemesters(123456));
 }
 
-testGetSemesters();
+//testGetSemesters();
+
+function testCourseIdsAndSemesterExist()
+{
+  print_r(StudentCourses::courseIdsAndSemesterExist(['course_ids' => [360, 367, 363], 'semester_id' => 2]));
+}
+
+testCourseIdsAndSemesterExist();
