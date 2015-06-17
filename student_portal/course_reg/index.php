@@ -88,7 +88,7 @@ class CourseRegController
    */
   private function getCoursesForSemesterDept($dept_code, $semester)
   {
-    $data = Courses1::get_courses_for_semester_and_dept([
+    $data = Courses1::getCoursesForSemesterDeptLevel([
       'department' => $dept_code,
       'semester' => $semester
     ]);

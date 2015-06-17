@@ -44,12 +44,28 @@
       <label for="level" class="control-label col-sm-4">Level</label>
 
       <div class="col-sm-7">
-        <select class="form-control" name="level" id="level" required>
+        <select class="form-control" name="semester-course-query[level]" id="level" required>
           <option value="">----</option>
-          <option value="ND I">ND I</option>
-          <option value="ND II">ND I</option>
-          <option value="HND I">HND I</option>
-          <option value="HND II">HND II</option>
+          <?php
+          foreach ($academicLevels as $academicLevel) {
+            echo "<option value='{$academicLevel['code']}'>{$academicLevel['description']}</option>";
+          }
+          ?>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="department" class="control-label col-sm-4">Department</label>
+
+      <div class="col-sm-7">
+        <select class="form-control" name="semester-course-query[department]" id="department" required>
+          <option value="">----</option>
+          <?php
+          foreach ($academicDepartments as $academicDepartment) {
+            echo "<option value='{$academicDepartment['code']}'>{$academicDepartment['description']}</option>";
+          }
+          ?>
         </select>
       </div>
     </div>
@@ -57,7 +73,14 @@
 
   <div class="form-group">
     <div class="semester-course-form-btn col-sm-5 col-sm-offset-4">
-      <button class="btn btn-default" type="submit" name="semester-course-submit">Submit</button>
+      <button class="btn btn-default" type="submit" name="semester-level-department-courses-submit">Submit</button>
     </div>
   </div>
 </form>
+
+<?php
+if ($coursesToClient) {
+  require __DIR__ . '/courses-publish-display-input.php';
+}
+?>
+

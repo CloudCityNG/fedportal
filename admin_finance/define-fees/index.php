@@ -12,7 +12,7 @@ include_once(__DIR__ . '/../../admin_academics/models/AcademicDepartment.php');
 
 $academic_levels = [];
 
-foreach (AcademicLevels::get_all_levels() as $academic_level) {
+foreach (AcademicLevels::getAllLevels() as $academic_level) {
   $academic_levels[$academic_level['id']] = $academic_level['code'];
 }
 

@@ -15,7 +15,8 @@
 
     <fieldset>
       <legend>
-        Courses and scores to publish: "<?php echo $coursesToClient['semester'] ?>" <br/>
+        Courses and scores to publish: <span style="color: #8F9FCE;">"<?php echo $coursesToClient['semester'] ?>"</span>
+        <br/>
         Check/uncheck to publish/unpublish a score.
       </legend>
 
@@ -25,6 +26,7 @@
             <th>S/N</th>
             <th>Code</th>
             <th>Title</th>
+            <th>Already Published?</th>
             <th>Publish</th>
           </tr>
         </thead>
@@ -42,6 +44,8 @@
                 <td>{$course['code']}</td>
                 <td>{$course['title']}</td>
 
+                <td align='center'> <span class='glyphicon glyphicon-remove'></span> </td>
+
                 <td>
                   <input type='checkbox' name='course_id[{$id}]'/>
                 </td>
@@ -57,8 +61,8 @@
     <div class="form-group">
       <div class="col-sm-5 col-sm-offset-4">
         <div class="btn-group">
-          <button class="btn btn-success" type="submit" name="student-course-score-form-submit">Submit</button>
-          <button class="btn btn-default" type="button" id="student-course-score-form-reset-btn">Reset</button>
+          <button class="btn btn-success" type="submit" name="courses-publish-form-submit">Submit</button>
+          <button class="btn btn-default" type="button" id="courses-publish-form-form-reset-btn">Reset</button>
         </div>
       </div>
     </div>

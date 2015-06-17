@@ -10,7 +10,11 @@ class AssessmentController
    * When we do a post request, we must tell user status of post -
    * whether success or failure. The function does just that.
    *
-   * @param array|null $postStatus - defaults to null in case of get requests
+   * @param array|null $postStatus - defaults to null in case of get requests. The array, if passed, must be of form:
+   * [
+   *  'posted' => bool,
+   *  'messages' => [string, string, string....]
+   * ]
    */
   public static function renderPostStatus(array $postStatus = null)
   {
@@ -44,6 +48,19 @@ class AssessmentController
                 </ul>
               </div> ";
     }
+  }
+
+  /**
+   * When a generic error is caught in a code block, log that error
+   *
+   * @param Exception $e
+   * @param \Monolog\Logger $logger
+   * @param string $message
+   */
+  protected static function logGeneralError(Exception $e, Monolog\Logger $logger, $message = '')
+  {
+    $logger->addInfo('Unknown Error: ' . $message);
+    $logger->addInfo('Unknown Error: ' . $e->getMessage());
   }
 
   /**

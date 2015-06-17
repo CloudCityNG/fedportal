@@ -17,7 +17,7 @@ class CoursesController
       echo json_encode([
         'template' => file_get_contents(__DIR__ . '/courses-view.mustache'),
 
-        'context' => ['levels' => AcademicLevels::get_all_levels()]
+        'context' => ['levels' => AcademicLevels::getAllLevels()]
       ]);
 
     } else {

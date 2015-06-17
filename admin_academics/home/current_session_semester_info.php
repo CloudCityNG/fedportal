@@ -68,12 +68,10 @@ $currentSessionInfo = CurrentSessionSemesterInfo::getCurrentSession();
 ?>
 
 <div class="session-semester-info row">
-  <div class="alternative">
-    <?php if (!$currentSessionInfo['session']) {
-      echo 'Academic session has ended but new session not set.';
-    }
-    ?>
-  </div>
+  <?php if (!$currentSessionInfo['session']) {
+    echo "<div class'alternative'>Academic session has ended but new session not set.</div>";
+  }
+  ?>
 
   <div class="col-sm-6">
     <div class="panel <?php echo $currentSemesterInfo['panel-class'] ?>">
@@ -102,12 +100,10 @@ $currentSessionInfo = CurrentSessionSemesterInfo::getCurrentSession();
       </div>
 
       <div class="panel-body">
-        <div class="alternative">
-          <?php if (!$currentSessionInfo['session']) {
-            echo 'Academic session has ended but new session not set.';
-          }
-          ?>
-        </div>
+        <?php if (!$currentSessionInfo['session']) {
+          echo "<div class'alternative'>Academic session has ended but new session not set.</div>";
+        }
+        ?>
 
         <div><strong>Started:&nbsp;&nbsp;&nbsp;</strong>
           <?php echo $currentSessionInfo['start'] ?>

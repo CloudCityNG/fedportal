@@ -25,7 +25,7 @@
             <option value="">---</option>
 
             <?php
-            foreach (AcademicLevels::get_all_levels() as $the_level) {
+            foreach (AcademicLevels::getAllLevels() as $the_level) {
               echo "<option value='{$the_level['code']}'>{$the_level['code']}</option>";
             }
             ?>
