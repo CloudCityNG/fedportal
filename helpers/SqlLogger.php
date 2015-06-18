@@ -29,6 +29,7 @@ class SqlLogger
   {
     $paramPart = $params ? ', [params: ' . print_r($params, true) . ']' : '';
     $this->logMessage = "{$purpose} =>  [query: {$query}]{$paramPart}";
+    $logger->addInfo("Executing SQL: {$this->logMessage}");
     $this->logger = $logger;
   }
 
@@ -64,7 +65,8 @@ class SqlLogger
   public static function logDataRetrieved(\Monolog\Logger $logger, $logMessage = '', array $databaseResult)
   {
     $logMessage = $logMessage ? "{$logMessage}:, " : '';
-    $logger->addInfo("{$logMessage}result is: ", $databaseResult);
+    $logger->addInfo(
+      "Results successfully obtained for executed SQL: {$logMessage}: result is: ", $databaseResult);
   }
 
   public function noData()
@@ -80,7 +82,7 @@ class SqlLogger
    */
   public static function logNoData(\Monolog\Logger $logger, $logMessage)
   {
-    $logger->addWarning("{$logMessage}: no data from database or database error.");
+    $logger->addWarning("No data from database or database error for executed SQL: {$logMessage}");
   }
 
   public function statementSuccess(array $bindParams = null)
@@ -98,9 +100,9 @@ class SqlLogger
   public static function logStatementSuccess(\Monolog\Logger $logger, $logMessage = '', array $bindParams = null)
   {
     $logMessage = $logMessage ? "{$logMessage}: " : '';
-    $msg = "{$logMessage}: statement executed successfully";
+    $msg = "Statement execution succeeds for SQL: {$logMessage}";
 
-    if ($bindParams) $msg .= ' using bind params: ' . print_r($bindParams, true);
+    if ($bindParams) $msg .= ': bind params: ' . print_r($bindParams, true);
 
     $logger->addInfo($msg);
   }
