@@ -58,17 +58,25 @@ function get_photo_dir()
   return $uploadsDirectory;
 }
 
-function path_to_link($path)
+/**
+ * @param $path
+ * @param bool|false $version - whether to add version information to the path generated
+ * @return string
+ */
+function path_to_link($path, $version = false)
 {
   if (!file_exists($path)) {
     return '';
   }
 
-  $unix_path = str_replace('\\', '/', realpath($path));
+  $absPath = realpath($path);
+  $unix_path = str_replace('\\', '/', $absPath);
 
   $root_pos = strpos($unix_path, STATIC_ROOT);
 
-  return substr($unix_path, $root_pos) . (is_dir($path) ? '/' : '');
+  $versionArg = $version ? '?v=' . filemtime($absPath) : '';
+
+  return substr($unix_path, $root_pos) . (is_dir($path) ? '/' : '') . $versionArg;
 }
 
 /**

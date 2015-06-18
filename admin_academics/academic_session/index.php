@@ -89,9 +89,9 @@ class AcademicSessionController
 
     $link_template = __DIR__ . '/session-partial.php';
 
-    $pageJsPath = path_to_link(__DIR__ . '/js/session.min.js');
+    $pageJsPath = path_to_link(__DIR__ . '/js/session.min.js', true);
 
-    $pageCssPath = path_to_link(__DIR__ . '/css/session.min.css');
+    $pageCssPath = path_to_link(__DIR__ . '/css/session.min.css', true);
 
     require(__DIR__ . '/../home/container.php');
 

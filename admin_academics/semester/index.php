@@ -139,9 +139,9 @@ class SemesterController
 
     $link_template = __DIR__ . '/semester-partial.php';
 
-    $pageJsPath = path_to_link(__DIR__ . '/js/semester.min.js');
+    $pageJsPath = path_to_link(__DIR__ . '/js/semester.min.js', true);
 
-    $pageCssPath = path_to_link(__DIR__ . '/css/semester.min.css');
+    $pageCssPath = path_to_link(__DIR__ . '/css/semester.min.css', true);
 
     require(__DIR__ . '/../home/container.php');
   }

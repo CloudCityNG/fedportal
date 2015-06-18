@@ -55,9 +55,9 @@ class AssessmentTranscriptController extends AssessmentController
 
     $link_template = __DIR__ . '/transcript-partial.php';
 
-    $pageJsPath = path_to_link(__DIR__ . '/js/transcript.min.js');
+    $pageJsPath = path_to_link(__DIR__ . '/js/transcript.min.js', true);
 
-    $pageCssPath = path_to_link(__DIR__ . '/css/grade-student-transcript.min.css');
+    $pageCssPath = path_to_link(__DIR__ . '/css/grade-student-transcript.min.css', true);
 
     require(__DIR__ . '/../../home/container.php');
   }

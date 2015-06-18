@@ -2,7 +2,7 @@
 require_once(__DIR__ . '/../helpers/app_settings.php');
 ?>
 
-<script src="<?php echo STATIC_ROOT . 'libs/compiled.min.js' ?>"></script>
+<script src="<?php echo path_to_link(__DIR__ . '/../libs/compiled.min.js', true) ?>"></script>
 
 <script>
   var STATIC_ROOT = "<?php echo STATIC_ROOT?>";

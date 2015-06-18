@@ -6,7 +6,7 @@ require(__DIR__ . '/getNavClass.php');
 <html class="no-js" lang="">
 <head>
   <?php include(__DIR__ . '/../../includes/header.php'); ?>
-  <link rel="stylesheet" href="<?php echo path_to_link(__DIR__ . '/css/home.min.css') ?>"/>
+  <link rel="stylesheet" href="<?php echo path_to_link(__DIR__ . '/css/admin-academics-home.min.css', true) ?>"/>
 
   <?php if (isset($pageCssPath)) {
     echo "<link rel='stylesheet' href='{$pageCssPath}'/>";
@@ -113,7 +113,7 @@ require(__DIR__ . '/getNavClass.php');
 
   <?php include(__DIR__ . '/../../includes/js-footer.php'); ?>
 
-  <script src="<?php echo path_to_link(__DIR__ . '/js/home.min.js') ?>"></script>
+  <script src="<?php echo path_to_link(__DIR__ . '/js/admin-academics-home.min.js', true) ?>"></script>
 
   <?php
   if (isset($pageJsPath) && $pageJsPath) {

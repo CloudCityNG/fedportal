@@ -2,7 +2,7 @@
 <html class="no-js" lang="">
 <head>
   <?php require(__DIR__ . '/../../includes/header.php'); ?>
-  <link rel="stylesheet" href="<?php echo STATIC_ROOT . 'libs/css/main.min.css' ?>">
+  <link rel="stylesheet" href="<?php echo path_to_link(__DIR__ . '/../../libs/css/main.min.css', true) ?>">
   <link rel="stylesheet" href="<?php echo $cssPath; ?>"/>
 </head>
 

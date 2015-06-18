@@ -6,7 +6,7 @@
 
 <?php include_once(__DIR__ . '/../helpers/app_settings.php') ?>
 
-<link rel="stylesheet" href="<?php echo STATIC_ROOT . 'libs/css/compiled.min.css' ?>">
+<link rel="stylesheet" href="<?php echo path_to_link(__DIR__ . '/../libs/css/compiled.min.css', true) ?>">
 
 <style>
   .add-link {
@@ -14,11 +14,13 @@
     background: url("<?php echo STATIC_ROOT . 'img/icon_addlink.gif' ?>") 0 .2em no-repeat;
     cursor: pointer;
   }
+
   .delete-icon {
     padding-left: 12px;
     background: url("<?php echo STATIC_ROOT . 'img/icon_delete.jpg' ?>") 0 .2em no-repeat;
     cursor: pointer;
   }
+
   .form-control-error-display {
     color: #DA3E16
   }

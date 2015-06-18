@@ -183,9 +183,9 @@ class PublishResultsController extends AssessmentController
 
     $link_template = __DIR__ . '/view.php';
 
-    $pageJsPath = path_to_link(__DIR__ . '/js/publish-results.min.js');
+    $pageJsPath = path_to_link(__DIR__ . '/js/publish-results.min.js', true);
 
-    $pageCssPath = path_to_link(__DIR__ . '/css/publish-results.min.css');
+    $pageCssPath = path_to_link(__DIR__ . '/css/publish-results.min.css', true);
 
     require(__DIR__ . '/../../home/container.php');
   }

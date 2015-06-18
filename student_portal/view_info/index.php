@@ -282,8 +282,8 @@ class ViewInfoController
     ];
 
     $viewPrintUrl = path_to_link(__DIR__);
-    $cssPath = path_to_link(__DIR__ . '/css/view-info.min.css');
-    $jsPath = path_to_link(__DIR__ . '/js/view-info.min.js');
+    $cssPath = path_to_link(__DIR__ . '/css/view-info.min.css', true);
+    $jsPath = path_to_link(__DIR__ . '/js/view-info.min.js', true);
     require('view.php');
   }
 
