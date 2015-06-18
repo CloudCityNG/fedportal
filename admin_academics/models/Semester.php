@@ -183,27 +183,27 @@ Class Semester
       'session_id' => $currentSession['id']
     ];
 
-    self::logger()->addInfo(
-      "About to get current semester with query: {$query} and params: ", $query_param
-    );
+    $logger = new SqlLogger(self::logger(), 'get current semester', $query, $query_param);
 
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($query_param)) {
+      $logger->statementSuccess();
+
       $semester = $stmt->fetch();
 
       if ($semester) {
-        self::logger()->addInfo("Query successfully ran. semester is: ", $semester);
-
         $semester = self::dbDatesToCarbon($semester);
 
         $semester['session'] = $currentSession;
+
+        $logger->dataRetrieved($semester);
 
         return $semester;
       }
     }
 
-    self::logger()->addWarning("Current semester not found!");
+    $logger->noData();
     return null;
   }
 
