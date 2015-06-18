@@ -25,6 +25,12 @@
 
 $('.publish-edit-trigger').click(function() {
   var $el = $(this).hide();
-  $el.prev().prop('disabled', false).prop('checked', false);
+  $el.prev().prop('checked', false);
   $el.next().show();
+});
+
+$('.publish-view-only').click(function() {
+  $(this).hide()
+    .prev().show()
+    .prev().prop('checked', true);
 });

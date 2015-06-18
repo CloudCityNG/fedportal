@@ -195,16 +195,53 @@ class PublishResultsController extends AssessmentController
     $semester_id = $_POST['semester_id'];
     $coursesToPublishPost = isset($_POST['course_id']) ? $_POST['course_id'] : null;
 
+    $coursesData = json_decode($_POST['courses-data'], true);
+
     if (!$coursesToPublishPost) {
     }
 
-    //TODO: write code to un-publish scores
-    $coursesIds = array_keys($coursesToPublishPost);
+    $publishableCourseIds = array_keys($coursesToPublishPost);
+    $toBeUpdated = [];
 
-    StudentCourses::publishScores($coursesIds, $semester_id);
+    foreach ($coursesData['courses'] as $course) {
+      $id = $course['id'];
+      $publish = $course['publish'];
+
+      if (!in_array($id, $publishableCourseIds)) {
+        if ($publish) $toBeUpdated[$id] = 0;
+        continue;
+      }
+
+      if (!$publish) $toBeUpdated[$id] = 1;
+    }
+
+    $updatedCourseIds = [];
+    $posted = ['posted' => false];
+    $errors = null;
+
+    try {
+      $updatedCourseIds = StudentCourses::publishScores($toBeUpdated, $semester_id);
+
+    } catch (PDOException $e) {
+      logPdoException($e, 'Database error while publishing courses', self::logger());
+      $errors = ['Database error while updating courses to publish'];
+
+    } catch (Exception $e) {
+      self::logGeneralError($e, self::logger(), 'publishing courses');
+      $errors = ['Unknown error occurred while updating courses to publish'];
+    }
+
+    if ($errors) {
+      $posted['messages'] = $errors;
+      $this->renderPage($posted);
+      return;
+    }
+
+    //:TODO redisplay published/un-published score on the client so user knows what really happened
+    //then when user clicks submit button, a dialog should pop informing user of courses that will be published/un-published
 
     $this->renderPage([
-      'posted' => true, 'messages' => [count($coursesIds) . ' scores published successfully!']
+      'posted' => true, 'messages' => [count($updatedCourseIds) . ' scores published successfully!']
     ]);
   }
 }

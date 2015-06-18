@@ -42,8 +42,8 @@
             $published = $course['publish'];
             $publishedIconClass = $published ? 'ok' : 'remove';
             $publishedClass = $published ? 'published' : '';
-            $publishedDisabled = $published ? 'disabled' : '';
             $publishedChecked = $published ? 'checked' : '';
+            $publishedClickable = $published ? "onclick='return false' onkeydown='return false'" : '';
 
             $editTrigger = $published ?
               "<span class='glyphicon glyphicon-edit publish-edit-trigger  publish-trigger'></span>" : '';
@@ -59,8 +59,9 @@
                 </td>
 
                 <td>
-                  <input type='checkbox' name='course_id[{$id}]' {$publishedDisabled} {$publishedChecked}
-                    class='{$publishedClass}'/>
+                  <input type='checkbox' name='course_id[{$id}]' {$publishedChecked}
+                    {$publishedClickable} class='{$publishedClass}'/>
+
                   {$editTrigger}
                   <span style='display: none;' class='glyphicon glyphicon-eye-open publish-view-only publish-trigger'></span>
                 </td>

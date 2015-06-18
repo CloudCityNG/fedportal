@@ -257,19 +257,20 @@ class StudentCourses
     $query = "SELECT COUNT(*) FROM student_courses
               WHERE semester_id = :semester_id AND reg_no = :reg_no";
 
-    $logMessage = SqlLogger::makeLogMessage(
-      'find out if student has signed up courses for given semester', $query, $data
-    );
+    $logger = new SqlLogger(
+      self::logger(), 'find out if student has signed up courses for given semester', $query, $data);
 
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($data)) {
-      SqlLogger::logStatementSuccess(self::logger(), $logMessage);
+      $logger->statementSuccess();
+
       $result = $stmt->fetchColumn();
-      SqlLogger::logDataRetrieved(self::logger(), $logMessage, [$result]);
+
+      $logger->dataRetrieved([$result]);
     }
 
-    SqlLogger::logNoData(self::logger(), $logMessage);
+    $logger->noData();
     return null;
   }
 
@@ -362,26 +363,38 @@ class StudentCourses
   }
 
   /**
-   * @param array $courseIds
+   * Either publish an un-published score or un-publish a published score
+   *
+   * @param array $courses - array of course IDs to be published/un-published, of form:
+   * [
+   *    'course_id' => publish(number), ...
+   * ]
+   * The value is either 0 for un-publish or 1 for publish
+   *
    * @param string|number $semesterId
-   * @return bool
+   * @return array - of courses IDs that are successfully updated
    */
-  public static function publishScores(array $courseIds, $semesterId)
+  public static function publishScores(array $courses, $semesterId)
   {
-    $courseIdsDBArray = toDbArray($courseIds);
-    $query = "update student_courses set publish = 1 WHERE course_id in {$courseIdsDBArray} and semester_id = ?";
-    $param = [$semesterId];
+    $query = "UPDATE student_courses SET publish = :publish WHERE course_id = :course_id AND semester_id = :semester_id";
 
-    $logger = new SqlLogger(self::logger(), 'publish or un-publish student scores', $query, $param);
+    $logger = new SqlLogger(self::logger(), 'publish or un-publish student scores', $query, $courses);
+    $publish = $courseId = null;
 
     $stmt = get_db()->prepare($query);
+    $stmt->bindValue('semester_id', $semesterId);
+    $stmt->bindParam('course_id', $courseId);
+    $stmt->bindParam('publish', $publish);
 
-    if ($stmt->execute($param)) {
-      $logger->statementSuccess();
-      return true;
+    $updated = [];
+
+    foreach ($courses as $courseId => $publish) {
+      if ($stmt->execute()) {
+        $logger->statementSuccess([$courseId => $publish]);
+        $updated[] = $courseId;
+      }
     }
 
-    $logger->noData();
-    return false;
+    return $updated;
   }
 }
