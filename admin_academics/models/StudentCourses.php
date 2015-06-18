@@ -268,6 +268,7 @@ class StudentCourses
       $result = $stmt->fetchColumn();
 
       $logger->dataRetrieved([$result]);
+      return $result;
     }
 
     $logger->noData();
