@@ -12,7 +12,7 @@ set deployFolderImgFolder="c:\wamp\www\fedportal-deploy\qportal\img"
 set deployFolderVendorFolder="c:\wamp\www\fedportal-deploy\qportal\vendor"
 set deployFolderJsFolder="c:\wamp\www\fedportal-deploy\qportal\js"
 set deployFolderTcPdfFolder="c:\wamp\www\fedportal-deploy\qportal\helpers\tcpdf"
-set deployFolderLogFile="c:\wamp\www\fedportal-deploy\qportal\out_log.log"
+set deployFolderLogFile="c:\wamp\www\fedportal-deploy\qportal\out_logs\out_log.log"
 REM end folders and files to be deleted
 
 set sourceFolder="c:\wamp\www\fedportal"
