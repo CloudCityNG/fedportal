@@ -3,6 +3,9 @@
 
 "use strict";
 
+var $modal = $('#current-semester-form-modal');
+var $modalBody = $('#current-semester-form-modal-body');
+
 (function studentCourseQueryFrom() {
   var tenMostRecentSemesters = JSON.parse($('#tenMostRecentSemesters-container').text());
 
@@ -27,16 +30,25 @@
 })();
 
 (function studentCourseScoreForm() {
-  var $courseScores = $('.course-score').each(function() {
-    var $el = $(this);
-
-    if (/^\d{1,3}(?:\.\d{0,2})?$/.test($el.val().trim())) {
-      $el.prop('disabled', true).siblings('.course-score-edit-trigger').show();
-    }
-  });
+  var $courseScores = $('.course-score');
+  var invalidFormMsg = '<div class="modal-body-caption no-valid">\n' +
+                       '  No score was inputted or updated. You may not submit form!\n' +
+                       '</div>';
 
   $('.course-score-edit-trigger').click(function() {
-    $(this).hide().siblings('.course-score').prop('disabled', false);
+    $(this).hide()
+      .siblings('.course-score').prop('disabled', false)
+      .siblings('.course-score-view-only-trigger').show();
+  });
+
+  $('.course-score-view-only-trigger').click(function() {
+    var $input = $(this).hide()
+      .siblings('.course-score').prop('disabled', true);
+
+    $form.data('formValidation').resetField($input);
+    resetExisting($input);
+
+    $input.siblings('.course-score-edit-trigger').show();
   });
 
   var scoreGradeMapping = JSON.parse($('#scoreGradeMapping-container').text());
@@ -54,15 +66,20 @@
   });
 
   $form.on('success.form.fv', function(evt) {
-    var scoreInputted = false;
-    $courseScores.not(':disabled').each(function() {
-      if ($(this).val().trim()) scoreInputted = true;
-    });
+    evt.preventDefault();
+    var grades = getFreshAndUpdatedGrades();
 
-    if (!scoreInputted) {
-      window.alert('No score was inputted or updated. You may not submit form!');
-      evt.preventDefault();
+    if (grades.length === 0) {
+      $form.data('formValidation').resetForm();
+      $modalBody.html('');
+      $modalBody.html(invalidFormMsg);
+
+    } else {
+      $modalBody.html('');
+      $modalBody.append(buildValidForm(grades));
     }
+
+    $modal.modal('show');
   });
 
   $('#student-course-score-form-reset-btn').click(function() {
@@ -70,15 +87,29 @@
 
     $courseScores.each(function() {
       var $el = $(this);
-      var existingVal = $el.data('existing-score');
-      $el.val(existingVal);
 
-      if (existingVal) {
-        updateRowWithLetterGrade($el);
-        $el.prop('disabled', true).siblings('.course-score-edit-trigger').show();
-      }
+      if ($el.is('.already-graded')) resetExisting($el);
+
+      else $el.val('').parent().siblings('.grade').text('');
     });
   });
+
+  /**
+   * Reset a row to score existing in the database if course for the row has been scored.
+   *
+   * @param {jQuery} $el
+   */
+  function resetExisting($el) {
+    var existingVal = $el.data('existing-score');
+    $el.val(existingVal);
+
+    if (existingVal) {
+      updateRowWithLetterGrade($el);
+      $el.prop('disabled', true)
+        .siblings('.course-score-view-only-trigger').hide()
+        .siblings('.course-score-edit-trigger').show();
+    }
+  }
 
   /**
    *
@@ -98,6 +129,7 @@
         $el.val(score);
         $el.parent().next().text(grade);
       }
+
     }
   }
 
@@ -122,7 +154,61 @@
     });
 
     score = score.toFixed(2);
-    return scoreGrade ? [score, scoreGrade[2]] : [score, 'F'];
+    return [score, scoreGrade ? scoreGrade[2] : 'F'];
+  }
+
+  function getFreshAndUpdatedGrades() {
+    var grades = [];
+    var $el, newScore, oldScore, updated;
+
+    $courseScores.each(function() {
+      $el = $(this);
+      newScore = $el.val().trim();
+
+      if ($el.is('.already-graded')) {
+        newScore = Number(newScore);
+        oldScore = Number($el.data('existing-score').trim());
+        updated = newScore !== oldScore;
+
+        if (updated) grades.push($el.closest('tr').clone());
+
+      } else {
+        if (newScore) grades.push($el.closest('tr').clone());
+      }
+    });
+
+    return grades;
+  }
+
+  /**
+   *
+   * @param {Object} grades
+   */
+  function buildValidForm(grades) {
+    var $scoreInputValidForm = $($('#scores-input-valid-form-template').html());
+    var $tdExistingScore, $scoreInputTd, $scoreInput, $children;
+
+    var $tBody = $scoreInputValidForm.find('tbody');
+
+    _.each(grades, function($tr, index) {
+      $children = $tr.children();
+
+      $children.first().text(index + 1);
+
+      $scoreInputTd = $children.filter('.fresh-score');
+      $scoreInput = $scoreInputTd.children('.course-score').attr('type', 'hidden');
+      $scoreInput.siblings().remove();
+      $scoreInputTd.append($scoreInput.val());
+
+      $tdExistingScore = $children.filter('.td-existing-score');
+
+      if ($tdExistingScore.is('.already-graded-td')) $tdExistingScore.text($tdExistingScore.children().val());
+      else $tdExistingScore.text('');
+
+      $tBody.append($tr);
+    });
+
+    return $scoreInputValidForm;
   }
 })();
 

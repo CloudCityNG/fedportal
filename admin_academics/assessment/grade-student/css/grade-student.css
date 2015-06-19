@@ -3,14 +3,24 @@
 }
 input.course-score.form-control {
   display: inline-block;
-  width: 40%;
+  width: 75px;
   margin-right: 10%;
   padding: 0 0 0 6px;
 }
-.course-score-edit-trigger {
+input.existing-score.form-control {
+  width: 75px;
+}
+.glyphicon {
   cursor: pointer;
-  display: none;
 }
 .student-courses-display-img-and-name {
   margin-bottom: 25px;
+}
+.modal .modal-body-caption {
+  text-align: center;
+  font-size: 18px;
+  color: #4CAE4C;
+}
+.modal .modal-body-caption.no-valid {
+  color: #C31010;
 }
