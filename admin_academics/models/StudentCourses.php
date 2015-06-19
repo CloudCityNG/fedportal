@@ -285,7 +285,7 @@ class StudentCourses
   {
     $query = "UPDATE student_courses SET score = :score WHERE id = :id";
 
-    $logger = new SqlLogger(self::logger(), 'grade student', $data);
+    $logger = new SqlLogger(self::logger(), 'grade student', $query, $data);
 
     $stmt = get_db()->prepare($query);
 
