@@ -127,12 +127,15 @@ class StudentCoursesUtilities
                     <td>{$coursesData['sum_points']}</td>
                 </tr>
              </tbody>
-          </table>
+          </table>";
 
-          <div style='margin-bottom: 25px;width: 200px;float: right;'>
+    if (isset($coursesData['gpa'])) {
+      $coursesTableBody .= "
+        <div style='margin-bottom: 25px;width: 200px;float: right;'>
             GPA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;{$coursesData['gpa']}
             {$cgpaDisplay}
-          </div>";
+         </div>";
+    }
 
     return $tableStart . $coursesTableBody;
   }

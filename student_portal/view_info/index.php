@@ -256,10 +256,15 @@ class ViewInfoController
       $this->renderPage(['view_results_courses_data_view' => $error]);
 
     } else {
+      $coursesWithGPA = StudentCoursesUtilities::addGpaInfo(['courses' => $courses]);
+
+      //:TODO - make it possible to view gpa once all scores have been published for that semester
+      unset($coursesWithGPA['gpa']);
+
       $resultDisplayTable = StudentCoursesUtilities::renderCoursesData(
         $sessionCode,
         $semesterNumber,
-        StudentCoursesUtilities::addGpaInfo(['courses' => $courses]),
+        $coursesWithGPA,
         $level
       );
 
