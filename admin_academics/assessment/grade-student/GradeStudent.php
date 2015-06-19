@@ -23,41 +23,44 @@ class AssessmentGradeStudentController extends AssessmentController
 
     if (isset($valid['errors'])) {
 
-      self::renderPage(
-        $oldStudentCourseQueryData,
+      $postStatus = [
+        'messages' => $valid['errors'],
+        'post-form' => 'student-course-query',
+        'posted' => false
+      ];
 
-        [
-          'messages' => $valid['errors'],
-          'post-form' => 'student-course-query',
-          'posted' => false
-        ]
-      );
+      self::renderPage([
+        'old_student_course_query_data' => $oldStudentCourseQueryData,
+        'post_status' => $postStatus
+      ]);
+
       return;
     }
 
     $regNo = $valid['reg-no'];
 
+    //:TODO - handle exception
     $postedCourses = StudentCourses::getStudentCoursesForSemester(
       ['reg_no' => $regNo, 'semester_id' => $oldStudentCourseQueryData['semester_id']],
       true
     );
 
     if (!$postedCourses) {
+      $postStatus = [
+        'messages' => [
+          'Student courses not found. May be student has not registered for courses for ' .
+          $oldStudentCourseQueryData['semester']
+        ],
 
-      self::renderPage(
-        $oldStudentCourseQueryData,
+        'post-form' => 'student-course-query',
 
-        [
-          'messages' => [
-            'Student courses not found. May be student has not registered for courses for ' .
-            $oldStudentCourseQueryData['semester']
-          ],
+        'posted' => false
+      ];
 
-          'post-form' => 'student-course-query',
-
-          'posted' => false
-        ]
-      );
+      self::renderPage([
+        'old_student_course_query_data' => $oldStudentCourseQueryData,
+        'post_status' => $postStatus
+      ]);
       return;
     }
 
@@ -65,25 +68,18 @@ class AssessmentGradeStudentController extends AssessmentController
     $profile = $student->getCompleteCurrentDetails();
     $profile['semester'] = $oldStudentCourseQueryData['semester'];
 
-    self::renderPage(
-      null, null, ['courses' => $postedCourses, 'student' => $profile]
-    );
+    self::renderPage([
+      'student_courses_data' => ['courses' => $postedCourses, 'student' => $profile]
+    ]);
   }
 
   /**
-   * @param array $oldStudentCourseQueryData
-   * @param array|null $postStatus
-   * @param array|null $studentCoursesData
+   * @param array $gradeCoursesContext
    */
-  public static function renderPage(
-    array $oldStudentCourseQueryData = null,
-    array $postStatus = null,
-    array $studentCoursesData = null
-  )
+  public static function renderPage(array $gradeCoursesContext = [])
   {
-    $tenMostRecentSemesters = self::getSemestersForJSAutoComplete();
-
-    $scoreGradeMapping = StudentCourses::$SCORE_GRADE_MAPPING;
+    $gradeCoursesContext['ten_most_recent_semesters'] = self::getSemestersForJSAutoComplete();
+    $gradeCoursesContext['score_grade_mapping'] = StudentCourses::$SCORE_GRADE_MAPPING;
 
     $currentPage = [
       'title' => 'assessment',
@@ -98,11 +94,6 @@ class AssessmentGradeStudentController extends AssessmentController
     $pageCssPath = path_to_link(__DIR__ . '/css/grade-student.min.css', true);
 
     require(__DIR__ . '/../../home/container.php');
-  }
-
-  private static function logger()
-  {
-    return get_logger('AssessmentGradeStudentController');
   }
 
   /**
@@ -142,6 +133,7 @@ class AssessmentGradeStudentController extends AssessmentController
      * Note that it is possible that not all
      * scores sent to the database were updated.
      * :TODO examples of scenarios where this is possible?
+     * :TODO - handle exceptions
      */
     $updatedCourses = StudentCourses::gradeStudent($postedCourses);
     $countUpdatedCourses = count($updatedCourses);
@@ -150,41 +142,20 @@ class AssessmentGradeStudentController extends AssessmentController
      * @var $studentCourses - student data that were sent back from client -
      * we extract only the courses
      */
-    $studentCourses = $studentCoursesData['courses'];
 
-    if ($countUpdatedCourses) {
+    $postStatus = [
+      'messages' => ["<strong>Success:</strong><br/>course(s) updated = {$countUpdatedCourses}."],
 
-      /**
-       * @var array $successfullyUpdatedCourses - courses that were
-       * successfully updated by database.
-       * The code that performed the database update will
-       * only send course id and score back to us.
-       * We extract other course data from @var $studentCourses
-       */
-      $successfullyUpdatedCourses = []; //:TODO will be sent back to client to indicate which courses were updated.
+      'post-form' => 'student-course-score',
 
-      foreach ($studentCourses as $studentCourse) {
-        $courseId = $studentCourse['id'];
-        if (isset($updatedCourses[$courseId])) {
+      'posted' => true
+    ];
 
-          $successfullyUpdatedCourses[$courseId] = [
-            'courseData' => $studentCourse,
-            'score' => $updatedCourses[$courseId],
-          ];
-        }
-      }
+    self::renderPage(['post_status' => $postStatus]);
+  }
 
-      self::renderPage(
-        null,
-        [
-          'messages' => ["<strong>Success:</strong><br/>course(s) updated = {$countUpdatedCourses}."],
-
-          'post-form' => 'student-course-score',
-
-          'posted' => true
-        ]
-      );
-
-    }
+  private static function logger()
+  {
+    return get_logger('AssessmentGradeStudentController');
   }
 }

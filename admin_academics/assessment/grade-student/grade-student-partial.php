@@ -1,3 +1,15 @@
+<?php
+$tenMostRecentSemesters = $gradeCoursesContext['ten_most_recent_semesters'];
+$scoreGradeMapping = $gradeCoursesContext['score_grade_mapping'];
+$postStatus = isset($gradeCoursesContext['post_status']) ? $gradeCoursesContext['post_status'] : null;
+
+$oldStudentCourseQueryData = isset($gradeCoursesContext['old_student_course_query_data']) ?
+  $gradeCoursesContext['old_student_course_query_data'] : null;
+
+$studentCoursesData = isset($gradeCoursesContext['student_courses_data']) ?
+  $gradeCoursesContext['student_courses_data'] : null;
+?>
+
 <span style="display: none" id="tenMostRecentSemesters-container">
   <?php echo json_encode($tenMostRecentSemesters) ?>
 </span>
