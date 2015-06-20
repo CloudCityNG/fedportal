@@ -151,7 +151,7 @@ class AssessmentGradeStudentController extends AssessmentController
       'posted' => true
     ];
 
-    self::renderPage(['post_status' => $postStatus]);
+    self::renderPage(['just_graded_courses' => $_POST['student-score-table-text']]);
   }
 
   private static function logger()

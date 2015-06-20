@@ -8,6 +8,11 @@ $oldStudentCourseQueryData = isset($gradeCoursesContext['old_student_course_quer
 
 $studentCoursesData = isset($gradeCoursesContext['student_courses_data']) ?
   $gradeCoursesContext['student_courses_data'] : null;
+
+$justGradedCourses = isset($gradeCoursesContext['just_graded_courses']) ? $gradeCoursesContext['just_graded_courses'] : '';
+
+$displayJustGradedCoursesStyle = $justGradedCourses ? 'block' : 'none';
+$initialDisplayFormStyle = $justGradedCourses ? 'none' : 'block';
 ?>
 
 <span style="display: none" id="tenMostRecentSemesters-container">
@@ -18,7 +23,16 @@ $studentCoursesData = isset($gradeCoursesContext['student_courses_data']) ?
   <?php echo json_encode($scoreGradeMapping) ?>
 </span>
 
-<form id="student-course-query-form"
+<div style="display: <?php echo $displayJustGradedCoursesStyle ?>"
+     class="just-graded-courses-alert alert alert-dismissible alert-success">
+
+  <button type="button" class="close just-graded-courses-close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  <?php echo $justGradedCourses?>
+</div>
+
+<form id="student-course-query-form" style="display: <?php echo $initialDisplayFormStyle ?>"
       class="form-horizontal"
       method="post"
       role="form"

@@ -4,6 +4,11 @@
 
 var $modal = $('#current-semester-form-modal');
 var $modalBody = $('#current-semester-form-modal-body');
+var $studentQueryForm = $('#student-course-query-form');
+
+$('.just-graded-courses-close').click(function() {
+  $studentQueryForm.show();
+});
 
 (function studentCourseQueryFrom() {
   var tenMostRecentSemesters = JSON.parse($('#tenMostRecentSemesters-container').text());
@@ -14,7 +19,7 @@ var $modalBody = $('#current-semester-form-modal-body');
     )
   );
 
-  $('#student-course-query-form').formValidation(
+  $studentQueryForm.formValidation(
     {
       fields: {
         'student-course-query[semester_id]': {
@@ -33,6 +38,7 @@ var $modalBody = $('#current-semester-form-modal-body');
   var invalidFormMsg = '<div class="modal-body-caption no-valid">\n' +
                        '  No score was inputted or updated. You may not submit form!\n' +
                        '</div>';
+  var studentRegNo = $('#student-reg-number').text();
 
   $('.course-score-edit-trigger').click(function() {
     $(this).hide()
@@ -69,7 +75,6 @@ var $modalBody = $('#current-semester-form-modal-body');
     var grades = getFreshAndUpdatedGrades();
 
     if (grades.length === 0) {
-      $form.data('formValidation').resetForm();
       $modalBody.html('');
       $modalBody.html(invalidFormMsg);
 
@@ -79,6 +84,7 @@ var $modalBody = $('#current-semester-form-modal-body');
     }
 
     $modal.modal('show');
+    $form.data('formValidation').resetForm();
   });
 
   $('#student-course-score-form-reset-btn').click(function() {
@@ -206,6 +212,18 @@ var $modalBody = $('#current-semester-form-modal-body');
 
       $tBody.append($tr);
     });
+
+    var $table = $scoreInputValidForm.children('table').clone();
+
+    var lenGrades = grades.length;
+    var coursesPluralize = 'course' + (lenGrades > 1 ? 's' : '');
+
+    $table.children('caption').text(
+      lenGrades + ' ' + coursesPluralize + ' newly graded/updated for student registration number "' + studentRegNo + '"'
+    );
+    $scoreInputValidForm
+      .find('#student-score-table-text')
+      .val($table.get(0).outerHTML);
 
     return $scoreInputValidForm;
   }

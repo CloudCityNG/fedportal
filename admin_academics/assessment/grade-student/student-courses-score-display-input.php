@@ -21,7 +21,7 @@
                 </tr>
 
                 <tr>
-                    <th>REGISTRATION NO</th> <td>{$student['reg_no']}</td>
+                    <th>REGISTRATION NO</th> <td id='student-reg-number'>{$student['reg_no']}</td>
                 </tr>
 
                 <tr>
@@ -180,7 +180,7 @@
           <th>Title</th>
           <th>Unit</th>
           <th style="width: 20px;">Old Score</th>
-          <th style="width: 142px;">New Score</th>
+          <th style="width: 12px;">New Score</th>
           <th>Grade</th>
         </tr>
       </thead>
@@ -191,7 +191,9 @@
 
     <?php
     $studentCoursesDataJSONEncoded = json_encode($studentCoursesData);
-    echo "<input type='hidden' value='{$studentCoursesDataJSONEncoded}' name='student-courses-data' />";
+    echo "<input type='hidden' value='{$studentCoursesDataJSONEncoded}' name='student-courses-data' />
+      <input type='hidden' name='student-score-table-text' id='student-score-table-text' />
+    ";
     ?>
 
     <div style="text-align: center">

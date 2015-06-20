@@ -16,11 +16,11 @@ input.existing-score.form-control {
 .student-courses-display-img-and-name {
   margin-bottom: 25px;
 }
-.modal .modal-body-caption {
+.modal-body-caption {
   text-align: center;
   font-size: 18px;
   color: #4CAE4C;
 }
-.modal .modal-body-caption.no-valid {
+.modal-body-caption.no-valid {
   color: #C31010;
 }
