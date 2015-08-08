@@ -27,7 +27,7 @@
         </script>
 
         <div class="row sign-in-container">
-          <form class="form-inline sign-in-form col-sm-8" id="sign-in-form" data-toggle="validator">
+          <form class="form-inline sign-in-form col-sm-8" id="sign-in-form" data-toggle="validator" method="post">
             <span class="legend">Academic Admin Login</span>
 
             <div class="form-group">

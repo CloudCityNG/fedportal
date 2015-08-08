@@ -14,23 +14,13 @@ module.exports = function(grunt) {
           files: {
             'libs/compiled.min.js': ['libs/compiled-temp.js']
           }
-        },
-
-        admin_academics: {
-          options: {
-            sourceMap: true
-          },
-          files: {
-            'admin_academics/academic_session/js/session.min.js': 'admin_academics/academic_session/js/session.js',
-            'admin_academics/home/js/home.min.js': 'admin_academics/home/js/home.js',
-            'admin_academics/semester/js/semester.min.js': 'admin_academics/semester/js/semester.js'
-          }
         }
       },
 
       concat: {
         initial: {
           options: {separator: ';\n'},
+
           files: {
             'libs/compiled-temp.js': [
               'libs/jquery/dist/jquery.js',
@@ -57,17 +47,6 @@ module.exports = function(grunt) {
             ]
           }
 
-        },
-
-        'admin_academics': {
-          options: {separator: ';'},
-          files: {
-            'admin_academics/home/js/home-bundle.js': [
-              'admin_academics/home/js/home.js',
-              'admin_academics/semester/js/*.js',
-              'admin_academics/academic_session/js/*.js'
-            ]
-          }
         }
       },
 
