@@ -1,7 +1,8 @@
 "use strict";
 
 module.exports = {
-  assessment: require('./assessment'),
+  assessment: require('./assessment/all.js'),
+
 
   utilities: require('./utilities')
 }

@@ -4,7 +4,7 @@ var gulp = require('gulp')
 var plugins = require('gulp-load-plugins')();
 var browserSync = require('browser-sync').create()
 
-var adminAcademics = require('./admin_academics')
+var adminAcademics = require('./admin_academics/all.js')
 var assessment = adminAcademics.assessment
 var gradeStudent = assessment.gradeStudent
 
@@ -15,6 +15,7 @@ gulp.task(gradeStudent.gulpTaskName, gradeStudent.gulpTaskFn(gulp, plugins))
 gulp.task('webpack', [gradeStudent.gulpTaskName])
 
 gulp.task('initial-js', function() {
+
   return gulp.src([
     'libs/jquery/dist/jquery.js',
     'libs/moment/min/moment.min.js',
@@ -64,6 +65,8 @@ gulp.task('initial-css', function() {
     .pipe(plugins.sourcemaps.write('.'))
     .pipe(gulp.dest('./libs/css'))
 })
+
+gulp.task('initial', ['initial-js', 'initial-css'])
 
 gulp.task('compress-js', function() {
   gulp.src(compressScripts, {base: '.'})
