@@ -1,4 +1,7 @@
 <?php
+//$gradeCoursesContext is exported by the php script that renders this page ie.
+//GradeStudent.php -> class AssessmentGradeStudentController -> method renderPage
+
 $tenMostRecentSemesters = $gradeCoursesContext['ten_most_recent_semesters'];
 $scoreGradeMapping = $gradeCoursesContext['score_grade_mapping'];
 $postStatus = isset($gradeCoursesContext['post_status']) ? $gradeCoursesContext['post_status'] : null;
@@ -29,7 +32,7 @@ $initialDisplayFormStyle = $justGradedCourses ? 'none' : 'block';
   <button type="button" class="close just-graded-courses-close" data-dismiss="alert" aria-label="Close">
     <span aria-hidden="true">&times;</span>
   </button>
-  <?php echo $justGradedCourses?>
+  <?php echo $justGradedCourses ?>
 </div>
 
 <form id="student-course-query-form" style="display: <?php echo $initialDisplayFormStyle ?>"

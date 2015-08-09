@@ -14,7 +14,7 @@ $('.just-graded-courses-close').click(function() {
   var tenMostRecentSemesters = JSON.parse($('#tenMostRecentSemesters-container').text());
 
   $('#semester').autocomplete(
-    require('./../../../utilities/js/admin-academics-utilities.js').sessionSemesterAutoComplete(
+    require('./../../../utilities').sessionSemesterAutoComplete(
       tenMostRecentSemesters, 'label'
     )
   );

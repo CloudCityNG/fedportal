@@ -16,7 +16,7 @@ function sessionSemesterAutoComplete(source, fieldToDisplay) {
 
     select: function(evt, ui) {
       var
-        $el      = $(this),
+        $el = $(this),
         $related = $($el.data('related-input-id'));
 
       $related.val(ui.item.id);
@@ -39,6 +39,4 @@ function sessionSemesterAutoComplete(source, fieldToDisplay) {
   };
 }
 
-module.exports = {
-  sessionSemesterAutoComplete: sessionSemesterAutoComplete
-};
+module.exports = sessionSemesterAutoComplete
