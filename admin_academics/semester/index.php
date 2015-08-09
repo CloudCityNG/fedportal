@@ -110,13 +110,12 @@ class SemesterController
    * those involved in executing http method 'POST'. The 2 arguments are required to re-render post data
    * back to users and indicate whether post succeeded or not.
    *
-   * @param array|null $oldCurrentSemesterData - if data needed to update current semester not valid,
-   *                                              then $oldCurrentSemesterData refers to that invalid data.
-   *                                              This will then be re-rendered to user.
+   * @param array|null $oldCurrentSemesterData - if data needed to update current semester not valid, then
+   *    $oldCurrentSemesterData refers to that invalid data. This will then be re-rendered to user.
    *
-   * @param array|null $oldNewSemester - if data needed to create current semester not valid,
-   *                                      then $oldNewSemester refers to that invalid data. This will then be
-   *                                      re-rendered to user.
+   * @param array|null $oldNewSemester - if data needed to create current semester not valid, then $oldNewSemester
+   *    refers to that invalid data. This will then be re-rendered to user.
+   *
    * @param array|null $postStatus -   whether semester successfully updated or created.
    */
   public function renderPage(array $oldCurrentSemesterData = null, array $oldNewSemester = null, array $postStatus = null)
@@ -196,12 +195,18 @@ class SemesterController
       $academicSessions = AcademicSession::getSessions($howMany);
 
       if ($academicSessions) {
+        $labelledAcademicSession = [];
 
-        $academicSessions = array_map(function ($aSession) {
+        foreach ($academicSessions as $aSession) {
           $aSession['label'] = $aSession['session'];
           $aSession['value'] = $aSession['session'];
-          return $aSession;
-        }, $academicSessions);
+
+          $labelledAcademicSession[] = $aSession;
+        }
+
+        $academicSessions = $labelledAcademicSession;
+
+        self::logger()->addInfo('Two most recent academic sessions for jquery ui autocomplete: ', $academicSessions);
       }
 
     } catch (PDOException $e) {
