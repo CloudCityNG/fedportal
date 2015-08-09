@@ -156,6 +156,7 @@
         <h4 class="modal-title" id="current-semester-form-modal-title">Grade Student</h4>
       </div>
       <div class="modal-body" id="current-semester-form-modal-body">
+        <!--modal form below will be appended here-->
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -165,7 +166,7 @@
   </div>
 </div>
 
-<!-- Modal form for when data is valid-->
+<!-- Modal confirmation form - for when data is valid - before final submission to server-->
 <script type="text/template" id="scores-input-valid-form-template">
   <form method="post">
     <table class="table table-striped table-condense table-bordered student-course-score-form-table">
@@ -186,6 +187,7 @@
       </thead>
 
       <tbody>
+        <!--courses that have been updated or freshly inputted will go here-->
       </tbody>
     </table>
 

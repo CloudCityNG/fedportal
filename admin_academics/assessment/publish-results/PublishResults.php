@@ -29,10 +29,12 @@ class PublishResultsController extends AssessmentController
     $sessionSemesterText = $post['session_semester_text'] . ' - ' . $post['level'] . ' - ' . $post['department_name'];
 
     $errors = false;
+
     $queryErrors = [
       'posted' => false,
       'messages' => ["No student has registered for courses for the given inputs: {$sessionSemesterText}!"]
     ];
+
     $courses = null;
     $studentCourses = null;
 
@@ -44,12 +46,15 @@ class PublishResultsController extends AssessmentController
       ]);
 
       if ($courses) {
-        $studentCourses = array_map(function ($course) {
-          return $course['id'];
-        }, $courses);
+
+        $ids = [];
+
+        foreach ($courses as $aCourse) {
+          $ids[] = $aCourse['id'];
+        }
 
         $studentCourses = StudentCourses::courseIdsAndSemesterExist(
-          ['course_ids' => $studentCourses, 'semester_id' => $post['semester_id']]
+          ['course_ids' => $ids, 'semester_id' => $post['semester_id']]
         );
       }
 
