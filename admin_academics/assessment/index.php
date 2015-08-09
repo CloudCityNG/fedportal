@@ -1,4 +1,5 @@
 <?php
+require_once(__DIR__ . '/../../helpers/app_settings.php');
 require_once(__DIR__ . '/../login/auth.php');
 require(__DIR__ . '/grade-student/GradeStudent.php');
 require(__DIR__ . '/transcript/Transcript.php');
@@ -6,6 +7,13 @@ require(__DIR__ . '/publish-results/PublishResults.php');
 
 class AssessmentController
 {
+
+  private static function logger()
+  {
+    return get_logger('AssessmentController');
+  }
+
+
   /**
    * When we do a post request, we must tell user status of post -
    * whether success or failure. The function does just that.
@@ -109,20 +117,28 @@ class AssessmentController
       $semesters = Semester::getSemesters(10);
 
       if ($semesters) {
+        $labelledSemesters = [];
 
-        $semesters = array_map(function ($aSemester) {
+        foreach ($semesters as $aSemester) {
           $aSemester['label'] = $aSemester['session']['session'] . ' - ' .
             Semester::renderSemesterNumber($aSemester['number']) . ' semester';
 
+          self::logger()->addInfo("aSemester[label]: " . $aSemester['label']);
+
           $aSemester['value'] = $aSemester['id'];
-          return $aSemester;
-        }, $semesters);
+
+          $labelledSemesters[] = $aSemester;
+        }
+
+        $semesters = $labelledSemesters;
+
+        self::logger()->addInfo('Ten most recent semesters for jquery ui autocomplete: ', $semesters);
       }
 
     } catch (PDOException $e) {
 
       logPdoException(
-        $e, 'Error occurred while retrieving the two most recent academic sessions', self::logger());
+        $e, 'Error occurred while retrieving the ten most recent academic sessions', self::logger());
     }
 
     return $semesters;
