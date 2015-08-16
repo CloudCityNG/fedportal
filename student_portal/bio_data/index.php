@@ -156,7 +156,7 @@ class FreshmanRegController1
 
       $log->addInfo("File '$fileName' for student '$reg' uploaded successfully");
 
-      $query = "INSERT INTO pics(personalno, nameofpic) VALUES ('$reg', '$fileName')";
+      $query = "INSERT INTO pics(personalno, nameofpic, created_at) VALUES ('$reg', '$fileName', NOW())";
 
       $log->addInfo("About to insert file name into database with query: $query");
 
