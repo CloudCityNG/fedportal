@@ -174,11 +174,6 @@ class PublishResultsController extends AssessmentController
     array $coursesToClient = null
   )
   {
-    $currentPage = [
-      'title' => 'assessment',
-
-      'link' => 'publish-results'
-    ];
 
     $tenMostRecentSemesters = self::getSemestersForJSAutoComplete();
 

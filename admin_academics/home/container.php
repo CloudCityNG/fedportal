@@ -1,7 +1,3 @@
-<?php
-require(__DIR__ . '/getNavClass.php');
-?>
-
 <!doctype html>
 <html class="no-js" lang="">
 <head>
@@ -36,66 +32,52 @@ require(__DIR__ . '/getNavClass.php');
     <?php require(__DIR__ . '/current_session_semester_info.php'); ?>
 
     <div class="row content-area">
+
       <div class="col-sm-3 side-bar-navs">
-        <div class="side-nav session-side-bar-nav <?php echo getNavClass($currentPage, 'nav', 'session') ?>">
+        <div class="side-nav session-side-bar-nav">
 
           <span class="title session-title">Manage Academic Sessions</span>
 
-          <div class="links <?php echo getNavClass($currentPage, 'links', 'session') ?>">
-            <a class="link <?php echo getNavClass($currentPage, 'link', 'new-session') ?>"
-               href="<?php echo STATIC_ROOT . 'admin_academics/academic_session/' ?>">
+          <div class="links">
+            <a class="link" href="<?php echo STATIC_ROOT . 'admin_academics/academic_session/' ?>">
               Current and New Academic Session
             </a>
           </div>
         </div>
 
-        <div class="side-nav semester-side-bar-nav <?php echo getNavClass($currentPage, 'nav', 'semester'); ?>">
-
+        <div class="side-nav semester-side-bar-nav">
           <span class="title">Manage Semester</span>
 
-          <div class="links <?php echo getNavClass($currentPage, 'links', 'semester') ?>">
-            <a class="link <?php echo getNavClass($currentPage, 'link', 'new-semester') ?>"
-               href="<?php echo path_to_link(__DIR__ . '/../semester/') ?>">
-              Current and New Semester
-            </a>
+          <div class="links">
+            <a class="link" href="<?php echo path_to_link(__DIR__ . '/../semester/') ?>">Current and New Semester</a>
           </div>
         </div>
 
-        <div class="side-nav <?php echo getNavClass($currentPage, 'nav', 'assessment'); ?>">
+        <div class="side-nav side-nav-exams-assessment">
           <span class="title">Exams And Assessments</span>
 
-          <div class="links <?php echo getNavClass($currentPage, 'links', 'assessment') ?>">
-            <a class="link <?php echo getNavClass($currentPage, 'link', 'enter-grades') ?>"
-               href="<?php echo path_to_link(__DIR__ . '/../assessment/') . '?grade-students' ?>">
+          <div class="links">
+            <a class="link" href="<?php echo path_to_link(__DIR__ . '/../assessment/') . '?grade-students' ?>">
               Grade Students
             </a>
 
-            <a class="link <?php echo getNavClass($currentPage, 'link', 'transcripts') ?>"
-               href="<?php echo path_to_link(__DIR__ . '/../assessment/') . '?transcripts' ?>">
+            <a class="link" href="<?php echo path_to_link(__DIR__ . '/../assessment/') . '?transcripts' ?>">
               Transcripts
             </a>
 
-            <a class="link <?php echo getNavClass($currentPage, 'link', 'publish-results') ?>"
-               href="<?php echo path_to_link(__DIR__ . '/../assessment/') . '?publish-results' ?>">
+            <a class="link" href="<?php echo path_to_link(__DIR__ . '/../assessment/') . '?publish-results' ?>">
               Publish Results
             </a>
           </div>
         </div>
 
-        <!--<div class="side-nav collapsed">-->
-        <!--  <span class="title">Courses</span>-->
-        <!---->
-        <!--  <div class="links">-->
-        <!--    <span class="link">View Course</span>-->
-        <!---->
-        <!--    <div class="link" id="add-course"-->
-        <!--         data-template-url="-->
-        <phpx
-        //echo STATIC_ROOT . 'admin_academics/courses/' ?><!--">-->
-        <!--      Add Course-->
-        <!--    </div>-->
-        <!--  </div>-->
-        <!--</div>-->
+        <div class="side-nav side-nav-courses">
+          <span class="title">Courses</span>
+
+          <div class="links">
+            <a class="link" href="<?php echo path_to_link(__DIR__ . '/../assessment/') . '?course' ?>">Add a course</a>
+          </div>
+        </div>
       </div>
 
       <div class="col-sm-9 content-area-main">

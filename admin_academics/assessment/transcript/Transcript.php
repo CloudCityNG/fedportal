@@ -41,17 +41,9 @@ class AssessmentTranscriptController extends AssessmentController
     }
   }
 
-  public static function renderPage(
-    array $oldStudentTranscriptQueryData = null,
-    array $postStatus = null,
-    array $studentScoresData = null
-  )
+  public static function renderPage(array $oldStudentTranscriptQueryData = null, array $postStatus = null,
+                                    array $studentScoresData = null)
   {
-    $currentPage = [
-      'title' => 'assessment',
-
-      'link' => 'transcripts'
-    ];
 
     $link_template = __DIR__ . '/transcript-partial.php';
 

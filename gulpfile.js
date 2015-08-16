@@ -8,7 +8,13 @@ var adminAcademics = require('./admin_academics/all.js')
 var assessment = adminAcademics.assessment
 var gradeStudent = assessment.gradeStudent
 
-var compressScripts = []
+var compressScripts = [
+  './admin_academics/home/js/admin-academics-home.js'
+]
+
+var lessFiles = [
+  './admin_academics/**/*.less'
+]
 
 gulp.task(gradeStudent.gulpTaskName, gradeStudent.gulpTaskFn(gulp, plugins))
 
@@ -77,8 +83,19 @@ gulp.task('compress-js', function() {
     .pipe(gulp.dest('.'))
 })
 
-gulp.task('watch', function() {
+gulp.task('less', function() {
+  gulp.src(lessFiles)
+    .pipe(plugins.less())
+    .pipe(plugins.sourcemaps.init())
+    .pipe(plugins.minifyCss())
+    .pipe(plugins.rename({suffix: '.min', extname: '.css'}))
+    .pipe(plugins.sourcemaps.write('.'))
+    .pipe(gulp.dest('.'))
+})
+
+gulp.task('default', function() {
   gulp.watch(compressScripts, ['compress-js'])
+  gulp.watch(lessFiles, ['less'])
 })
 
 gulp.task('browser-sync', function() {

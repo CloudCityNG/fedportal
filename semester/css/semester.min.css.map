@@ -1,0 +1,1 @@
+{"version":3,"sources":["semester/css/semester.css"],"names":[],"mappings":"AAAA,+BACE,QAAS,MAEX,2BACE,QAAS,KAEX,+BACE,OAAQ","file":"semester/css/semester.min.css","sourcesContent":[".new-semester-form legend > span {\n  display: block;\n}\n.current-semester-form-btn {\n  display: none;\n}\n.current-semester-edit-trigger {\n  cursor: pointer;\n}\n"],"sourceRoot":"/source/"}

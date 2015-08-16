@@ -74,12 +74,6 @@ class AcademicSessionController
 
   public function renderPage($oldNewSessionData = null, $postStatus = null)
   {
-    $currentPage = [
-      'title' => 'session',
-
-      'link' => 'new-session'
-    ];
-
     $theSession = AcademicAdminUtilities::getCurrentOrAlternativeSession();
 
     if ($theSession) {
