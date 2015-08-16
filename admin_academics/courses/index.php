@@ -1,41 +1,22 @@
 <?php
-require_once(__DIR__ . '/../login/auth.php');
-require_once(__DIR__ . '/../../helpers/databases.php');
 require_once(__DIR__ . '/../../helpers/app_settings.php');
+require_once(__DIR__ . '/../login/auth.php');
+require(__DIR__ . '/add-course/AddCourse.php');
 
-require_once(__DIR__ . '/../models/AcademicLevels.php');
+switch ($_SERVER['QUERY_STRING']) {
+  case 'add-course': {
+    $addCourse = new AddCourseController();
 
-class CoursesController
-{
-  private static $LOG_NAME = 'ACADEMIC-ADMIN-COURSES-CONTROLLER';
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+      $addCourse->renderPage();
 
-  public function get()
-  {
-    header("Content-Type: application/json");
-
-    if (isset($_GET['initial']) && $_GET['initial']) {
-      echo json_encode([
-        'template' => file_get_contents(__DIR__ . '/courses-view.mustache'),
-
-        'context' => ['levels' => AcademicLevels::getAllLevels()]
-      ]);
-
-    } else {
-      echo json_encode([]);
+    } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $addCourse->post();
     }
+    break;
   }
 
-  public function post()
-  {
-
-  }
-}
-
-$controller = new CoursesController();
-
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-  $controller->get();
-
-} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $controller->post();
+  default:
+    $home = path_to_link(__DIR__ . '/../home');
+    header("Location: {$home}");
 }

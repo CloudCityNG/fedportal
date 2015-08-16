@@ -75,7 +75,7 @@
           <span class="title">Courses</span>
 
           <div class="links">
-            <a class="link" href="<?php echo path_to_link(__DIR__ . '/../assessment/') . '?course' ?>">Add a course</a>
+
           </div>
         </div>
       </div>
