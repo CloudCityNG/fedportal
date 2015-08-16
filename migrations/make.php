@@ -27,8 +27,11 @@ $stub = "<?php\n\n\nClass {$className}\n{\n  " .
   "public function up(PDO \$db) \n  {\n  }\n\n  " .
   "public function down(PDO \$db) \n  {\n  } \n}";
 
-$fileObj = fopen(__DIR__ . "/scripts/{$fileName}.php", 'w');
+$migrationScriptName = "/scripts/{$fileName}.php";
+$fileObj = fopen(__DIR__ . $migrationScriptName, 'w');
 
 fwrite($fileObj, $stub);
 
 fclose($fileObj);
+
+echo "migration script: '{$migrationScriptName}' successfully created.";
