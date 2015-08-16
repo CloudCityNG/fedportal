@@ -25,7 +25,7 @@ include_once(__DIR__ . '/../vendor/autoload.php');
 
 use Monolog\Logger;
 
-use Monolog\Handler\StreamHandler;
+use Monolog\Handler\RotatingFileHandler;
 
 /**
  * @param string $name
@@ -40,7 +40,7 @@ function get_logger($name)
 
   if (!file_exists($logDir)) mkdir($logDir);
 
-  $log->pushHandler(new StreamHandler($logDir . '/out_log.log', Logger::DEBUG));
+  $log->pushHandler(new RotatingFileHandler($logDir . '/out_log.log', 0, Logger::DEBUG));
 
   return $log;
 }
