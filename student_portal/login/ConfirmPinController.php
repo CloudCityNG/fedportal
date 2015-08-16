@@ -27,7 +27,7 @@ class ConfirmPinController1
     $this->confirm_password = trim($post['confirm-password']);
 
     $post['password'] = 'hidden';
-    $post['confirm_password'] = 'hidden';
+    $post['confirm-password'] = 'hidden';
 
     $log->addInfo("Instantiating ConfirmPinController with post data", $post);
 

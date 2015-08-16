@@ -1,7 +1,6 @@
 <?php
-include_once(__DIR__ . '/ConfirmPinController1.php');
-
-include_once(__DIR__ . '/../../helpers/app_settings.php');
+require_once(__DIR__ . '/ConfirmPinController.php');
+require_once(__DIR__ . '/../../helpers/app_settings.php');
 
 
 class LoginStudentController1

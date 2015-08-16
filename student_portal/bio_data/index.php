@@ -1,14 +1,9 @@
 <?php
 require_once(__DIR__ . '/../login/auth.php');
-
 require_once(__DIR__ . '/../../helpers/databases.php');
-
 require_once(__DIR__ . '/../../helpers/app_settings.php');
-
 require_once(__DIR__ . '/../home/set_student_reg_form_completion_session.php');
-
 require_once(__DIR__ . '/../../helpers/models/StudentProfile.php');
-
 require_once(__DIR__ . '/../../admin_academics/models/AcademicSession.php');
 
 class FreshmanRegController1
