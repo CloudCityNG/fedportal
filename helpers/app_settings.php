@@ -1,14 +1,15 @@
 <?php
 
+define('DB_NAME', 'fedportal');
+define('DB_USERNAME', 'fedportal');
+define('DB_PASSWORD', 'fedportal');
+
 define('STATIC_ROOT', '/fedportal/');
+
 define('BLANK_IMAGE_PATH', STATIC_ROOT . 'photo_files/_blank.png');
 
 define('SESSION_TIME_OUT', 1800);
 define('SESSION_TIME_OUT_ALERT', 1500);
-
-define('DB_NAME', 'fedportal');
-define('DB_USERNAME', 'fedportal');
-define('DB_PASSWORD', 'fedportal');
 
 define('SCHOOL_NAME', 'Federal School of Dental Technology And Therapy');
 define('SCHOOL_WEBSITE', 'www.fedsdtten.edu.ng');
@@ -36,7 +37,9 @@ function get_logger($name)
   $log = new Logger($name);
 
   $logDir = __DIR__ . '/../out_logs';
+
   if (!file_exists($logDir)) mkdir($logDir);
+
   $log->pushHandler(new StreamHandler($logDir . '/out_log.log', Logger::DEBUG));
 
   return $log;
@@ -90,9 +93,7 @@ function sessionAgeValid($appSessionName)
 {
   $lastActivitySessionName = LAST_ACTIVITY_AUTH_PREFIX_KEY . $appSessionName;
 
-  if (isset($_SESSION[$lastActivitySessionName]) &&
-    (time() - $_SESSION[$lastActivitySessionName] > SESSION_TIME_OUT)
-  ) {
+  if (isset($_SESSION[$lastActivitySessionName]) && (time() - $_SESSION[$lastActivitySessionName] > SESSION_TIME_OUT)) {
 
     if (isset($_SESSION[$appSessionName])) unset($_SESSION[$appSessionName]);
     return false;
@@ -105,8 +106,8 @@ function sessionAgeValid($appSessionName)
 /**
  * Take a php array and convert to array suitable for use in database query
  *
- * @param array $phpArray - of the form [0: mixed, 1: mixed, 3: mixed....]
- * @return string - of the form ('string', 'string', 'string', ..)
+ * @param array $phpArray - of the form [0: mixed, 1: mixed, 2: mixed....]
+ * @return string - of the form ('string', 'string', 'string'..)
  */
 function toDbArray(array $phpArray)
 {
