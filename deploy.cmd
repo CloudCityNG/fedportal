@@ -34,5 +34,6 @@ del %deployFolder%\gulpfile.js
 del %deployFolder%\package.json
 del %deployFolder%\README.md
 del %deployFolder%\root.config.js
+del %deployFolder%\..\qportal.zip
 
 7z a -y  %deployFolder%.zip %deployFolder%
