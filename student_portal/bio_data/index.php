@@ -156,17 +156,29 @@ class FreshmanRegController1
 
       $log->addInfo("File '$fileName' for student '$reg' uploaded successfully");
 
-      $query = "INSERT INTO pics(personalno, nameofpic, created_at) VALUES ('$reg', '$fileName', NOW())";
+      $db = get_db();
+
+      $studentId = null;
+
+      $stmtFreshmanId = $db->query("SELECT id FROM freshman_profile WHERE personalno = '{$reg}'");
+
+      if ($stmtFreshmanId) {
+        $studentId = $stmtFreshmanId->fetch()['id'];
+      }
+
+      $query = "INSERT INTO pics(personalno, nameofpic, created_at, freshman_profile_id)
+                VALUES ('$reg', '$fileName', NOW(), '{$studentId}')";
 
       $log->addInfo("About to insert file name into database with query: $query");
 
-      get_db()->query($query);
+      if ($studentId) {
+        $db->query($query);
 
-      $log->addInfo("File '$fileName' successfully inserted into database.");
+        $log->addInfo("File '$fileName' successfully inserted into database.");
 
-      return true;
+        return true;
 
-    } catch (Exception $e) {
+      }} catch (Exception $e) {
 
       $log->addError(
         "Either File upload failed with error: " .
