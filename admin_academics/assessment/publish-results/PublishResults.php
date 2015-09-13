@@ -35,8 +35,12 @@ class PublishResultsController extends AssessmentController
       'messages' => ["No student has registered for courses for the given inputs: {$sessionSemesterText}!"]
     ];
 
+    /**
+     * An array of all courses taken in a particular department, in a level and semester
+     */
     $courses = null;
-    $studentCourses = null;
+
+    $coursesToClient = [];
 
     try {
       $courses = Courses1::getCoursesForSemesterDeptLevel([
@@ -46,16 +50,7 @@ class PublishResultsController extends AssessmentController
       ]);
 
       if ($courses) {
-
-        $ids = [];
-
-        foreach ($courses as $aCourse) {
-          $ids[] = $aCourse['id'];
-        }
-
-        $studentCourses = StudentCourses::courseIdsAndSemesterExist(
-          ['course_ids' => $ids, 'semester_id' => $post['semester_id']]
-        );
+        $coursesToClient = StudentCourses::getCoursesWithPublishedStatus($courses, $post['semester_id']);
       }
 
     } catch (PDOException $e) {
@@ -73,21 +68,9 @@ class PublishResultsController extends AssessmentController
       self::logGeneralError($e, self::logger());
     }
 
-    if ($errors || !$courses || !$studentCourses) {
+    if ($errors || !$courses) {
       self::renderPage($queryErrors);
       return;
-    }
-
-    $coursesToClient = [];
-    $studentCoursesIds = array_keys($studentCourses);
-
-    foreach ($courses as $course) {
-      $id = $course['id'];
-
-      if (in_array($id, $studentCoursesIds)) {
-        $course['publish'] = $studentCourses[$id];
-        $coursesToClient[] = $course;
-      }
     }
 
     self::renderPage(null, null, [
@@ -168,13 +151,8 @@ class PublishResultsController extends AssessmentController
     return get_logger('PublishResultsController');
   }
 
-  public function renderPage(
-    array $postStatus = null,
-    array $oldSemesterCourseQueryData = null,
-    array $coursesToClient = null
-  )
+  public function renderPage(array $postStatus = null, array $oldSemesterCourseQueryData = null, array $coursesToClient = null)
   {
-
     $tenMostRecentSemesters = self::getSemestersForJSAutoComplete();
 
     $academicLevels = AcademicLevels::getAllLevels();

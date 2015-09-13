@@ -1,9 +1,16 @@
+<?php
+$regNo = $studentCourseRegViewContext['reg_no'];
+$dept_name = $studentCourseRegViewContext['dept_name'];
+$dept_code = $studentCourseRegViewContext['dept_code'];
+$currentLevel = $studentCourseRegViewContext['current-level'];
+?>
+
 <form class="courses-tables-form form-horizontal" method="post" action="" data-toggle="validator">
 
   <header class="panel-heading no-b">
     <h3 class="text-center">
       Course <b>Sign Up Form:
-        <?php echo "{$dept_name} ({$semester}" . ($semester == 1 ? 'st' : 'nd') . " Semester {$academicYear} session)"; ?>
+        <?php echo "{$dept_name} (" . $studentCourseRegViewContext['semester-text'] . " Semester {$academicYear} session)"; ?>
       </b>
     </h3>
   </header>

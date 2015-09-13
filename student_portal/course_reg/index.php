@@ -20,9 +20,9 @@ class CourseRegController
 
   public function get()
   {
-    $regNo = $_SESSION['REG_NO'];
+    $studentRegNo = $_SESSION['REG_NO'];
 
-    if (!StudentProfile::student_exists($regNo)) {
+    if (!StudentProfile::student_exists($studentRegNo)) {
       self::exitOnError('You have not selected your department! Please complete bio data.');
     }
 
@@ -40,29 +40,29 @@ class CourseRegController
       self::exitOnError('Current semester not set. Please inform admin about this error.');
     }
 
-    $semester = $semesterFromDb['number'];
-
-    $semester_text = Semester::renderSemesterNumber($semester);
-
-    $profile = new StudentProfile($regNo);
-
-    $currentLevel = $profile->getCurrentLevelDept($academicYear)['level'];
-
-    $dept_code = $profile->dept_code;
-
-    $dept_name = AcademicDepartment::getDeptNameFromCode($dept_code);
+    $profile = new StudentProfile($studentRegNo);
 
     $course_data = StudentCourses::getStudentCoursesForSemester([
-      'reg_no' => $regNo,
+      'reg_no' => $studentRegNo,
       'semester_id' => $semesterFromDb['id']
     ]);
 
+    $semester = $semesterFromDb['number'];
+
+    $studentCourseRegViewContext = [
+      'reg_no' => $studentRegNo,
+      'dept_name' => AcademicDepartment::getDeptNameFromCode($profile->dept_code),
+      'dept_code' => $profile->dept_code,
+      'current-level' => $profile->getCurrentLevelDept($academicYear)['level'],
+      'semester-text' => Semester::renderSemesterNumber($semester)
+    ];
+
     if (!empty($course_data)) {
-      $student = get_student_profile_from_reg_no($regNo);
+      $student = get_student_profile_from_reg_no($studentRegNo);
       $view = __DIR__ . '/view_print.php';
 
     } else {
-      $courses_for_semester = $this->getCoursesForSemesterDept($dept_code, $semester);
+      $courses_for_semester = $this->getCoursesForSemesterDept($profile->dept_code, $semester);
       $view = __DIR__ . '/form.php';
     }
 
@@ -121,8 +121,18 @@ class CourseRegistrationPostController
   private $academic_year;
   private $reg_no;
   private $level;
-  private $semester;
-  private $courses_chosen;
+
+  /**
+   * The number (1st or second) of the semester in which the student is registering
+   * @var string|number
+   */
+  private $semesterNumber;
+
+  /**
+   * An array of courses the students had signed up for
+   * @var array
+   */
+  private $coursesChosen;
   private $dept_code;
 
   function __construct()
@@ -133,13 +143,13 @@ class CourseRegistrationPostController
 
       $this->reg_no = $post['reg_no'];
 
-      $this->semester = $post['semester'];
+      $this->semesterNumber = $post['semester'];
 
       $this->academic_year = $post['academic_year'];
 
       $this->level = $post['level'];
 
-      $this->courses_chosen = $post['course_reg'];
+      $this->coursesChosen = $post['course_reg'];
 
       $this->dept_code = $post['dept'];
 
@@ -163,15 +173,15 @@ class CourseRegistrationPostController
 
   public function insert_courses()
   {
-    $count = count($this->courses_chosen);
+    $count = count($this->coursesChosen);
 
     try {
       StudentCourses::bulkCreateForStudentForSemester(
-        $this->courses_chosen,
+        $this->coursesChosen,
         [
           'academic_year_code' => $this->academic_year,
           'reg_no' => $this->reg_no,
-          'semester' => $this->semester,
+          'semester' => $this->semesterNumber,
           'level' => $this->level
         ]
       );
@@ -192,7 +202,7 @@ class CourseRegistrationPostController
       return;
     }
 
-    $this->set_current_level_dept();
+    $this->setCurrentLevelDept();
 
     $bill = new StudentBilling();
 
@@ -204,6 +214,8 @@ class CourseRegistrationPostController
       "You have registered for $count courses this semester. Click on
          view and print to print course registration form."
     );
+
+    $this->publishScores();
 
     self::redirectToDashboard();
     return;
@@ -218,7 +230,14 @@ class CourseRegistrationPostController
     return get_logger("CourseRegistrationPostController");
   }
 
-  private function set_current_level_dept()
+  private function publishScores()
+  {
+    $currentSemester = Semester::getCurrentSemester();
+    $studentCourses = StudentCourses::courseIdsAndSemesterExist(['course_ids' => array_keys($this->coursesChosen), 'semester_id' => $currentSemester['id']]);
+    return StudentCourses::publishScores($studentCourses, $currentSemester['id'], $this->reg_no);
+  }
+
+  private function setCurrentLevelDept()
   {
     try {
       StudentCurrent::create([

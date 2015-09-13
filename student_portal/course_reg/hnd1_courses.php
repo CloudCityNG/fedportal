@@ -4,15 +4,15 @@
 
     <thead>
     <tr>
-      <th>#</th>
-      <th>Course Code</th>
-      <th>Course Title</th>
-      <th>Credit Unit</th>
-
       <th>
         <label class="sr-only" for="hnd1-check-all">HND 1 CHECK ALL</label>
         <input type="checkbox" id="hnd1-check-all"/>
       </th>
+
+      <th>#</th>
+      <th>Course Code</th>
+      <th>Course Title</th>
+      <th>Credit Unit</th>
     </tr>
     </thead>
 
@@ -31,23 +31,14 @@
 
       $unit = sprintf('%.2f', $courses['unit']);
 
-      echo "<tr>\n
-
-                                <input type='hidden' name='course_reg[$id]' value='$id' disabled />
-
-                                <td>$course_seq</td>\n
-
-                                <td>$code</td>\n
-
-                                <td>$title</td>\n
-
-                                <td>$unit</td>\n
-
-                                <td>
-                                    <input class='hnd1-check' type='checkbox' name='hnd1-check'/>
-                                </td>
-
-                                </tr>";
+      echo "<tr>
+              <input type='hidden' name='course_reg[$id]' value='$id' disabled />
+              <td><input class='hnd1-check' type='checkbox' name='hnd1-check'/></td>
+              <td>$course_seq</td>
+              <td>$code</td>
+              <td>$title</td>
+              <td>$unit</td>
+            </tr>";
 
       $course_seq++;
     }

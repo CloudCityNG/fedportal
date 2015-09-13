@@ -67,7 +67,7 @@ class StudentCourses
     if (isset($data['semester_id'])) $query .= ' AND semester_id = :semester_id';
     if (isset($data['publish'])) $query .= ' AND publish = :publish';
 
-    $logger = new SqlLogger(self::logger(), 'get student courses', $query);
+    $logger = new SqlLogger(self::logger(), 'get student courses', $query, $data);
 
     $stmt = get_db()->prepare($query);
 
@@ -331,7 +331,7 @@ class StudentCourses
   {
     $courseIdsDbArray = toDbArray($data['course_ids']);
 
-    $query = "select DISTINCT course_id, publish from student_courses
+    $query = "select course_id, publish from student_courses
               WHERE course_id IN {$courseIdsDbArray}
               AND semester_id = ?";
 
@@ -351,7 +351,15 @@ class StudentCourses
 
       $returnedVal = [];
 
-      while ($row = $stmt->fetch()) $returnedVal[$row['course_id']] = $row['publish'];
+      while ($row = $stmt->fetch()) {
+        $courseId = $row['course_id'];
+        $published = $row['publish'];
+
+        //published courses take precedence
+        if (array_key_exists($courseId, $returnedVal) && $returnedVal[$courseId] == 1) continue;
+
+        $returnedVal[$courseId] = $published;
+      }
 
       if (count($returnedVal)) {
         $logger->dataRetrieved($returnedVal);
@@ -373,11 +381,18 @@ class StudentCourses
    * The value is either 0 for un-publish or 1 for publish
    *
    * @param string|number $semesterId
+   * @param string|null $regNo - optionally publish score for student with the specified registration number
    * @return array - of courses IDs that are successfully updated
    */
-  public static function publishScores(array $courses, $semesterId)
+  public static function publishScores(array $courses, $semesterId, $regNo = null)
   {
-    $query = "UPDATE student_courses SET publish = :publish WHERE course_id = :course_id AND semester_id = :semester_id";
+    $query = "
+        UPDATE student_courses
+        SET publish = :publish
+        WHERE course_id = :course_id
+        AND semester_id = :semester_id";
+
+    $query .= $regNo ? " AND reg_no = :reg_no" : '';
 
     $logger = new SqlLogger(self::logger(), 'publish or un-publish student scores', $query, $courses);
     $publish = $courseId = null;
@@ -386,6 +401,7 @@ class StudentCourses
     $stmt->bindValue('semester_id', $semesterId);
     $stmt->bindParam('course_id', $courseId);
     $stmt->bindParam('publish', $publish);
+    if ($regNo) $stmt->bindParam('reg_no', $regNo);
 
     $updated = [];
 
@@ -397,5 +413,47 @@ class StudentCourses
     }
 
     return $updated;
+  }
+
+  /**
+   * Take courses that are available in a semester in a level and department and update them with published status.
+   * This is is what the algorithm looks like:
+   *  (1) user will get courses available in a semester, department and level
+   *  (2) Get all students (actually their course IDs) that have signed up for the given courses in (1) - this will
+   *        naturally retrieve their published statuses
+   *  (3) Update the courses in (1) with the published statuses in (2) and return the courses
+   *
+   * @param array $courses - array of courses from which we wish to pull out published courses
+   * @param $semesterId - the id of the semester
+   * @return array
+   */
+  public static function getCoursesWithPublishedStatus(array $courses, $semesterId)
+  {
+    $coursesIds = [];
+
+    /**
+     * Students (actually their courses) that have signed up for the courses in the $courses array above
+     */
+    $studentCourses = null;
+
+    foreach ($courses as $aCourse) {
+      $coursesIds[] = $aCourse['id'];
+    }
+
+    $studentCourses = self::courseIdsAndSemesterExist(['course_ids' => $coursesIds, 'semester_id' => $semesterId]);
+
+    $returnedCourses = [];
+    $studentCoursesIds = array_keys($studentCourses);
+
+    foreach ($courses as $course) {
+      $id = $course['id'];
+
+      if (in_array($id, $studentCoursesIds)) {
+        $course['publish'] = $studentCourses[$id];
+        $returnedCourses[] = $course;
+      }
+    }
+
+    return $returnedCourses;
   }
 }
