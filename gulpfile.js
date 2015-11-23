@@ -2,7 +2,6 @@
 
 var gulp = require('gulp')
 var plugins = require('gulp-load-plugins')();
-var browserSync = require('browser-sync').create()
 
 var adminAcademics = require('./admin_academics/all.js')
 var assessment = adminAcademics.assessment
@@ -93,15 +92,9 @@ gulp.task('less', function() {
     .pipe(gulp.dest('.'))
 })
 
-gulp.task('default', function() {
+gulp.task('watch', function() {
   gulp.watch(compressScripts, ['compress-js'])
   gulp.watch(lessFiles, ['less'])
 })
 
-gulp.task('browser-sync', function() {
-  browserSync.init({
-    files: ['./**/*.js', './**/*.css', './**/*.html', './**/*.php'],
-
-    proxy: 'localhost/fedportal'
-  })
-})
+gulp.task('default', ['watch', 'webpack'])

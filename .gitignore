@@ -1,13 +1,14 @@
+!includes/img
 photo_files
+!photo_files/_blank.png
 .idea
 insertpin1.php
 zzz.php
 insertpin.js
 error_log
 0.html
-node_modules
-vendor
-img
+/vendor
+/node_modules
 libs/jquery
 libs/moment
 libs/formValidation

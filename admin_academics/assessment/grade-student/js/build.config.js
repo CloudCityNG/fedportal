@@ -1,12 +1,12 @@
 "use strict";
 
 var path = require('path')
-var webpack = require('webpack')
-var rootConfig = require(path.join('..', '..', '..', '..', 'root.config.js'))
+var deepCopy = require('deepcopy')
+var rootConfig = deepCopy(require(path.join('..', '..', '..', '..', 'root.config.js')))
 
 var base = __dirname
 
-var entry = path.join(base, 'grade-student.js')
+var entry = path.join(base, 'grade-student-in.js')
 
 var webpackConfig = rootConfig.webpackConfig
 
@@ -22,7 +22,7 @@ webpackConfig.resolve = [base]
 function gulpTaskFn(gulp, plugins) {
   return function() {
     return gulp.src(entry)
-      .pipe(plugins.webpack(webpackConfig, webpack))
+      .pipe(plugins.webpack(webpackConfig, require('webpack')))
       .pipe(plugins.sourcemaps.init())
       .pipe(plugins.uglify())
       .pipe(plugins.rename({suffix: '.min'}))

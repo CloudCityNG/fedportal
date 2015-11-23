@@ -32,7 +32,7 @@ $('.just-graded-courses-close').click(function() {
 })();
 
 (function studentCourseScoreForm() {
-  var $courseScores = $('.course-score');
+  var $courseScores = $('.course-score')
   var invalidFormMsg = '<div class="modal-body-caption no-valid">\n' +
                        '  No score was inputted or updated. You may not submit form!\n' +
                        '</div>';
