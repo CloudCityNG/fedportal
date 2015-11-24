@@ -33,7 +33,7 @@
 
     <div class="row content-area">
 
-      <div class="col-sm-3 side-bar-navs">
+      <div class="col-sm-3 side-bar-navs navigation-controls">
         <div class="side-nav session-side-bar-nav">
 
           <span class="title session-title">Manage Academic Sessions</span>

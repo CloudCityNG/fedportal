@@ -18,19 +18,6 @@ module.exports = function(grunt) {
               'admin_academics/utilities/js/admin-academics-utilities.js'
             ]
           }
-        },
-
-        'admin-academics-semester': {
-          options: {
-            watch: true,
-            keepAlive: true
-          },
-          files: {
-            'admin_academics/semester/js/semester.js': [
-              'admin_academics/semester/js/semester-raw.js',
-              'admin_academics/utilities/js/admin-academics-utilities.js'
-            ]
-          }
         }
       }
     }

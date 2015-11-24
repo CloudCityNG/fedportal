@@ -73,9 +73,9 @@ $(document.body).on(
 
 var twoMostRecentSessions = JSON.parse($('#two-most-recent-sessions').text());
 
-$('.semester-session').autocomplete(
-  require('./../../utilities/js/admin-academics-utilities.js').sessionSemesterAutoComplete(twoMostRecentSessions, 'session')
-);
+$('.semester-session').autocomplete(require('./../../utilities/js/session-semester-autocomplete.js')(
+  twoMostRecentSessions, 'session'
+));
 
 (function currentSemesterForm() {
   var $form = $('.current-semester-form').formValidation(

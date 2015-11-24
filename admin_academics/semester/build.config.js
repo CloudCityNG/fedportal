@@ -2,11 +2,11 @@
 
 var path = require('path')
 var deepCopy = require('deepcopy')
-var rootConfig = deepCopy(require(path.join('..', '..', '..', '..', 'root.config.js')))
+var rootConfig = deepCopy(require(path.join('..', '..', 'root.config.js')))
 
-var base = __dirname
+var base = path.join(__dirname, 'js')
 
-var entry = path.join(base, 'grade-student-raw.js')
+var entry = path.join(base, 'semester-raw.js')
 
 var webpackConfig = rootConfig.webpackConfig
 
@@ -14,7 +14,7 @@ webpackConfig.entry = entry
 
 webpackConfig.output = {
   base: base,
-  filename: 'grade-student.js'
+  filename: 'semester.js'
 }
 
 function gulpTaskFn(gulp, plugins) {
@@ -26,7 +26,8 @@ function gulpTaskFn(gulp, plugins) {
 }
 
 module.exports = {
-  gulpTaskName: 'webpack-admin-academics-assessment-grade-student',
+  gulpTaskName: 'webpack-admin-academics-semester',
   gulpTaskFn: gulpTaskFn,
-  minifyJs: [path.join(base, 'grade-student.js')]
+  destDir: base,
+  minifyJs: [path.join(base, 'semester.js')]
 }

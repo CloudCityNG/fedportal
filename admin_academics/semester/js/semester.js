@@ -1,242 +1,291 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"C:\\wamp\\www\\fedportal\\admin_academics\\semester\\js\\semester-raw.js":[function(require,module,exports){
-/*jshint camelcase:false*/
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
 
-"use strict";
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
 
-var
-  thisYear = new Date().getFullYear(),
-  lastYear = thisYear - 1;
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
 
-var sessionValidation = {
-  callback: function(value) {
-    var regExp = /^(\d{4})\/(\d{4})$/.exec(value);
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
 
-    if (regExp) {
-      var
-        start = parseInt(regExp[1]),
-        end = parseInt(regExp[2]);
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
 
-      if ((end - start) === 1) {
-        var
-          thisYear = new Date().getFullYear(),
-          startDiff = Math.abs(start - thisYear),
-          endDiff = Math.abs(end - thisYear);
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
 
-        return startDiff < 3 && endDiff < 3;
-      }
-    }
-    return false;
-  },
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
 
-  message: 'Please match pattern e.g ' + lastYear + '/' + thisYear
-};
 
-$(document.body).on(
-  {
-    'click': function() {
-      var $el = $(this),
-        $fieldSet = $el.closest('.current-semester-panel').find('fieldset'),
-        $formControls = $fieldSet.find('.form-control').not('#current-semester-session'),
-        $semesterBtn = $('.current-semester-form-btn');
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
 
-      $fieldSet.closest('.current-semester-form').data('formValidation').resetForm();
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
 
-      if ($el.is('.glyphicon-edit')) {
-        $formControls.each(function() {
-                             $(this).prop('disabled', false);
-                           }
-        );
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
 
-        $el
-          .removeClass('glyphicon-edit')
-          .addClass('glyphicon-eye-open')
-          .attr('title', 'View only');
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ function(module, exports, __webpack_require__) {
 
-        $semesterBtn.show();
+	/*jshint camelcase:false*/
 
-      } else {
+	"use strict";
 
-        $formControls.each(function() {
-                             $(this).prop('disabled', true);
-                           }
-        );
+	var
+	  thisYear = new Date().getFullYear(),
+	  lastYear = thisYear - 1;
 
-        $el
-          .removeClass('glyphicon-eye-open')
-          .addClass('glyphicon-edit')
-          .attr('title', 'Edit semester');
+	var sessionValidation = {
+	  callback: function(value) {
+	    var regExp = /^(\d{4})\/(\d{4})$/.exec(value);
 
-        $semesterBtn.hide();
-      }
-    }
-  }, '.current-semester-edit-trigger'
-);
+	    if (regExp) {
+	      var
+	        start = parseInt(regExp[1]),
+	        end = parseInt(regExp[2]);
 
-var twoMostRecentSessions = JSON.parse($('#two-most-recent-sessions').text());
+	      if ((end - start) === 1) {
+	        var
+	          thisYear = new Date().getFullYear(),
+	          startDiff = Math.abs(start - thisYear),
+	          endDiff = Math.abs(end - thisYear);
 
-$('.semester-session').autocomplete(
-  require('./../../utilities/js/admin-academics-utilities.js').sessionSemesterAutoComplete(twoMostRecentSessions, 'session')
-);
+	        return startDiff < 3 && endDiff < 3;
+	      }
+	    }
+	    return false;
+	  },
 
-(function currentSemesterForm() {
-  var $form = $('.current-semester-form').formValidation(
-    {
-      fields: {
-        'current_semester[session]': {
-          validators: {
-            callback: {
-              callback: sessionValidation.callback,
-              message: sessionValidation.message
-            }
-          }
-        },
+	  message: 'Please match pattern e.g ' + lastYear + '/' + thisYear
+	};
 
-        'current_semester[session_id]': {
-          excluded: false,
-          validators: {
-            notEmpty: {message: 'You may only pick from the drop down list'}
-          }
-        }
-      }
-    }
-  );
+	$(document.body).on(
+	  {
+	    'click': function() {
+	      var $el = $(this),
+	        $fieldSet = $el.closest('.current-semester-panel').find('fieldset'),
+	        $formControls = $fieldSet.find('.form-control').not('#current-semester-session'),
+	        $semesterBtn = $('.current-semester-form-btn');
 
-  $form.on('err.field.fv', '#current-semester-session', function(evt) {
-             $form.formValidation('revalidateField', $($(evt.target).data('related-input-id')).val(''));
-           }
-  );
+	      $fieldSet.closest('.current-semester-form').data('formValidation').resetForm();
 
-})();
+	      if ($el.is('.glyphicon-edit')) {
+	        $formControls.each(function() {
+	                             $(this).prop('disabled', false);
+	                           }
+	        );
 
-(function newSemesterForm() {
-  var $form = $('.new-semester-form').formValidation(
-    {
-      fields: {
-        'new_semester[session]': {
-          validators: {
-            callback: {
-              callback: sessionValidation.callback,
-              message: sessionValidation.message
-            }
-          }
-        },
+	        $el
+	          .removeClass('glyphicon-edit')
+	          .addClass('glyphicon-eye-open')
+	          .attr('title', 'View only');
 
-        'new_semester[session_id]': {
-          excluded: false,
-          validators: {
-            notEmpty: {message: 'You may only pick from the drop down list'}
-          }
-        }
-      }
-    }
-  );
+	        $semesterBtn.show();
 
-  $form.on('err.field.fv', '#new-semester-session', function(evt) {
-             $form.formValidation('revalidateField', $($(evt.target).data('related-input-id')).val(''));
-           }
-  );
-})();
+	      } else {
 
-(function currentSemesterSelectUpdate() {
-  var $form = $('.current-semester-select-update-form').formValidation(
-    {
-      fields: {
-        'current_semester[session]': {
-          validators: {
-            callback: {
-              callback: sessionValidation.callback,
-              message: sessionValidation.message
-            }
-          }
-        },
+	        $formControls.each(function() {
+	                             $(this).prop('disabled', true);
+	                           }
+	        );
 
-        'current_semester[session_id]': {
-          excluded: false,
-          validators: {
-            notEmpty: {message: 'You may only pick from the drop down list'}
-          }
-        }
-      }
-    }
-  );
+	        $el
+	          .removeClass('glyphicon-eye-open')
+	          .addClass('glyphicon-edit')
+	          .attr('title', 'Edit semester');
 
-  var
-    $tr,
-    trBgColor;
+	        $semesterBtn.hide();
+	      }
+	    }
+	  }, '.current-semester-edit-trigger'
+	);
 
-  $(document.body).on(
-    {
-      'click': function() {
-        var
-          $el = $(this),
-          data = JSON.parse($el.next().text());
+	var twoMostRecentSessions = JSON.parse($('#two-most-recent-sessions').text());
 
-        $tr = $el.closest('tr');
-        trBgColor = $tr.css('background-color');
+	$('.semester-session').autocomplete(__webpack_require__(1)(
+	  twoMostRecentSessions, 'session'
+	));
 
-        $tr.css('background-color', '#DAC3DB').siblings().css('background-color', trBgColor);
+	(function currentSemesterForm() {
+	  var $form = $('.current-semester-form').formValidation(
+	    {
+	      fields: {
+	        'current_semester[session]': {
+	          validators: {
+	            callback: {
+	              callback: sessionValidation.callback,
+	              message: sessionValidation.message
+	            }
+	          }
+	        },
 
-        $('#current-semester-select-update-id').val(data.id);
-        $form.find('#number').val(String(data.number));
-        $form.find('#start_date').val(moment(data.start_date.date).format('DD-MM-YYYY'));
-        $form.find('#end_date').val(moment(data.end_date.date).format('DD-MM-YYYY'));
+	        'current_semester[session_id]': {
+	          excluded: false,
+	          validators: {
+	            notEmpty: {message: 'You may only pick from the drop down list'}
+	          }
+	        }
+	      }
+	    }
+	  );
 
-        $form.show();
-      }
-    }, '.current-semester-select-update-trigger'
-  );
+	  $form.on('err.field.fv', '#current-semester-session', function(evt) {
+	             $form.formValidation('revalidateField', $($(evt.target).data('related-input-id')).val(''));
+	           }
+	  );
 
-  $('#current-semester-select-update-clear-btn').click(function() {
-    $tr.css('background-color', trBgColor);
-    $form.hide();
-  }
-  );
-})();
+	})();
 
-},{"./../../utilities/js/admin-academics-utilities.js":"C:\\wamp\\www\\fedportal\\admin_academics\\utilities\\js\\admin-academics-utilities.js"}],"C:\\wamp\\www\\fedportal\\admin_academics\\utilities\\js\\admin-academics-utilities.js":[function(require,module,exports){
-"use strict";
+	(function newSemesterForm() {
+	  var $form = $('.new-semester-form').formValidation(
+	    {
+	      fields: {
+	        'new_semester[session]': {
+	          validators: {
+	            callback: {
+	              callback: sessionValidation.callback,
+	              message: sessionValidation.message
+	            }
+	          }
+	        },
 
-/**
- *
- * @param {Array} source
- * @param {String} fieldToDisplay - the field from the source that will be set as value
- * of form control been auto-completed
- *
- * @returns {{minLength: number, source: Array, select: Function}}
- */
-function sessionSemesterAutoComplete(source, fieldToDisplay) {
-  return {
-    minLength: 1,
+	        'new_semester[session_id]': {
+	          excluded: false,
+	          validators: {
+	            notEmpty: {message: 'You may only pick from the drop down list'}
+	          }
+	        }
+	      }
+	    }
+	  );
 
-    source: source,
+	  $form.on('err.field.fv', '#new-semester-session', function(evt) {
+	             $form.formValidation('revalidateField', $($(evt.target).data('related-input-id')).val(''));
+	           }
+	  );
+	})();
 
-    select: function(evt, ui) {
-      var
-        $el      = $(this),
-        $related = $($el.data('related-input-id'));
+	(function currentSemesterSelectUpdate() {
+	  var $form = $('.current-semester-select-update-form').formValidation(
+	    {
+	      fields: {
+	        'current_semester[session]': {
+	          validators: {
+	            callback: {
+	              callback: sessionValidation.callback,
+	              message: sessionValidation.message
+	            }
+	          }
+	        },
 
-      $related.val(ui.item.id);
+	        'current_semester[session_id]': {
+	          excluded: false,
+	          validators: {
+	            notEmpty: {message: 'You may only pick from the drop down list'}
+	          }
+	        }
+	      }
+	    }
+	  );
 
-      if (evt.originalEvent.which === 1) {
-        window.setTimeout(function() {
-                            $el.val(ui.item[fieldToDisplay]);
-                          }
-        );
-      }
+	  var
+	    $tr,
+	    trBgColor;
 
-      window.setTimeout(function() {
-                          $el.closest('form').formValidation('revalidateField', $el);
-                          $el.closest('form').formValidation('revalidateField', $related);
-                        }
-      );
+	  $(document.body).on(
+	    {
+	      'click': function() {
+	        var
+	          $el = $(this),
+	          data = JSON.parse($el.next().text());
 
-      return false;
-    }
-  };
-}
+	        $tr = $el.closest('tr');
+	        trBgColor = $tr.css('background-color');
 
-module.exports = {
-  sessionSemesterAutoComplete: sessionSemesterAutoComplete
-};
+	        $tr.css('background-color', '#DAC3DB').siblings().css('background-color', trBgColor);
 
-},{}]},{},["C:\\wamp\\www\\fedportal\\admin_academics\\semester\\js\\semester-raw.js","C:\\wamp\\www\\fedportal\\admin_academics\\utilities\\js\\admin-academics-utilities.js"]);
+	        $('#current-semester-select-update-id').val(data.id);
+	        $form.find('#number').val(String(data.number));
+	        $form.find('#start_date').val(moment(data.start_date.date).format('DD-MM-YYYY'));
+	        $form.find('#end_date').val(moment(data.end_date.date).format('DD-MM-YYYY'));
+
+	        $form.show();
+	      }
+	    }, '.current-semester-select-update-trigger'
+	  );
+
+	  $('#current-semester-select-update-clear-btn').click(function() {
+	    $tr.css('background-color', trBgColor);
+	    $form.hide();
+	  }
+	  );
+	})();
+
+
+/***/ },
+/* 1 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	/**
+	 *
+	 * @param {Array} source
+	 * @param {String} fieldToDisplay - the field from the source that will be set as value
+	 * of form control been auto-completed
+	 *
+	 * @returns {{minLength: number, source: Array, select: Function}}
+	 */
+	function sessionSemesterAutoComplete(source, fieldToDisplay) {
+	  return {
+	    minLength: 1,
+
+	    source: source,
+
+	    select: function(evt, ui) {
+	      var
+	        $el = $(this),
+	        $related = $($el.data('related-input-id'));
+
+	      $related.val(ui.item.id);
+
+	      if (evt.originalEvent.which === 1) {
+	        window.setTimeout(function() {
+	                            $el.val(ui.item[fieldToDisplay]);
+	                          }
+	        );
+	      }
+
+	      window.setTimeout(function() {
+	                          $el.closest('form').formValidation('revalidateField', $el);
+	                          $el.closest('form').formValidation('revalidateField', $related);
+	                        }
+	      );
+
+	      return false;
+	    }
+	  };
+	}
+
+	module.exports = sessionSemesterAutoComplete
+
+
+/***/ }
+/******/ ]);
