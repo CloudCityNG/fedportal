@@ -17,8 +17,13 @@ define('SCHOOL_ADDRESS', 'Trans-Ekulu, P.M.B. 01473, Enugu');
 
 //auth sessions
 define('STUDENT_PORTAL_AUTH_KEY', 'REG_NO');
+
 define('ACADEMIC_ADMIN_AUTH_KEY', 'ADMIN-ACADEMICS');
 define('ACADEMIC_ADMIN_AUTH_VALUE', 'ADMIN-ACADEMICS');
+
+define('STAFF_USER_KEY', 'jhhdd7HG5dhdhd{}VDE{}+FFqbbch');
+define('STAFF_CAPABILITY_KEY', 'MjhsvsYBBB50?@#^&*/KKgqvnop');
+
 define('LAST_ACTIVITY_AUTH_PREFIX_KEY', 'LAST-ACTIVITY-');
 
 include_once(__DIR__ . '/../vendor/autoload.php');

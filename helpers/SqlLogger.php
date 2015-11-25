@@ -38,7 +38,7 @@ class SqlLogger
    * purpose => [query: 'the database SQL prepared statement to be executed'], [params: 'the SQL query parameters']
    * the params part of the message is however optional since not all SQL prepared statements use parameters
    *
-   * @param string $purpose - a brief summary of what the method wishes to do or what we wish to retrieve from databse
+   * @param string $purpose - a brief summary of what the method wishes to do or what we wish to retrieve from database
    * @param $query - the SQL vanilla statement or prepared statement
    * @param array $params - the SQL prepared statement parameters - null if it does not use any parameter
    * @return string - in the form
@@ -50,8 +50,19 @@ class SqlLogger
     return "{$purpose} =>  [query: {$query}]{$paramPart}";
   }
 
-  public function dataRetrieved(array $databaseResult)
+  /**
+   * Log the result of a database query
+   * @param array $databaseResult - the result of the database query
+   * @param array|null $hiddenParams - if specified, the values of the array entries will be set to 'hidden' in the
+   * database result before logging. This is useful for hiding such things as user password
+   */
+  public function dataRetrieved(array $databaseResult, array $hiddenParams = null)
   {
+    if($hiddenParams){
+      foreach ($hiddenParams as $hiddenParam) {
+        $databaseResult[$hiddenParam] = 'HIDDEN';
+      }
+    }
     self::logDataRetrieved($this->logger, $this->logMessage, $databaseResult);
   }
 

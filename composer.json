@@ -9,7 +9,8 @@
     "behat/mink": "1.4.*@stable",
     "behat/mink-extension": "*",
     "behat/mink-goutte-driver": "*",
-    "behat/mink-selenium2-driver": "*"
+    "behat/mink-selenium2-driver": "*",
+    "ircmaxell/password-compat": "^1.0"
   },
   "autoload": {
     "classmap": [
