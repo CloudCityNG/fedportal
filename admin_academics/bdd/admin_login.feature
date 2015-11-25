@@ -33,5 +33,21 @@ Feature: The admin interface login
 #    multiple steps
     When I enter my credentials and submit login form
     Then Session is created with user data
-    And User is redirected to login page
-    And User is shown message that he does not have sufficient privilege
+    And I am redirected to login page
+    And And shown message that I do not have sufficient privilege
+
+
+  Scenario: Login - username not in system
+    Given I am at the admin login page
+#    multiple steps
+    When I enter my credentials and submit login form
+    Then I am redirected to login page
+    And And shown message that username/password does not exist
+
+  Scenario: Login - username in system, but password not in system
+    Given There is user in the system
+    And I am at the admin login page
+#    multiple steps
+    When I enter my credentials and submit login form
+    Then I am redirected to login page
+    And And shown message that username/password does not exist

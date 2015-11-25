@@ -9,7 +9,8 @@ var gradeStudent = assessment.gradeStudent
 var semester = adminAcademics.semester
 
 var compressScripts = [
-  './admin_academics/home/js/admin-academics-home.js'
+  './admin_academics/home/js/admin-academics-home.js',
+  './admin_academics/login/js/login.js'
 ].concat(semester.minifyJs)
   .concat(gradeStudent.minifyJs)
 

@@ -8,20 +8,8 @@ function adminAcademicsAuth()
 
   require_once(__DIR__ . '/../../helpers/app_settings.php');
 
-  $login = STATIC_ROOT . 'admin_academics/login/';
-
-  if (!isset($_SESSION[ACADEMIC_ADMIN_AUTH_KEY])) {
-    header("location: {$login}");
-    exit;
-  }
-
-  if (!trim($_SESSION[ACADEMIC_ADMIN_AUTH_KEY])) {
-    header("location: {$login}");
-    exit;
-  }
-
-  if (!sessionAgeValid(ACADEMIC_ADMIN_AUTH_KEY)) {
-    header("location: {$login}");
+  if (!isset($_SESSION[STAFF_USER_KEY]) || !sessionAgeValid(STAFF_USER_KEY)) {
+    header('location: ' . STATIC_ROOT . 'admin_academics/login/');
     exit;
   }
 }
