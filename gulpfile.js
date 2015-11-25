@@ -45,7 +45,7 @@ gulp.task('initial-js', function () {
     .pipe(plugins.addSrc.append('libs/number-format.js'))
     .pipe(plugins.addSrc.append('libs/navigation-control/navigation-control.js'))
     .pipe(plugins.addSrc.append('libs/js/jquery.cookie.js'))
-    .pipe(plugins.addSrc.append('libs/js/jquery.treeview.js'))
+    .pipe(plugins.addSrc.append('bower_components/jquery-treeview/jquery.treeview.js'))
     .pipe(plugins.sourcemaps.init())
     .pipe(plugins.concat('compiled.js'))
     .pipe(plugins.uglify())

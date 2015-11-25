@@ -22,6 +22,7 @@
     "bootstrap": "3.3.2",
     "bootstrap-datepicker": "1.4.1",
     "moment": "~2.10.6",
-    "formvalidation": "https://github.com/samba6/formvalidation.git"
+    "formvalidation": "https://github.com/samba6/formvalidation.git",
+    "jquery-treeview": "~1.4.2"
   }
 }
