@@ -8,11 +8,15 @@ var assessment = adminAcademics.assessment
 var gradeStudent = assessment.gradeStudent
 var semester = adminAcademics.semester
 
+var staffProfile =  adminAcademics.staffProfile
+var createStaffProfile = staffProfile.createProfile
+
 var compressScripts = [
   './admin_academics/home/js/admin-academics-home.js',
   './admin_academics/login/js/login.js'
 ].concat(semester.minifyJs)
   .concat(gradeStudent.minifyJs)
+  .concat(createStaffProfile.minifyJs)
 
 var lessFiles = [
   './admin_academics/**/*.less'
@@ -20,8 +24,13 @@ var lessFiles = [
 
 gulp.task(gradeStudent.gulpTaskName, gradeStudent.gulpTaskFn(gulp, plugins))
 gulp.task(semester.gulpTaskName, semester.gulpTaskFn(gulp, plugins))
+gulp.task(createStaffProfile.gulpTaskName, createStaffProfile.gulpTaskFn(gulp, plugins))
 
-gulp.task('webpack', [gradeStudent.gulpTaskName, semester.gulpTaskName])
+gulp.task('webpack', [
+  gradeStudent.gulpTaskName,
+  semester.gulpTaskName,
+  createStaffProfile.gulpTaskName
+])
 
 gulp.task('initial-js', function () {
 
@@ -86,7 +95,7 @@ gulp.task('compress-js', function () {
 })
 
 gulp.task('less', function () {
-  gulp.src(lessFiles)
+  gulp.src(lessFiles, {base: '.'})
     .pipe(plugins.less())
     .pipe(plugins.sourcemaps.init())
     .pipe(plugins.minifyCss())

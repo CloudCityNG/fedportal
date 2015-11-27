@@ -31,27 +31,22 @@ Class Semester
                 session_id = :session_id
                 WHERE id = :id";
 
-    self::logger()->addInfo("About to update semester using query: {$query} and params: ", $post);
-
     $oldStartDate = Carbon::createFromFormat('d-m-Y', $post['start_date']);
     $oldEndDate = Carbon::createFromFormat('d-m-Y', $post['end_date']);
-
     $post['start_date'] = $oldStartDate->format('Y-m-d');
     $post['end_date'] = $oldEndDate->format('Y-m-d');
-
+    $logger = new SqlLogger(self::logger(), 'Update semester', $query, $post);
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($post)) {
+      $logger->statementSuccess();
       $post['start_date'] = $oldStartDate;
       $post['end_date'] = $oldEndDate;
       $post['session'] = AcademicSession::get_session_by_id($post['session_id']);
-
-      self::logger()->addInfo("Semester successfully updated.");
-
       return $post;
     }
 
-    self::logger()->addWarning('Could not update semester');
+    $logger->noData();
     return null;
   }
 
@@ -70,36 +65,31 @@ Class Semester
   public static function create(array $post)
   {
     $db = get_db();
-
     $now = Carbon::now();
-
     $query = "INSERT INTO semester(number, start_date, end_date, created_at, updated_at, session_id)
               VALUES (:number, :start_date, :end_date, '$now', '$now', :session_id)";
 
-    self::logger()->addInfo("About to create a new semester using query: {$query} and params: ", $post);
-
     $old_start_date = Carbon::createFromFormat('d-m-Y', $post['start_date']);
     $old_end_date = Carbon::createFromFormat('d-m-Y', $post['end_date']);
-
     $post['start_date'] = $old_start_date->format('Y-m-d');
     $post['end_date'] = $old_end_date->format('Y-m-d');
-
+    $logger = new SqlLogger(self::logger(), 'Create a new semester', $query, $post);
     $stmt = $db->prepare($query);
 
     if ($stmt->execute($post)) {
+      $logger->statementSuccess();
       $post['id'] = $db->lastInsertId();
       $post['created_at'] = $now;
       $post['updated_at'] = $now;
       $post['start_date'] = $old_start_date;
       $post['end_date'] = $old_end_date;
       $post['session'] = AcademicSession::get_session_by_id($post['session_id']);
-
-      self::logger()->addInfo("Semester successfully created as: ", $post);
+      $logger->dataRetrieved($post);
 
       return $post;
     }
 
-    self::logger()->addError("Query to create semester failed to execute");
+    $logger->noData();
 
     return null;
   }
@@ -107,32 +97,24 @@ Class Semester
   public static function getImmediatePastSemester()
   {
     $query1 = "SELECT * FROM semester WHERE end_date < ? ORDER BY end_date DESC LIMIT 1";
-
     $param = [Carbon::now()->format('Y-m-d')];
-
-    self::logger()->addInfo(
-      "About to get immediate past semester with query {$query1}, and param: ", $param
-    );
-
+    $logger = new SqlLogger(self::logger(), 'Get immediate past semester', $query1, $param);
     $stmt = get_db()->prepare($query1);
 
     if ($stmt->execute($param)) {
       $semester = $stmt->fetch();
 
       if ($semester) {
-        self::logger()->addInfo(
-          "Query executed successfully. Immediate past semester is: ", $semester
-        );
-
+        $logger->statementSuccess();;
         $semester = self::dbDatesToCarbon($semester);
-
         $semester['session'] = AcademicSession::getCurrentSession();
+        $logger->dataRetrieved($semester);
 
         return $semester;
       }
     }
 
-    self::logger()->addWarning("Immediate past semester not found.");
+    $logger->noData();
     return null;
   }
 
@@ -183,20 +165,17 @@ Class Semester
       'session_id' => $currentSession['id']
     ];
 
-    $logger = new SqlLogger(self::logger(), 'get current semester', $query, $query_param);
+    $logger = new SqlLogger(self::logger(), 'Get current semester', $query, $query_param);
 
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($query_param)) {
       $logger->statementSuccess();
-
       $semester = $stmt->fetch();
 
       if ($semester) {
         $semester = self::dbDatesToCarbon($semester);
-
         $semester['session'] = $currentSession;
-
         $logger->dataRetrieved($semester);
 
         return $semester;
@@ -225,21 +204,20 @@ Class Semester
                AND session_id = ({$query1})";
 
     $params = [$number, $session];
-
-    self::logger()->addInfo("About to get semester using query: {$query2} and params: ", $params);
-
+    $logger = new SqlLogger(self::logger(), 'Get semester', $query2, $params);
     $stmt = get_db()->prepare($query2);
 
     if ($stmt->execute($params)) {
+      $logger->statementSuccess();
       $result = $stmt->fetch();
 
       if ($result) {
-        self::logger()->addInfo("Statement executed successfully, result is: ", $result);
+        $logger->dataRetrieved($result);
         return $result;
       }
     }
 
-    self::logger()->addWarning("Can not get semester.");
+    $logger->noData();
     return null;
   }
 
@@ -347,8 +325,8 @@ Class Semester
    *
    * @param array $data - the data array that will be passed to the database. Contains a key 'number'
    *
-   * @param bool $newSemester - indicates whether data will be used to create new semester or update an existing semester
-   * Some business rules e.g existence rule, can not be enforced for update
+   * @param bool $newSemester - indicates whether data will be used to create new semester or update an existing
+   *   semester Some business rules e.g existence rule, can not be enforced for update
    *
    * @return array - we return back the data to the caller unmodified.
    */
@@ -450,11 +428,12 @@ Class Semester
       $query .= " LIMIT {$howMany}";
     }
 
-    self::logger()->addInfo("About to get semesters with query: {$query}");
+    $logger = new SqlLogger(self::logger(), 'Get semesters', $query);
 
     $stmt = get_db()->query($query);
 
     if ($stmt) {
+      $logger->statementSuccess();
       $semesters = [];
 
       while ($row = $stmt->fetch()) {
@@ -464,12 +443,12 @@ Class Semester
       }
 
       if (count($semesters)) {
-        self::logger()->addInfo("Statement executed successfully. Semesters are: ", $semesters);
+        $logger->dataRetrieved($semesters);
         return $semesters;
       }
     }
 
-    self::logger()->addWarning("Semesters could not be retrieved.");
+    $logger->noData();
     return null;
   }
 

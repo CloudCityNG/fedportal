@@ -27,8 +27,7 @@ class SqlLogger
    */
   public function __construct(\Monolog\Logger $logger, $purpose, $query, array $params = null)
   {
-    $paramPart = $params ? ', [params: ' . print_r($params, true) . ']' : '';
-    $this->logMessage = "{$purpose} =>  [query: {$query}]{$paramPart}";
+    $this->logMessage = self::makeLogMessage($purpose, $query, $params);
     $logger->addInfo("Executing SQL: {$this->logMessage}");
     $this->logger = $logger;
   }
@@ -46,8 +45,18 @@ class SqlLogger
    */
   public static function makeLogMessage($purpose, $query, array $params = null)
   {
+    $user = '';
+
+    if (session_status() === PHP_SESSION_NONE) {
+      session_start();
+    }
+
+    if (isset($_SESSION[USER_AUTH_SESSION_KEY])) {
+      $user = 'Username: "' . json_decode($_SESSION[USER_AUTH_SESSION_KEY], true)['username'] . '": ';
+    }
+
     $paramPart = $params ? ', [params: ' . print_r($params, true) . ']' : '';
-    return "{$purpose} =>  [query: {$query}]{$paramPart}";
+    return "{$user}{$purpose} =>  [query: {$query}]{$paramPart}";
   }
 
   /**

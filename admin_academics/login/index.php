@@ -98,8 +98,9 @@ class AdminLogin
         session_start();
       }
       session_regenerate_id();
-      $_SESSION[STAFF_USER_KEY] = json_encode($result);
-      $_SESSION[LAST_ACTIVITY_AUTH_PREFIX_KEY . STAFF_USER_KEY] = time();
+      $_SESSION[USER_AUTH_SESSION_KEY] = json_encode($result, true);
+      $_SESSION[STAFF_USER_SESSION_KEY] = STAFF_USER_SESSION_VALUE;
+      $_SESSION[LAST_ACTIVITY_AUTH_PREFIX_KEY . STAFF_USER_SESSION_KEY] = time();
       session_write_close();
 
       header('location: ' . STATIC_ROOT . 'admin_academics/home/');

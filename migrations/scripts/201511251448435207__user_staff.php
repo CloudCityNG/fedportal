@@ -50,8 +50,8 @@ Class A201511251448435207
         `deleted_at`            TIMESTAMP     NULL DEFAULT NULL,
 
         PRIMARY KEY (`id`),
-        FOREIGN KEY (`staff_profile_id`) REFERENCES `staff_profile` (`id`),
-        FOREIGN KEY (`staff_capability_id`) REFERENCES `staff_capability` (`id`)
+        FOREIGN KEY (`staff_profile_id`) REFERENCES `staff_profile` (`id`) ON DELETE CASCADE,
+        FOREIGN KEY (`staff_capability_id`) REFERENCES `staff_capability` (`id`) ON DELETE CASCADE
       )"
     );
 

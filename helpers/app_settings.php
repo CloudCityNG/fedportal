@@ -18,10 +18,9 @@ define('SCHOOL_ADDRESS', 'Trans-Ekulu, P.M.B. 01473, Enugu');
 //auth sessions
 define('STUDENT_PORTAL_AUTH_KEY', 'REG_NO');
 
-define('ACADEMIC_ADMIN_AUTH_KEY', 'ADMIN-ACADEMICS');
-define('ACADEMIC_ADMIN_AUTH_VALUE', 'ADMIN-ACADEMICS');
-
-define('STAFF_USER_KEY', 'jhhdd7HG5dhdhd{}VDE{}+FFqbbch');
+define('STAFF_USER_SESSION_KEY', 'jhhdd7HG5dhdhd{}VDE{}+FFqbbch');
+define('STAFF_USER_SESSION_VALUE', 'jhhdd7HG5dhdhd{}VDE{}+FFqbbch');
+define('USER_AUTH_SESSION_KEY', 'USER_d0ks25_50?@#^&SESSION_KEY');
 define('STAFF_CAPABILITY_KEY', 'MjhsvsYBBB50?@#^&*/KKgqvnop');
 
 define('LAST_ACTIVITY_AUTH_PREFIX_KEY', 'LAST-ACTIVITY-');
@@ -100,16 +99,19 @@ function sessionAgeValid($appSessionName)
 
   if (isset($_SESSION[$lastActivitySessionName]) && (time() - $_SESSION[$lastActivitySessionName] > SESSION_TIME_OUT)) {
 
-    if (isset($_SESSION[$appSessionName])) unset($_SESSION[$appSessionName]);
+    unset($_SESSION[$appSessionName]);
+    unset($_SESSION[USER_AUTH_SESSION_KEY]);
     return false;
   }
+
   $_SESSION[$lastActivitySessionName] = time();
 
   return true;
 }
 
 /**
- * Take a php array and convert to array suitable for use in database query
+ * Take a php array and convert to array suitable for use in database query e.g in WHERE CLAUSE or INSERT attribute
+ * values
  *
  * @param array $phpArray - of the form [0: mixed, 1: mixed, 2: mixed....]
  * @return string - of the form ('string', 'string', 'string'..)
@@ -119,6 +121,22 @@ function toDbArray(array $phpArray)
   $returned = '(';
   foreach ($phpArray as $el) {
     $returned .= "'{$el}', ";
+  }
+  return trim($returned, ' ,') . ')';
+}
+
+/**
+ * Take a php array and convert to array suitable for use in database INSERT for column names e.g INSERT INTO table_x
+ * (colName1, colName2...,colNameN)
+ *
+ * @param array $phpArray - of the form [0: mixed, 1: mixed, 2: mixed....]
+ * @return string - of the form (string, string, string..)S
+ */
+function toDbColArray(array $phpArray)
+{
+  $returned = '(';
+  foreach ($phpArray as $el) {
+    $returned .= "{$el}, ";
   }
   return trim($returned, ' ,') . ')';
 }
