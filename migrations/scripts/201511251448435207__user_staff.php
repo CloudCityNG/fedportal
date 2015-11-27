@@ -66,10 +66,10 @@ Class A201511251448435207
         ('can_view_session' , 'Assess admin page for managing academic sessions', NOW()),
         ('can_create_session' , 'Create a new session', NOW()),
         ('can_edit_session' , 'Modify an existing session', NOW()),
-        ('can_view_exams' , 'Assess the admin page for managing students\' exams and assessments', NOW()),
-        ('can_gen_transcripts', 'Generate students\' transcripts', NOW()),
-        ('can_publish_results', 'Publish students\' exam results so students can view them on their profile page.', NOW()),
-        ('can_view_courses', 'Assess admin page for managing students\' courses', NOW())
+        ('can_view_exams' , 'Assess the admin page for managing students exams and assessments', NOW()),
+        ('can_gen_transcripts', 'Generate students transcripts', NOW()),
+        ('can_publish_results', 'Publish students exam results so students can view them on their profile page.', NOW()),
+        ('can_view_courses', 'Assess admin page for managing students courses', NOW())
       "
     );
   }
