@@ -78,9 +78,7 @@ function path_to_link($path, $version = false)
 
   $absPath = realpath($path);
   $unix_path = str_replace('\\', '/', $absPath);
-
   $root_pos = strpos($unix_path, STATIC_ROOT);
-
   $versionArg = $version ? '?v=' . filemtime($absPath) : '';
 
   return substr($unix_path, $root_pos) . (is_dir($path) ? '/' : '') . $versionArg;
@@ -127,10 +125,10 @@ function toDbArray(array $phpArray)
 
 /**
  * Take a php array and convert to array suitable for use in database INSERT for column names e.g INSERT INTO table_x
- * (colName1, colName2...,colNameN)
+ * VALUES (colName1, colName2...,colNameN)
  *
- * @param array $phpArray - of the form [0: mixed, 1: mixed, 2: mixed....]
- * @return string - of the form (string, string, string..)S
+ * @param array $phpArray - array of table attributes of the form [0: mixed, 1: mixed, 2: mixed....]
+ * @return string - of the form (string, string, string..)
  */
 function toDbColArray(array $phpArray)
 {
@@ -139,4 +137,51 @@ function toDbColArray(array $phpArray)
     $returned .= "{$el}, ";
   }
   return trim($returned, ' ,') . ')';
+}
+
+/**
+ * Given an array of column names, return a string suitable for use in SQL statement WHERE clause with PDOStatement
+ *    bind parameters
+ * @param array $columns - column names of a DB table of the form [colName1, colNam2, ..]
+ * @param string $glue
+ * @return string - of the form 'colName1=:colName1 AND colName2=:colName2..'
+ */
+function getDbBindParamsFromColArray(array $columns, $glue = ' AND ')
+{
+  $paramArray = [];
+  foreach ($columns as $column) {
+    $paramArray[] = "{$column}=:{$column}";
+  }
+
+  return implode($glue, $paramArray);
+}
+
+
+class UserSession
+{
+  public static function user()
+  {
+    if (session_status() === PHP_SESSION_NONE) {
+      session_start();
+    }
+
+    if(isset($_SESSION[USER_AUTH_SESSION_KEY])) {
+      $user = json_decode($_SESSION[USER_AUTH_SESSION_KEY], true);
+      $user['full_name'] = $user['first_name'] . ' ' . $user['last_name'];
+
+      return $user;
+    }
+    return null;
+  }
+
+  public static function isCapable($capability = null)
+  {
+    $user = self::user();
+
+    if(!$user) return 0;
+
+    if (isset($user['is_super_user']) && $user['is_super_user']) return true;
+
+    return isset($user[$capability]) && $user[$capability];
+  }
 }

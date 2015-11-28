@@ -3,10 +3,24 @@ require_once(__DIR__ . '/StaffProfile.php');
 
 function testGetAllStaff()
 {
-  print_r(StaffProfile::getAllStaff());
+  print_r(StaffProfile::getStaff());
 }
 
 //testGetAllStaff();
+
+function testGetAllStaffFilterUsername()
+{
+  print_r(StaffProfile::getStaff(['username' => 'admin']));
+}
+
+//testGetAllStaffFilterUsername();
+
+function testGetAllStaffFilterUsernameAndID()
+{
+  print_r(StaffProfile::getStaff(['username' => 'admin', 'id' => 1]));
+}
+
+testGetAllStaffFilterUsernameAndID();
 
 
 function testStaffExistsReturnTrue()

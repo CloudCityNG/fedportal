@@ -9,9 +9,12 @@
       toggleSelection($(this));
     })
 
-    var $currentLink = $('[href="' + location.pathname + location.search +'"]')
+    var query = location.search.split('&')[0]
+    var $currentLink = $('[href^="' + location.pathname + query + '"]')
 
-    if($currentLink.size()) {
+    if (query) $currentLink = $currentLink.filter('[href$="' + query + '"]')
+
+    if ($currentLink.size()) {
       $currentLink.addClass('selected')
       emphasizeLinkContainer($currentLink.closest('.side-nav'))
     }
@@ -28,7 +31,7 @@
      *
      * @param {jQuery} sideNav
      */
-    function emphasizeLinkContainer(sideNav){
+    function emphasizeLinkContainer(sideNav) {
       sideNav
         .siblings()
         .removeClass('expanded')

@@ -4,6 +4,8 @@ require_once(__DIR__ . '/../../helpers/app_settings.php');
 require_once(__DIR__ . '/../models/AcademicSession.php');
 require_once(__DIR__ . '/../Utilities.php');
 
+AdminAcademicsAuth::checkCapability('can_view_session');
+
 class AcademicSessionController
 {
   public function post()

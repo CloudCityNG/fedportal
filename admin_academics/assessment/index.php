@@ -5,6 +5,8 @@ require(__DIR__ . '/grade-student/GradeStudent.php');
 require(__DIR__ . '/transcript/Transcript.php');
 require(__DIR__ . '/publish-results/PublishResults.php');
 
+AdminAcademicsAuth::checkCapability('can_view_exams');
+
 class AssessmentController
 {
 
@@ -147,6 +149,8 @@ class AssessmentController
 
 switch ($_SERVER['QUERY_STRING']) {
   case 'transcripts': {
+    AdminAcademicsAuth::checkCapability('can_gen_transcripts');
+
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
       AssessmentTranscriptController::renderPage();
 
@@ -157,6 +161,7 @@ switch ($_SERVER['QUERY_STRING']) {
   }
 
   case 'grade-students': {
+    AdminAcademicsAuth::checkCapability('can_grade_students');
     $assessment = new AssessmentGradeStudentController();
 
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -169,6 +174,7 @@ switch ($_SERVER['QUERY_STRING']) {
   }
 
   case 'publish-results': {
+    AdminAcademicsAuth::checkCapability('can_publish_results');
     $publisher = new PublishResultsController();
 
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {

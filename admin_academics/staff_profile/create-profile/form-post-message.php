@@ -26,7 +26,7 @@ if (isset($createStaffProfileContext['posted'])) {
   } else {
     $profile = $createStaffProfileContext['created_staff_profile'];
     $capabilities = 'None';
-    $selectedCapabilities = $profile['capabilities'];
+    $selectedCapabilities = isset($profile['capabilities']) ? $profile['capabilities'] : null;
 
     if (is_array($selectedCapabilities) && count($selectedCapabilities)) {
       $capabilities = "<ol>\n";

@@ -80,13 +80,9 @@ class AssessmentGradeStudentController extends AssessmentController
   {
     $gradeCoursesContext['ten_most_recent_semesters'] = self::getSemestersForJSAutoComplete();
     $gradeCoursesContext['score_grade_mapping'] = StudentCourses::$SCORE_GRADE_MAPPING;
-
     $link_template = __DIR__ . '/grade-student-partial.php';
-
     $pageJsPath = path_to_link(__DIR__ . '/js/grade-student.min.js', true);
-
     $pageCssPath = path_to_link(__DIR__ . '/css/grade-student.min.css', true);
-
     require(__DIR__ . '/../../home/container.php');
   }
 

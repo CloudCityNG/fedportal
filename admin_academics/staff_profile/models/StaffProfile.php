@@ -17,16 +17,21 @@ class StaffProfile
   }
 
   /**
-   * Get all staff in the database
+   * Get staff in the database with optional filter
+   * @param array $filter
    * @return array|null
    */
-  public static function getAllStaff()
+  public static function getStaff(array $filter = null)
   {
     $query = "SELECT * FROM staff_profile";
-    $logger = new SqlLogger(self::logger(), 'Get all staff profile', $query);
-    $stmt = get_db()->query($query);
 
-    if ($stmt) {
+    if ($filter) $query .= ' WHERE ' . getDbBindParamsFromColArray(array_keys($filter));
+    else $filter = [];
+
+    $logger = new SqlLogger(self::logger(), 'Get staff profile', $query, $filter);
+    $stmt = get_db()->prepare($query);
+
+    if ($stmt->execute($filter)) {
       $logger->statementSuccess();
       $result = [];
 
@@ -52,12 +57,7 @@ class StaffProfile
   {
     if (!is_array($params) || !count($params)) return 0;
 
-    $paramArray = [];
-    foreach ($params as $param => $val) {
-      $paramArray[] = "{$param}=:{$param}";
-    }
-
-    $query = "SELECT COUNT(*) FROM staff_profile WHERE " . implode(' AND ', $paramArray);
+    $query = "SELECT COUNT(*) FROM staff_profile WHERE " . getDbBindParamsFromColArray(array_keys($params));
     $logger = new SqlLogger(self::logger(), 'Check if staff profile exists', $query, $params);
     $stmt = get_db()->prepare($query);
 
@@ -70,6 +70,36 @@ class StaffProfile
 
     $logger->noData();
 
+    return 0;
+  }
+
+  /**
+   * @param array $changes - a mapping of attribute names to their values. These are the attributes we wish to update
+   * @param array|null $filter - a mapping of attribute names to their values that will be used in the WHERE clause.
+   * @return int - 1 means update success, 0 means failure
+   */
+  public static function updateProfile(array $changes, array $filter = null)
+  {
+    if(isset($changes['password'])) $changes['password'] = password_hash($changes['password'], PASSWORD_DEFAULT);
+
+    $changesBindParams = getDbBindParamsFromColArray(array_keys($changes), ' , ');
+    $query = "UPDATE staff_profile SET {$changesBindParams} ";
+
+    if ($filter) $query .= ' WHERE ' . getDbBindParamsFromColArray(array_keys($filter));
+    else $filter = [];
+
+    $params = array_merge($changes, $filter);
+    $logger = new SqlLogger(self::logger(), 'Update staff profile', $query, $params);
+    $stmt = get_db()->prepare($query);
+
+    if ($stmt->execute($params)) {
+      $logger->statementSuccess();
+      $result = 1;
+      $logger->dataRetrieved([$result]);
+      return $result;
+    }
+
+    $logger->noData();
     return 0;
   }
 

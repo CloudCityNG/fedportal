@@ -2,9 +2,14 @@
 
   <span class="title session-title">Manage Academic Sessions</span>
 
-  <div class="links">
-    <a class="link" href="<?php echo STATIC_ROOT . 'admin_academics/academic_session/' ?>">
-      Current and New Academic Session
-    </a>
-  </div>
+  <?php
+  if (UserSession::isCapable('can_edit_session') || UserSession::isCapable('can_create_session')) {
+    $sessionLink = path_to_link(__DIR__ . '/../academic_session');
+    echo "
+      <div class='links'>
+        <a class='link' href='{$sessionLink}'>Current and New Academic Session</a>
+      </div>
+    ";
+  }
+  ?>
 </div>

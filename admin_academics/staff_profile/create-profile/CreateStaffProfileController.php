@@ -5,6 +5,15 @@ require_once(__DIR__ . '/../models/StaffProfile.php');
 
 class CreateStaffProfileController extends StaffProfileController
 {
+  private static function checkUserNameUniqueness($userName)
+  {
+    if (StaffProfile::staffExists(['username' => $userName])) {
+      return ["username '{$userName}' reserved. Please choose another!"];
+    }
+
+    return null;
+  }
+
   /**Checks whether post data is valid
    *
    * @param $userName
@@ -29,8 +38,9 @@ class CreateStaffProfileController extends StaffProfileController
       return $status;
     }
 
-    if (StaffProfile::staffExists(['username' => $userName])) {
-      $status['messages'] = ["username '{$userName}' reserved. Please choose another!"];
+    $uniqueness = self::checkUserNameUniqueness($userName);
+    if ($uniqueness) {
+      $status['messages'] = $uniqueness;
       return $status;
     }
 
@@ -45,8 +55,9 @@ class CreateStaffProfileController extends StaffProfileController
    */
   private static function assignCapabilities($staffId, array $capabilitiesSelected)
   {
-    if(!count($capabilitiesSelected)) return 0;
+    if (!count($capabilitiesSelected)) return 0;
 
+    StaffCapabilityAssign::deleteCapabilities(['staff_profile_id' => $staffId]);
     $capabilities = [];
 
     foreach ($capabilitiesSelected as $id => $name) {
@@ -56,12 +67,96 @@ class CreateStaffProfileController extends StaffProfileController
     return StaffCapabilityAssign::create($capabilities);
   }
 
+  private function edit()
+  {
+    $context = ['posted' => false, 'status' => 'Edit profile failed!'];
+    $profile = json_decode($_POST['staff_profile_data'], true);
+    $postData = [];
+
+    if(isset($_POST['staff_profile'])){
+      $staffProfile = $_POST['staff_profile'];
+
+      if (isset($staffProfile['username'])) {
+        $userName = trim($staffProfile['username']);
+
+        if ($userName) {
+          $uniqueness = self::checkUserNameUniqueness($userName);
+
+          if ($uniqueness) {
+            $context['messages'] = $uniqueness;
+            //:TODO reject with post error
+          }
+
+          $profile['username'] = $userName;
+          $postData['username'] = $userName;
+        }
+      }
+
+      if (isset($staffProfile['first_name'])) {
+        $firstName = trim($staffProfile['first_name']);
+
+        if ($firstName) {
+          $profile['first_name'] = $firstName;
+          $postData['first_name'] = $firstName;
+        }
+      }
+
+      if (isset($staffProfile['last_name'])) {
+        $lastName = trim($staffProfile['last_name']);
+
+        if ($lastName) {
+          $profile['last_name'] = $lastName;
+          $postData['last_name'] = $lastName;
+        }
+      }
+
+      if (isset($staffProfile['password'])) {
+        $password = trim($staffProfile['password']);
+
+        if ($password) {
+          $profile['password'] = $password;
+          $postData['password'] = $password;
+        }
+      }
+    }
+
+    $profileId = $profile['id'];
+    if(count($postData)) {
+      StaffProfile::updateProfile($postData, ['id' => $profileId]);
+    }
+
+    $capabilitiesToSelectFrom = [];
+    if (isset($_POST['capabilities-to-select-from'])) {
+      $capabilitiesToSelectFrom = json_decode(trim($_POST['capabilities-to-select-from']), true);
+    }
+
+    $capabilitiesSelected = [];
+    if (isset($_POST['capabilities-selected'])) {
+      $capabilitiesSelected = json_decode(trim($_POST['capabilities-selected']), true);
+    }
+
+    if (is_array($capabilitiesSelected) && self::assignCapabilities($profileId, $capabilitiesSelected)) {
+      $profile['capabilities'] = $capabilitiesSelected;
+    }
+
+    $this->renderPage([
+      'created_staff_profile' => $profile,
+      'posted' => true,
+      'status' => 'Staff profile successfully updated!'
+    ]);
+  }
+
   public function post()
   {
+    if (isset($_POST['staff_profile_data'])) {
+      $this->edit();
+      return;
+    }
+
     $staffProfile = $_POST['staff_profile'];
     $userName = trim($staffProfile['username']);
-    $firstName = trim($staffProfile['first_name']);
-    $lastName = trim($staffProfile['last_name']);
+    $firstName = strtoupper(trim($staffProfile['first_name']));
+    $lastName = strtoupper(trim($staffProfile['last_name']));
     $password = trim($staffProfile['password']);
     $confirmPassword = trim($staffProfile['confirm_password']);
 
@@ -74,7 +169,8 @@ class CreateStaffProfileController extends StaffProfileController
     if (isset($_POST['capabilities-selected'])) {
       $capabilitiesSelected = json_decode(trim($_POST['capabilities-selected']), true);
     }
-    $context = ['staff_profile' => $staffProfile, 'posted' => false, 'status' => 'Post failed!'];
+
+    $context = ['staff_profile' => $staffProfile, 'posted' => false, 'status' => 'Profile creation failed!'];
     $valid = self::confirmPost($userName, $firstName, $lastName, $password, $confirmPassword);
 
     if (!$valid['valid']) {
@@ -90,7 +186,7 @@ class CreateStaffProfileController extends StaffProfileController
       'password' => $password
     ]);
 
-    if (self::assignCapabilities($staff['id'], $capabilitiesSelected)) {
+    if (is_array($capabilitiesSelected) && self::assignCapabilities($staff['id'], $capabilitiesSelected)) {
       $staffProfile['capabilities'] = $capabilitiesSelected;
     }
 
@@ -102,6 +198,62 @@ class CreateStaffProfileController extends StaffProfileController
   }
 
   /**
+   * Get staff ID from the url query parameter
+   * @param $query - the query has been exploded into an array so that "create-profile&staff_id=1" is
+   *    [create-profile, staff_id=1]
+   * @return null|int - returns staff ID if present in URL otherwise null
+   */
+  private static function getStaffIdFromQuery($query)
+  {
+    $staffIdQueryRegexp = "/^staff_id=(\d+)$/";
+    $staffId = null;
+
+    foreach ($query as $item) {
+      if (preg_match($staffIdQueryRegexp, $item, $matches) === 1) {
+        $staffId = $matches[1];
+        break;
+      }
+    }
+
+    return $staffId;
+  }
+
+  /**
+   * Get staff profile from DB and also get capabilities that have been assigned to the staff
+   * @param $staffId - the database ID of staff whose profile we seek
+   * @param array $capabilitiesToSelectFrom - This is an array of all possible capabilities in the database in the form
+   *    [capabilityID => capabilityName]
+   * @return array|null - return null if staff profile not found otherwise return an array in the form:
+   *    [staffProfile, $capabilitiesToSelectFrom, selectedCapabilities]
+   *          $capabilitiesToSelectFrom is the same as the one passed into this method with all capabilities already
+   *              assigned to staff removed
+   *          selectedCapabilities - if capabilities had been assigned to staff, then this is the array of such
+   *            capabilities otherwise this entry will be null
+   */
+  private static function getStaffProfile($staffId, array $capabilitiesToSelectFrom)
+  {
+    $staff = StaffProfile::getStaff(['id' => $staffId]);
+
+    if ($staff) {
+      $staff = $staff[0];
+      $capabilities = StaffCapabilityAssign::getCapabilities(['staff_profile_id' => $staffId]);
+      $selectedCapabilities = [];
+
+      if ($capabilities) {
+        foreach ($capabilities as $row) {
+          $id = $row['staff_capability_id'];
+          $selectedCapabilities[$id] = $capabilitiesToSelectFrom[$id];
+          unset($capabilitiesToSelectFrom[$id]);
+        }
+      }
+
+      return [$staff, $capabilitiesToSelectFrom, count($selectedCapabilities) ? $selectedCapabilities : null];
+    }
+
+    return null;
+  }
+
+  /**
    * @param array $createStaffProfileContext
    * @param array $capabilitiesToSelectFrom
    * @param array $capabilitiesSelected
@@ -110,12 +262,25 @@ class CreateStaffProfileController extends StaffProfileController
                              array $capabilitiesToSelectFrom = null,
                              array $capabilitiesSelected = null)
   {
-
     if (!is_array($capabilitiesToSelectFrom)) {
       $capabilitiesToSelectFrom = [];
 
       foreach (StaffCapability::getAllCapabilities() as $capability) {
         $capabilitiesToSelectFrom[$capability['id']] = $capability['name'];
+      }
+    }
+
+    if (isset($createStaffProfileContext['query'])) {
+      $staffId = self::getStaffIdFromQuery($createStaffProfileContext['query']);
+
+      if ($staffId) {
+        $staff = self::getStaffProfile($staffId, $capabilitiesToSelectFrom);
+        if ($staff) {
+          $createStaffProfileContext['staff_profile'] = $staff[0];
+          $capabilitiesToSelectFrom = $staff[1];
+          $capabilitiesSelected = $staff[2];
+          $createStaffProfileContext['edit'] = true;
+        }
       }
     }
 

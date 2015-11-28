@@ -14,7 +14,7 @@
     <div class="top-info">
       <div class="legend clearfix">
         <div class="pull-left">
-          <a href="<?php echo path_to_link(__DIR__ . '/') ?>">Academics Administration</a>
+          <a href="<?php echo path_to_link(__DIR__ . '/') ?>">Administration</a>
         </div>
 
         <div class="pull-right">
@@ -24,8 +24,15 @@
         </div>
       </div>
 
-      <div class="divider">
-        <span class="date-time"><?php echo date('l, F j, Y', time()); ?></span>
+      <div class="divider clearfix">
+        <span class="date-time pull-left"><?php echo date('l, F j, Y', time()); ?></span>
+
+        <div class="date-time pull-right">
+          <?php
+          $user = UserSession::user();
+          if ($user) echo "Logged in as: {$user['username']} ({$user['full_name']})";
+          ?>
+        </div>
       </div>
     </div>
 
@@ -34,26 +41,11 @@
     <div class="row content-area">
 
       <div class="col-sm-3 side-bar-navs navigation-controls">
-        <?php
-        if (session_status() === PHP_SESSION_NONE) {
-          session_start();
-        }
-
-        $user = json_decode($_SESSION[USER_AUTH_SESSION_KEY], true);
-        $isSuperUser = isset($user['is_super_user']) ? $user['is_super_user'] : false;
-
-        function isCapable($capability){
-          global $user;
-          return isset($user[$capability]) && $user[$capability];
-        }
-        ?>
-
-        <?php if($isSuperUser || isCapable('can_view_semester')) require(__DIR__ . '/session-link.php') ?>
-        <?php if($isSuperUser) require(__DIR__ . '/semester-link.php') ?>
-        <?php if($isSuperUser) require(__DIR__ . '/assessment-link.php') ?>
-        <?php if($isSuperUser) require(__DIR__ . '/courses-link.php') ?>
-        <?php if($isSuperUser) require(__DIR__ . '/staff-profile-link.php') ?>
-
+        <?php if (UserSession::isCapable('can_view_session')) require(__DIR__ . '/session-link.php') ?>
+        <?php if (UserSession::isCapable('can_view_semester')) require(__DIR__ . '/semester-link.php') ?>
+        <?php if (UserSession::isCapable('can_view_exams')) require(__DIR__ . '/assessment-link.php') ?>
+        <?php if (UserSession::isCapable('can_view_courses')) require(__DIR__ . '/courses-link.php') ?>
+        <?php if (UserSession::isCapable('can_view_staff_profile')) require(__DIR__ . '/staff-profile-link.php') ?>
       </div>
 
       <div class="col-sm-9 content-area-main">
@@ -66,7 +58,9 @@
 
   <?php include(__DIR__ . '/../../includes/js-footer.php'); ?>
   <script src="<?php echo path_to_link(__DIR__ . '/js/admin-academics-home.min.js', true) ?>"></script>
-  <?php if (isset($pageJsPath) && $pageJsPath) { echo "<script src='{$pageJsPath}'></script>"; } ?>
+  <?php if (isset($pageJsPath) && $pageJsPath) {
+    echo "<script src='{$pageJsPath}'></script>";
+  } ?>
 
 </body>
 </html>

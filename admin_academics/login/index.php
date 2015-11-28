@@ -81,7 +81,7 @@ class AdminLogin
       if (!$isSuper && !$capabilities && !isset($capabilities['can_view_admin_page'])) {
         $this->get([
           'status' => $status,
-          'messages' => ['You are not authorized to view admin page!']
+          'messages' => ['You are not authorized. Access denied!']
         ]);
         return;
       }

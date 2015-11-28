@@ -12,7 +12,7 @@ class ListStaffController extends StaffProfileController
   public function get()
   {
     $listStaffContext = [
-      'staff_list' => StaffProfile::getAllStaff()
+      'staff_list' => StaffProfile::getStaff()
     ];
     $link_template = __DIR__ . '/view.php';
 

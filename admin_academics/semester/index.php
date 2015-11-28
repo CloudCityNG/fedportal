@@ -5,6 +5,8 @@ require_once(__DIR__ . '/../../helpers/app_settings.php');
 require_once(__DIR__ . '/../models/Semester.php');
 require_once(__DIR__ . '/../models/AcademicSession.php');
 
+AdminAcademicsAuth::checkCapability('can_view_semester');
+
 class SemesterController
 {
   public function post()

@@ -5,7 +5,7 @@
     <div class="col-sm-5">
       <label for="select-capabilities" class="control-label">Select Capabilities</label>
 
-      <select id="select-capabilities" class="form-control" multiple>
+      <select id="select-capabilities" class="form-control" multiple <?php echo $disabled; ?>>
         <?php
         $capabilitiesToSelectFromJson = json_encode($capabilitiesToSelectFrom);
         foreach ($capabilitiesToSelectFrom as $capabilityId => $capabilityName) {
@@ -15,24 +15,30 @@
         ?>
       </select>
 
-      <input type="hidden" id="capabilities-to-select-from" name="capabilities-to-select-from"
+      <input type="hidden" id="capabilities-to-select-from" name="capabilities-to-select-from" <?php echo $disabled; ?>
              value='<?php echo $capabilitiesToSelectFromJson; ?>'>
     </div>
 
-    <div class="col-sm-2 capability-select-deselect">
-      <div id="select-one-capability" data-toggle="tooltip" title="Select singles"> --></div>
+    <div class="col-sm-2">
+      <?php echo $editIconCapabilities; ?>
 
-      <div id="select-all-capabilities" data-toggle="tooltip" title="Select all"> -->></div>
+      <div class="capability-select-deselect"
+           style="display: <?php if ($editProfile) echo 'none'; else echo 'block'; ?>;">
 
-      <div id="deselect-one-capability" data-toggle="tooltip" title="Deselect singles"> <--</div>
+        <div id="select-one-capability" data-toggle="tooltip" title="Select singles"> --></div>
 
-      <div id="deselect-all-capabilities" data-toggle="tooltip" title="Deselect all"> <<--</div>
+        <div id="select-all-capabilities" data-toggle="tooltip" title="Select all"> -->></div>
+
+        <div id="deselect-one-capability" data-toggle="tooltip" title="Deselect singles"> <--</div>
+
+        <div id="deselect-all-capabilities" data-toggle="tooltip" title="Deselect all"> <<--</div>
+      </div>
     </div>
 
     <div class="col-sm-5">
       <label for="selected-capabilities" class="control-label">Selected Capabilities</label>
 
-      <select id="selected-capabilities" class="form-control" multiple>
+      <select id="selected-capabilities" class="form-control" multiple <?php echo $disabled; ?>>
         <?php
         $capabilitiesSelectedJson = null;
 
@@ -46,8 +52,16 @@
         ?>
       </select>
 
-      <input type="hidden" name="capabilities-selected" id="capabilities-selected"
+      <input type="hidden" name="capabilities-selected" id="capabilities-selected" <?php echo $disabled; ?>
              value='<?php echo $capabilitiesSelectedJson; ?>'>
+
+      <?php
+      if ($editProfile) {
+        $arrayKeys = is_array($capabilitiesSelected) ? array_keys($capabilitiesSelected) : null;
+        $capabilitiesSelectedOriginalJson = json_encode($arrayKeys);
+        echo "<input type='hidden' value='{$capabilitiesSelectedOriginalJson}' id='capabilities-selected-original' />";
+      }
+      ?>
     </div>
   </div>
 </fieldset>

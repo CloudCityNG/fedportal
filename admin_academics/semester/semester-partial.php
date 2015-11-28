@@ -8,7 +8,8 @@
  *                                 array for a post request
  *                                 $postStatus = [
  *                                                  'posted' => true or false,
- *                                                  'messages' => array of success or failure messages to display to users
+ *                                                  'messages' => array of success or failure messages to display to
+ *   users
  *                                               ]
  * @param string $formType - flag representing whether request emanated from current or new semester form.
  */
@@ -57,50 +58,11 @@ function renderPostStatus(array $postStatus = null, $formType)
     <?php echo json_encode($twoMostRecentSessions) ?>
   </span>
 
-  <div class="panel panel-default current-semester-panel">
-    <div class="panel-heading">
-      <h1 class="panel-title">Current Semester</h1>
-    </div>
-
-    <div class="panel-body">
-      <?php
-      if ($oldCurrentSemesterData || $current_semester) {
-        renderPostStatus($postStatus, 'current_semester');
-
-        require __DIR__ . '/current-semester-form.php';
-
-      } else if ($semestersInCurrentSession) {
-        require(__DIR__ . '/current-semester-select-update.php');
-
-      } else {
-        echo 'Semester or session not set';
-      }
-      ?>
-    </div>
-
-    <?php
-    if ($oldCurrentSemesterData || $current_semester) {
-      echo '<div class="panel-footer">
-                <span class="glyphicon glyphicon-edit current-semester-edit-trigger"
-                data-toggle="tooltip" title="Edit semester"
-                id="semester-form-edit-icon1"></span>
-            </div>';
-    }
-    ?>
-  </div>
-
   <?php
+  if (UserSession::isCapable('can_edit_semester')) require(__DIR__ . '/current-semester-view.php');
+
   renderPostStatus($postStatus, 'new_semester');
+
+  if (UserSession::isCapable('can_create_semester')) require(__DIR__ . '/new-semester-view.php');
   ?>
-
-  <div>
-    <?php
-    if (!AcademicSession::getCurrentSession()) {
-      echo 'New session has not been set. New semester is not available';
-
-    } else {
-      require __DIR__ . '/new-semester-form.php';
-    }
-    ?>
-  </div>
 </div>
