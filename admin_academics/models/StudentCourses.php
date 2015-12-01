@@ -348,7 +348,6 @@ class StudentCourses
 
     if ($stmt->execute($param)) {
       $logger->statementSuccess();
-
       $returnedVal = [];
 
       while ($row = $stmt->fetch()) {
@@ -393,14 +392,13 @@ class StudentCourses
         AND semester_id = :semester_id";
 
     $query .= $regNo ? " AND reg_no = :reg_no" : '';
-
     $logger = new SqlLogger(self::logger(), 'publish or un-publish student scores', $query, $courses);
     $publish = $courseId = null;
-
     $stmt = get_db()->prepare($query);
     $stmt->bindValue('semester_id', $semesterId);
     $stmt->bindParam('course_id', $courseId);
     $stmt->bindParam('publish', $publish);
+
     if ($regNo) $stmt->bindParam('reg_no', $regNo);
 
     $updated = [];
@@ -441,7 +439,6 @@ class StudentCourses
     }
 
     $studentCourses = self::courseIdsAndSemesterExist(['course_ids' => $coursesIds, 'semester_id' => $semesterId]);
-
     $returnedCourses = [];
     $studentCoursesIds = array_keys($studentCourses);
 

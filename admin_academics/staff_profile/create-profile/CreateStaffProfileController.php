@@ -73,7 +73,7 @@ class CreateStaffProfileController extends StaffProfileController
     $profile = json_decode($_POST['staff_profile_data'], true);
     $postData = [];
 
-    if(isset($_POST['staff_profile'])){
+    if (isset($_POST['staff_profile'])) {
       $staffProfile = $_POST['staff_profile'];
 
       if (isset($staffProfile['username'])) {
@@ -121,14 +121,7 @@ class CreateStaffProfileController extends StaffProfileController
     }
 
     $profileId = $profile['id'];
-    if(count($postData)) {
-      StaffProfile::updateProfile($postData, ['id' => $profileId]);
-    }
-
-    $capabilitiesToSelectFrom = [];
-    if (isset($_POST['capabilities-to-select-from'])) {
-      $capabilitiesToSelectFrom = json_decode(trim($_POST['capabilities-to-select-from']), true);
-    }
+    if (count($postData)) StaffProfile::updateProfile($postData, ['id' => $profileId]);
 
     $capabilitiesSelected = [];
     if (isset($_POST['capabilities-selected'])) {
@@ -139,11 +132,7 @@ class CreateStaffProfileController extends StaffProfileController
       $profile['capabilities'] = $capabilitiesSelected;
     }
 
-    $this->renderPage([
-      'created_staff_profile' => $profile,
-      'posted' => true,
-      'status' => 'Staff profile successfully updated!'
-    ]);
+    self::setPostSession(true, 'Staff profile successfully updated!', ['created_staff_profile' => $profile], true);
   }
 
   public function post()
@@ -170,11 +159,12 @@ class CreateStaffProfileController extends StaffProfileController
       $capabilitiesSelected = json_decode(trim($_POST['capabilities-selected']), true);
     }
 
-    $context = ['staff_profile' => $staffProfile, 'posted' => false, 'status' => 'Profile creation failed!'];
+    $context = ['staff_profile' => $staffProfile];
     $valid = self::confirmPost($userName, $firstName, $lastName, $password, $confirmPassword);
 
     if (!$valid['valid']) {
       $context['messages'] = $valid['messages'];
+      self::setPostSession(false, 'Profile creation failed!', $context);
       $this->renderPage($context, $capabilitiesToSelectFrom, $capabilitiesSelected);
       return;
     }
@@ -190,11 +180,7 @@ class CreateStaffProfileController extends StaffProfileController
       $staffProfile['capabilities'] = $capabilitiesSelected;
     }
 
-    $this->renderPage([
-      'created_staff_profile' => $staffProfile,
-      'posted' => true,
-      'status' => 'Staff profile successfully created!'
-    ]);
+    self::setPostSession(true, 'Staff profile successfully created!', ['created_staff_profile' => $staffProfile], true);
   }
 
   /**
@@ -293,6 +279,15 @@ class CreateStaffProfileController extends StaffProfileController
 
   private static function logger()
   {
-    return get_logger('AssessmentGradeStudentController');
+    return get_logger('CreateStaffProfileController');
+  }
+
+  private static function setPostSession($posted, $status, array $context, $redirect = false)
+  {
+    $_SESSION['CREATE-STAFF-PROFILE-POST-KEY'] = json_encode(
+      array_merge(['posted' => $posted, 'status' => $status], $context)
+    );
+
+    if ($redirect) header("Location: " . path_to_link(__DIR__ . '/..') . '?create-profile');
   }
 }

@@ -1,11 +1,16 @@
 <?php
 $createStaffProfilePostMessage = '';
+$postStatus = false;
 
-if (isset($createStaffProfileContext['posted'])) {
-  if (!$createStaffProfileContext['posted']) {
+if (isset($_SESSION['CREATE-STAFF-PROFILE-POST-KEY'])) {
+  $postStatus = json_decode($_SESSION['CREATE-STAFF-PROFILE-POST-KEY'], true);
+}
+
+if ($postStatus) {
+  if (!$postStatus['posted']) {
     $message = "<ul>\n";
 
-    foreach ($createStaffProfileContext['messages'] as $messageText) {
+    foreach ($postStatus['messages'] as $messageText) {
       $message .= "  <li>{$messageText}</li>\n";
     }
 
@@ -13,18 +18,18 @@ if (isset($createStaffProfileContext['posted'])) {
 
     $createStaffProfilePostMessage = "
     <div class='alert alert-dismissible alert-danger' role='alert'>
-          <button type='button' class='close' data-dismiss='alert' aria-label='Close'>
-            <span aria-hidden='true'>&times;</span>
-          </button>
+      <button type='button' class='close' data-dismiss='alert' aria-label='Close'>
+        <span aria-hidden='true'>&times;</span>
+      </button>
 
-          <h4 style='text-align: center;'>{$createStaffProfileContext['status']}</h4>
+      <h4 style='text-align: center;'>{$postStatus['status']}</h4>
 
-          <div>{$message}</div>
+      <div>{$message}</div>
     </div>
     ";
 
   } else {
-    $profile = $createStaffProfileContext['created_staff_profile'];
+    $profile = $postStatus['created_staff_profile'];
     $capabilities = 'None';
     $selectedCapabilities = isset($profile['capabilities']) ? $profile['capabilities'] : null;
 
@@ -40,17 +45,18 @@ if (isset($createStaffProfileContext['posted'])) {
 
     $createStaffProfilePostMessage = "
     <div class='alert alert-dismissible alert-success' role='alert'>
-          <button type='button' class='close' data-dismiss='alert' aria-label='Close'>
-            <span aria-hidden='true'>&times;</span>
-          </button>
+      <button type='button' class='close' data-dismiss='alert' aria-label='Close'>
+        <span aria-hidden='true'>&times;</span>
+      </button>
 
-          <h4 style='text-align: center;'>{$createStaffProfileContext['status']}</h4>
+      <h4 style='text-align: center;'>{$postStatus['status']}</h4>
 
-          <div> <label>Username:</label> {$profile['username']}</div>
-          <div> <label>First Name:</label> {$profile['first_name']}</div>
-          <div> <label>Last Name:</label> {$profile['last_name']}</div>
-          <div> <label>Capabilities:</label> {$capabilities}</div>
+      <div> <label>Username:</label> {$profile['username']}</div>
+      <div> <label>First Name:</label> {$profile['first_name']}</div>
+      <div> <label>Last Name:</label> {$profile['last_name']}</div>
+      <div> <label>Capabilities:</label> {$capabilities}</div>
     </div>
     ";
   }
 }
+unset($_SESSION['CREATE-STAFF-PROFILE-POST-KEY']);

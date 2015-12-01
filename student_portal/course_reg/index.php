@@ -58,8 +58,9 @@ class CourseRegController
     ];
 
     if (!empty($course_data)) {
-      $student = get_student_profile_from_reg_no($studentRegNo);
-      $view = __DIR__ . '/view_print.php';
+      self::exitOnError(
+        'You have signed up for courses for this semester. Please contact admin if you need to make changes'
+      );
 
     } else {
       $courses_for_semester = $this->getCoursesForSemesterDept($profile->dept_code, $semester);
@@ -74,9 +75,7 @@ class CourseRegController
    */
   private static function exitOnError($message)
   {
-    set_student_reg_form_completion_session1(
-      'error', $message);
-
+    set_student_reg_form_completion_session1('error', $message);
     $home = STATIC_ROOT . 'student_portal/home/';
     header("Location: {$home}");
   }
@@ -233,7 +232,10 @@ class CourseRegistrationPostController
   private function publishScores()
   {
     $currentSemester = Semester::getCurrentSemester();
-    $studentCourses = StudentCourses::courseIdsAndSemesterExist(['course_ids' => array_keys($this->coursesChosen), 'semester_id' => $currentSemester['id']]);
+    $studentCourses = StudentCourses::courseIdsAndSemesterExist([
+      'course_ids' => array_keys($this->coursesChosen),
+      'semester_id' => $currentSemester['id']
+    ]);
     return StudentCourses::publishScores($studentCourses, $currentSemester['id'], $this->reg_no);
   }
 

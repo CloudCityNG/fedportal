@@ -49,9 +49,8 @@ echo $createStaffProfilePostMessage;
       <label class="control-label" for="username">Username</label>
 
       <div class="input-group">
-        <input class="form-control check-original-profile-data" type="text" name="staff_profile[username]"
-               id="username" required
-               value="<?php if ($staffProfile) echo $staffProfile['username']; ?>" <?php echo $disabled; ?>
+        <input class="form-control check-original-profile-data" type="text" name="staff_profile[username]" id="username"
+               required value="<?php if ($staffProfile) echo $staffProfile['username']; ?>" <?php echo $disabled; ?>
                data-fv-stringlength="true" data-fv-stringlength-min="3"/>
 
         <?php echo $editIcon; ?>
