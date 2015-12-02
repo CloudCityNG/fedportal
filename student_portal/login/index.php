@@ -1,118 +1,62 @@
 <?php
-require_once(__DIR__ . '/ConfirmPinController.php');
+
+require_once(__DIR__ . '/../../helpers/databases.php');
 require_once(__DIR__ . '/../../helpers/app_settings.php');
+require_once(__DIR__ . '/../../helpers/SqlLogger.php');
+require_once(__DIR__ . '/../set_student_login_session.php');
 
-
-class LoginStudentController1
+class StudentDashboardLogin
 {
-  private static $LOG_NAME = 'LoginStudentController';
 
-  public function get()
-  {
+  private static $LOG_NAME = 'StudentDashboardLogin';
 
-    include(__DIR__ . '/login_view.php');
-    return;
-  }
+  public function get($studentLoginContext = null) { include(__DIR__ . '/view.php'); }
 
   public function post()
   {
-    header("Content-Type: application/json");
-
-    if (isset($_POST['auth']) && $_POST['auth']) {
-
-      if ($this->authenticate()) {
-        echo json_encode(['auth' => true]);
-
-      } else {
-        echo json_encode(['auth' => false]);
-      }
-
-    } else {
-
-      $confirmPin = new ConfirmPinController1($_POST['confirm_pin']);
-
-      $confirmed = $confirmPin->confirm() ? true : false;
-
-      echo json_encode(['confirmed' => $confirmed]);
-    }
-  }
-
-  private function authenticate()
-  {
-    $db = get_db();
-
-    $log = get_logger(self::$LOG_NAME);
-
-    $reg_no = trim($_POST['regNo']);
 
     $password = trim($_POST['password']);
+    $username = trim($_POST['username']);
+    $adminLoginContext = ['username' => $username];
 
-    $log->addInfo("about to login student with registration number $reg_no");
-
-    if (!$reg_no || !$password) {
-
-      $error_message = 'Invalid registration number or password';
-
-      $log->addError("Login failed because: $error_message");
-
-      return false;
+    if (!$password || !$username) {
+      $this->get($adminLoginContext);
+      return;
     }
 
-    $query = "SELECT COUNT(*) FROM pin_table WHERE number = ? AND pass = ?";
+    $query = "SELECT COUNT(*) FROM pin_table WHERE number=:username AND pass=:password";
+    $queryParam = ['username' => $username, 'password' => 'HIDDEN'];
+    $logger = new SqlLogger(get_logger(self::$LOG_NAME), 'Login student', $query, $queryParam);
+    $queryParam['password'] = $password;
+    $stmt = get_db()->prepare($query);
 
     try {
-      $stmt = $db->prepare($query);
+      if ($stmt->execute($queryParam)) {
+        $logger->statementSuccess();
+        $result = $stmt->fetchColumn();
+        $logger->dataRetrieved([$result]);
 
-      $stmt->execute([$reg_no, $password]);
+        if ($result) {
+          setStudentLoginSession($username);
+          return;
+        }
 
-      if ($stmt->fetchColumn()) {
-
-        $stmt->closeCursor();
-
-        $log->addInfo("Login succeeds.");
-
-        $this->set_session($reg_no);
-
-        return true;
-
-      } else {
-        $log->addError(
-          "Login fails. Login credentials supplied does not match those in database."
-        );
+        $logger->noData();
+        $this->get($adminLoginContext);
+        return;
       }
-
-    } catch (Exception $e) {
+    } catch (PDOException $e) {
+      $log = get_logger(self::$LOG_NAME);
       $log->addError("Login fails.");
-
-      logPdoException($e, "Error while running query $query", $log);
+      logPdoException($e, "Error while running login students with query {$query}", $log);
+      $adminLoginContext['message'] = 'Unknown error occurred! Please try again.';
+      $this->get($adminLoginContext);
     }
-
-    return false;
-
   }
-
-  private function set_session($reg_no)
-  {
-    if (session_status() === PHP_SESSION_NONE) {
-      session_start();
-    }
-
-    session_regenerate_id();
-
-    $_SESSION['REG_NO'] = $reg_no;
-    $_SESSION['LAST-ACTIVITY-REG_NO'] = time();
-
-    session_write_close();
-  }
-
 }
 
-
-$login = new LoginStudentController1;
-
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-  $login->get();
-
-} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $login->post();
-}
+if (session_status() === PHP_SESSION_NONE) session_start();
+unset($_SESSION[USER_AUTH_SESSION_KEY]);
+$login = new StudentDashboardLogin;
+if ($_SERVER['REQUEST_METHOD'] === 'GET') $login->get();
+elseif ($_SERVER['REQUEST_METHOD'] === 'POST') $login->post();
