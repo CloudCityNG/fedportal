@@ -2,9 +2,7 @@
 
 function studentDashboardSession()
 {
-  if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-  }
+  if (session_status() === PHP_SESSION_NONE) session_start();
 
   require_once(__DIR__ . '/../../helpers/app_settings.php');
 
@@ -24,7 +22,6 @@ function studentDashboardSession()
   require_once(__DIR__ . '/../../helpers/databases.php');
 
   $regNo = trim($_SESSION[STUDENT_PORTAL_AUTH_KEY]);
-
   $stmt = get_db()->prepare("SELECT COUNT(*) FROM pin_table WHERE number = ? ;");
   $stmt->execute([$regNo]);
 

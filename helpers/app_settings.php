@@ -161,15 +161,15 @@ class UserSession
 {
   public static function user()
   {
-    if (session_status() === PHP_SESSION_NONE) {
-      session_start();
-    }
+    if (session_status() === PHP_SESSION_NONE) session_start();
 
-    if(isset($_SESSION[USER_AUTH_SESSION_KEY])) {
+    if (isset($_SESSION[USER_AUTH_SESSION_KEY])) {
       $user = json_decode($_SESSION[USER_AUTH_SESSION_KEY], true);
-      $user['full_name'] = $user['first_name'] . ' ' . $user['last_name'];
 
-      return $user;
+      if ($user) {
+        $user['full_name'] = $user['first_name'] . ' ' . $user['last_name'];
+        return $user;
+      }
     }
     return null;
   }
@@ -178,7 +178,7 @@ class UserSession
   {
     $user = self::user();
 
-    if(!$user) return 0;
+    if (!$user) return 0;
 
     if (isset($user['is_super_user']) && $user['is_super_user']) return true;
 

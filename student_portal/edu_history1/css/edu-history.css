@@ -1,0 +1,30 @@
+@media all and (min-width: 750px) {
+  form {
+    width: 750px;
+    margin: auto;
+  }
+}
+fieldset .history-details {
+  border: 1px solid #ADACB3;
+  padding: 6px;
+  border-radius: 10px;
+}
+.subject-grade {
+  margin-bottom: 10px;
+}
+.subject-grade:last-of-type {
+  margin-bottom: 20px;
+}
+.subject-grade > span {
+  top: 14px;
+  padding-right: 0;
+  padding-left: 55px;
+}
+.has-subject-grade-error {
+  color: red;
+  margin-left: 135px;
+  margin-top: 5px;
+}
+.o-level-exams-scores-2 {
+  margin-bottom: 28px;
+}

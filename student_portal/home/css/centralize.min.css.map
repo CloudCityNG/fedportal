@@ -1,0 +1,1 @@
+{"version":3,"sources":["student_portal/home/css/centralize.css"],"names":[],"mappings":"AAAA,iCACE,KACE,MAAO,MACP,OAAQ","file":"student_portal/home/css/centralize.min.css","sourcesContent":["@media all and (min-width: 830px) {\n  form {\n    width: 750px;\n    margin: auto;\n  }\n}\n"],"sourceRoot":"/source/"}

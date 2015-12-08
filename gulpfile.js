@@ -19,7 +19,8 @@ var compressScripts = [
   .concat(createStaffProfile.minifyJs)
 
 var lessFiles = [
-  './admin_academics/**/*.less'
+  './admin_academics/**/*.less',
+  './student_portal/**/*.less'
 ]
 
 gulp.task(gradeStudent.gulpTaskName, gradeStudent.gulpTaskFn(gulp, plugins))
