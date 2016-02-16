@@ -8,15 +8,21 @@ var assessment = adminAcademics.assessment
 var gradeStudent = assessment.gradeStudent
 var semester = adminAcademics.semester
 
-var staffProfile =  adminAcademics.staffProfile
+var staffProfile = adminAcademics.staffProfile
 var createStaffProfile = staffProfile.createProfile
+
+var courses = adminAcademics.courses
+var createCourse = courses.createCourse
 
 var compressScripts = [
   './admin_academics/home/js/admin-academics-home.js',
-  './admin_academics/login/js/login.js'
+  './admin_academics/login/js/login.js',
+  './student_portal/bio_data1/js/bio-data.js',
+  './student_portal/home1/js/home.js'
 ].concat(semester.minifyJs)
   .concat(gradeStudent.minifyJs)
   .concat(createStaffProfile.minifyJs)
+  .concat(createCourse.minifyJs)
 
 var lessFiles = [
   './admin_academics/**/*.less',
@@ -26,11 +32,13 @@ var lessFiles = [
 gulp.task(gradeStudent.gulpTaskName, gradeStudent.gulpTaskFn(gulp, plugins))
 gulp.task(semester.gulpTaskName, semester.gulpTaskFn(gulp, plugins))
 gulp.task(createStaffProfile.gulpTaskName, createStaffProfile.gulpTaskFn(gulp, plugins))
+gulp.task(createCourse.gulpTaskName, createCourse.gulpTaskFn(gulp, plugins))
 
 gulp.task('webpack', [
   gradeStudent.gulpTaskName,
   semester.gulpTaskName,
-  createStaffProfile.gulpTaskName
+  createStaffProfile.gulpTaskName,
+  createCourse.gulpTaskName
 ])
 
 gulp.task('initial-js', function () {

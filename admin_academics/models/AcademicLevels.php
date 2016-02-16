@@ -54,4 +54,15 @@ class AcademicLevels
       "About to get levels using query: {$query} and params: ", $params
     );
   }
+
+  public static function getLevelsMapping()
+  {
+    $levels = [];
+
+    foreach (self::getAllLevels() as $level) {
+      $levels[$level['code']] = $level['description'];
+    }
+
+    return $levels;
+  }
 }

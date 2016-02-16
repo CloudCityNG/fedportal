@@ -1,0 +1,1 @@
+{"version":3,"sources":["admin_academics/courses/list-courses/css/list-courses.css"],"names":[],"mappings":"AAAA,oCACE,MAAO,QAET,gCACE,MAAO","file":"admin_academics/courses/list-courses/css/list-courses.min.css","sourcesContent":[".course-is-active > .glyphicon-remove {\n  color: #FF4F4F;\n}\n.course-is-active > .glyphicon-ok {\n  color: #00B4FF;\n}\n"],"sourceRoot":"/source/"}

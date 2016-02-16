@@ -7,13 +7,7 @@
  */
 
 function set_student_reg_form_completion_session1($code, $message) {
-  if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-  }
+  if (session_status() == PHP_SESSION_NONE) session_start();
 
-  $FORM_COMPLETION_SESSION_KEY = 'STUDENT-REG-FORM-REGISTRATION';
-
-  $_SESSION[$FORM_COMPLETION_SESSION_KEY] = json_encode([
-    $code => ['message' => $message]
-  ]);
+  $_SESSION['STUDENT-REG-FORM-REGISTRATION'] = json_encode([$code => ['message' => $message]]);
 }

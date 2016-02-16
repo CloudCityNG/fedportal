@@ -10,60 +10,50 @@ class Courses1
   private static $LOG_NAME = 'CoursesModel';
 
   /**
-   * Get the courses that can be taken in a particular department in a particular semester, and optionally in a level
+   * while the correct column name should have been level, we DDL with column name 'class'. some codes however use
+   * the correct column name 'level'
+   * @param array $params
+   * @return array
+   */
+  private static function transformLevel(array $params)
+  {
+    if (isset($params['level'])) {
+      $params['class'] = $params['level'];
+      unset($params['level']);
+    }
+
+    return $params;
+  }
+
+  /**
+   * Get the courses, filtering by the mapping $params
    *
-   * @param array $params - an array that holds the department code and semester number (1 or 2), of the form:
+   * @param array $params - an array that holds the filter criteria, of the form:
    * [
    *  'department' => string, 'semester' => number|string, 'level' => string
    * ]
-   * the 'level' key will only be given if we need to restrict returned courses to particular level
    *
    * @return array|null
    */
-  public static function getCoursesForSemesterDeptLevel(array $params)
+  public static function getCourses(array $params = null)
   {
-    $query = "SELECT * FROM course_table
-              WHERE department = :department
-              AND semester = :semester";
+    $query = "SELECT * FROM course_table ";
 
-    if (isset($params['level'])) $query .= ' AND class = :level';
+    if ($params) {
+      $params = self::transformLevel($params);
 
-    $logMessage = SqlLogger::makeLogMessage(
-      'get courses for a particular department in a particular semester and optionally, level', $query, $params
-    );
+      $filter = getDbBindParamsFromColArray(array_keys($params));
+      $query .= " WHERE {$filter}";
+
+    } else {
+      $params = [];
+    }
+
+    $logger = new SqlLogger(self::logger(), 'get courses with optional filter ', $query, $params);
 
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($params)) {
-      SqlLogger::logStatementSuccess(self::logger(), $logMessage);
-
-      $result = $stmt->fetchAll();
-
-      if (count($result)) {
-        SqlLogger::logDataRetrieved(self::logger(), $logMessage, $result);
-        return $result;
-      }
-    }
-
-    SqlLogger::logNoData(self::logger(), $logMessage);
-    return null;
-  }
-
-
-  /**
-   * Get all courses
-   *
-   * @return array|null
-   */
-  public static function getAllCourses()
-  {
-    $query = "SELECT * FROM course_table";
-
-    $logger = new SqlLogger(self::logger(), 'get all courses', $query);
-
-    $stmt = get_db()->query($query);
-
-    if ($stmt) {
       $logger->statementSuccess();
 
       $result = $stmt->fetchAll();
@@ -76,6 +66,34 @@ class Courses1
 
     $logger->noData();
     return null;
+  }
+
+
+  public static function courseIsUnique(array $params)
+  {
+    $params = self::transformLevel($params);
+    $filter = getDbBindParamsFromColArray(array_keys($params));
+    $query = "SELECT COUNT(*) FROM course_table WHERE {$filter}";
+
+    $logger = new SqlLogger(
+      self::logger(),
+      'check if the combination of code, department, level and semester for a course is unique ',
+      $query,
+      $params
+    );
+
+    $stmt = get_db()->prepare($query);
+
+    if ($stmt->execute($params)) {
+      $logger->statementSuccess();
+      $result = $stmt->fetchColumn();
+      $logger->dataRetrieved([$result]);
+      return $result;
+    }
+
+    $logger->noData();
+    return null;
+
   }
 
   /**

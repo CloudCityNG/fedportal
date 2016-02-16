@@ -6,7 +6,7 @@ class ListStaffController extends StaffProfileController
 
   private static function logger()
   {
-    return get_logger('PublishResultsController');
+    return get_logger('ListStaffController');
   }
 
   public function get()

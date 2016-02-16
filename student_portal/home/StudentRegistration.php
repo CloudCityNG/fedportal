@@ -33,9 +33,7 @@ class StudentRegistration
 
   public function __construct($reg_no = null)
   {
-    if (session_status() == PHP_SESSION_NONE) {
-      session_start();
-    }
+    if (session_status() == PHP_SESSION_NONE) session_start();
 
     $this->reg_no = $reg_no ? $reg_no : $_SESSION['REG_NO'];
 
@@ -133,15 +131,12 @@ class StudentRegistration
       $this->form_completion = true;
 
       if (isset($form_completion->error)) {
-
         $this->form_completion_message = "<strong>Error!</strong> " . $form_completion->error->message;
-
         $this->form_completion_class = 'alert-danger';
 
       } elseif (isset($form_completion->success)) {
 
         $this->form_completion_message = "<strong>Congrats!</strong> " . $form_completion->success->message;
-
         $this->form_completion_class = 'alert-success';
       }
 

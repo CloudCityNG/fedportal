@@ -75,4 +75,15 @@ Class AcademicDepartment
     $logger->noData();
     return null;
   }
+
+  public static function getDepartmentCodeNameMap()
+  {
+    $departments = [];
+
+    foreach (self::getAcademicDepartments() as $academicDepartment) {
+      $departments[$academicDepartment['code']] = $academicDepartment['description'];
+    }
+
+    return $departments;
+  }
 }

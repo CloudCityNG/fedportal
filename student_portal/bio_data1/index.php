@@ -56,23 +56,15 @@ class FreshmanBioDataController
 
   public function post()
   {
-
     $log = get_logger(self::$LOGGER_NAME);
-
     $validator = new \Sirius\Validation\Validator();
-
     $validator->add('student_bio[personalno]', 'required', null, 'Matriculation number is required.');
-
     $validator->add('student_bio[first_name]', 'required', null, 'First name is required');
-
     $validator->add('student_bio[surname]', 'required', null, 'Surname is required');
-
     $validator->add('student_bio[sex]', 'required', null, 'Sex is required');
-
     $log->addInfo("About to insert bio data for: ", $_POST['student_bio']);
 
     if ($validator->validate($_POST)) {
-
       $query = "INSERT INTO freshman_profile
                  (first_name, personalno, surname, other_names, previousname,
                   sex, dateofbirth, email, phone, permanentaddress, nationality,
@@ -103,33 +95,24 @@ class FreshmanBioDataController
         $stmt = get_db()->prepare($query);
 
         foreach ($_POST['student_bio'] as $param => $val) {
-
           if (in_array($param, $shouldBeUppercase)) $val = strtoupper($val);
-
           $stmt->bindValue($param, $val);
-
         }
 
         $stmt->execute();
-
         $log->addInfo("Bio data successfully created.");
-
         $this->handlePhoto($_POST['student_bio']['personalno']);
-
         set_student_reg_form_completion_session1('success', 'Bio data saved.');
+        header('Location: ' . STATIC_ROOT . 'student_portal/home1/');
+        return;
 
       } catch (PDOException $e) {
-
         logPdoException($e, "Error occurred with inserting bio into database", $log);
-
         set_student_reg_form_completion_session1('error', 'Bio data can not be saved. Try again or contact admin');
+        header('Location: ' . path_to_link(__DIR__));
+        return;
       }
-
     }
-
-    $home = STATIC_ROOT . 'student_portal/home/';
-    header("Location: {$home}");
-
   }
 
   private function handlePhoto($reg)
@@ -164,7 +147,8 @@ class FreshmanBioDataController
 
         return true;
 
-      }} catch (Exception $e) {
+      }
+    } catch (Exception $e) {
 
       $log->addError(
         "Either File upload failed with error: " .

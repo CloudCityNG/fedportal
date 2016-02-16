@@ -30,8 +30,7 @@ $student = new StudentRegistration;
           <div class="wrapper">
             <div
               class="h4 alert <?php echo $student->form_completion_class; ?> alert-dismissible form-completion-success-alert"
-              role="alert" style="display: <?php echo $student->form_completion ? 'block' : 'none' ?>;"
-              >
+              role="alert" style="display: <?php echo $student->form_completion ? 'block' : 'none' ?>;">
 
               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>

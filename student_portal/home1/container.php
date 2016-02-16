@@ -3,6 +3,26 @@ require_once(__DIR__ . '/../../helpers/get_photos.php');
 $photo = get_photo(null, true);
 $photoPath = $photo ? $photo : STATIC_ROOT . 'includes/img/faceless.jpg';
 $regNo = $_SESSION['REG_NO'];
+
+$form_completion1 = false;
+$form_completion1_class = 'alert-danger';
+$form_completion1_message = '';
+
+if (isset($_SESSION['STUDENT-REG-FORM-REGISTRATION'])) {
+  $form_completion = json_decode($_SESSION['STUDENT-REG-FORM-REGISTRATION']);
+  $form_completion1 = true;
+
+  if (isset($form_completion->error)) {
+    $form_completion1_message = "<strong>Error!</strong> " . $form_completion->error->message;
+
+  } elseif (isset($form_completion->success)) {
+
+    $form_completion1_message = "<strong>Congrats!</strong> " . $form_completion->success->message;
+    $form_completion1_class = 'alert-success';
+  }
+}
+
+unset($_SESSION['STUDENT-REG-FORM-REGISTRATION']);
 ?>
 
 <!doctype html>
@@ -73,6 +93,16 @@ $regNo = $_SESSION['REG_NO'];
       </div>
 
       <div class="col-sm-9 content-area-main">
+        <div class="h4 alert <?php echo $form_completion1_class; ?> alert-dismissible form-completion-success-alert"
+             role="alert" style="display: <?php echo $form_completion1 ? 'block' : 'none' ?>;">
+
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+
+          <?php echo $form_completion1_message; ?>
+        </div>
+
         <div class="content-area-main-insert-template">
           <?php if (isset($link_template) && $link_template) require($link_template); ?>
         </div>
@@ -81,7 +111,7 @@ $regNo = $_SESSION['REG_NO'];
   </div>
 
   <?php include(__DIR__ . '/../../includes/js-footer.php'); ?>
-  <script src="<?php echo path_to_link(__DIR__ . '/js/admin-academics-home.min.js', true) ?>"></script>
+  <script src="<?php echo path_to_link(__DIR__ . '/js/home.min.js', true) ?>"></script>
   <?php if (isset($pageJsPath) && $pageJsPath) {
     echo "<script src='{$pageJsPath}'></script>";
   } ?>

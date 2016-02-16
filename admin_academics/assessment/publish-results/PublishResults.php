@@ -43,7 +43,7 @@ class PublishResultsController extends AssessmentController
     $coursesToClient = [];
 
     try {
-      $courses = Courses1::getCoursesForSemesterDeptLevel([
+      $courses = Courses1::getCourses([
         'department' => $post['department_code'],
         'level' => $post['level'],
         'semester' => $post['semester_number']
