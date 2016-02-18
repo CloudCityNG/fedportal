@@ -144,16 +144,39 @@ function toDbColArray(array $phpArray)
  *    bind parameters
  * @param array $columns - column names of a DB table of the form [colName1, colNam2, ..]
  * @param string $glue
+ * @param string $comparator
  * @return string - of the form 'colName1=:colName1 AND colName2=:colName2..'
  */
-function getDbBindParamsFromColArray(array $columns, $glue = ' AND ')
+function getDbBindParamsFromColArray(array $columns, $glue = ' AND ', $comparator = '=')
 {
   $paramArray = [];
   foreach ($columns as $column) {
-    $paramArray[] = "{$column}=:{$column}";
+    $paramArray[] = "{$column}{$comparator}:{$column}";
   }
 
   return implode($glue, $paramArray);
+}
+
+/**
+ * Given a URL query string such as "create-profile&staff_id=1" which has been exploded by '&'
+ * into [create-profile, staff_id=1]. For any of the query keys, get its corresponding value
+ * @param array $query - of the form [create-profile, staff_id=1]
+ * @param $key - e.g staff_id
+ * @return null|number
+ */
+function getIdFromQuery(array $query, $key)
+{
+  $queryRegexp = "/^{$key}=(\d+)$/";
+  $_id = null;
+
+  foreach ($query as $item) {
+    if (preg_match($queryRegexp, $item, $matches) === 1) {
+      $_id = $matches[1];
+      break;
+    }
+  }
+
+  return $_id;
 }
 
 

@@ -184,27 +184,6 @@ class CreateStaffProfileController extends StaffProfileController
   }
 
   /**
-   * Get staff ID from the url query parameter
-   * @param $query - the query has been exploded into an array so that "create-profile&staff_id=1" is
-   *    [create-profile, staff_id=1]
-   * @return null|int - returns staff ID if present in URL otherwise null
-   */
-  private static function getStaffIdFromQuery($query)
-  {
-    $staffIdQueryRegexp = "/^staff_id=(\d+)$/";
-    $staffId = null;
-
-    foreach ($query as $item) {
-      if (preg_match($staffIdQueryRegexp, $item, $matches) === 1) {
-        $staffId = $matches[1];
-        break;
-      }
-    }
-
-    return $staffId;
-  }
-
-  /**
    * Get staff profile from DB and also get capabilities that have been assigned to the staff
    * @param $staffId - the database ID of staff whose profile we seek
    * @param array $capabilitiesToSelectFrom - This is an array of all possible capabilities in the database in the form
@@ -257,7 +236,7 @@ class CreateStaffProfileController extends StaffProfileController
     }
 
     if (isset($createStaffProfileContext['query'])) {
-      $staffId = self::getStaffIdFromQuery($createStaffProfileContext['query']);
+      $staffId = getIdFromQuery($createStaffProfileContext['query'], 'staff_id');
 
       if ($staffId) {
         $staff = self::getStaffProfile($staffId, $capabilitiesToSelectFrom);

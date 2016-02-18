@@ -26,7 +26,7 @@ if ($postStatus) {
     ";
 
   } else {
-    $postedCourse = $postStatus['created_course'];
+    $postedCourse = $postStatus['created_or_modified_course'];
     $postedCourseActive = $postedCourse['active'] ? 'Active' : 'Inactive';
 
     $createCoursePostMessage = "

@@ -1,6 +1,43 @@
 <?php
 require(__DIR__ . '/form-post-message.php');
 echo $createCoursePostMessage;
+
+/**
+ * @param bool $isEditing - whether we are editing or creating a course
+ * @param null $displayedCourseData
+ * @param null $originalCourseData
+ * @param string $key
+ * @return array - of the form [
+ *    'value for form control',
+ *    'value for disabled attr of form element',
+ *    'icon for toggling form control'
+ * ]
+ */
+function getEditIcon($isEditing = false, $displayedCourseData = null, $originalCourseData = null, $key = '')
+{
+  if (!$isEditing || !$displayedCourseData) return ['', '', '<span class="input-group-addon"></span>'];
+
+  $edit = '';
+  $view = '';
+  $disabled = '';
+  $displayedVal = $displayedCourseData[$key];
+
+  if ($displayedVal == $originalCourseData[$key]) {
+    $view = "display: none;";
+    $disabled = 'disabled';
+
+  } else $edit = 'display: none;';
+
+  $icon = "
+        <span class='input-group-addon'>
+          <span class='glyphicon glyphicon-pencil toggle-form-control-edit' style='cursor:pointer;{$edit}'></span>
+          <span class='glyphicon glyphicon-eye-open toggle-form-control-edit' style='cursor:pointer;{$view}'></span>
+        </span>
+      ";
+
+  return [$displayedVal, $disabled, $icon];
+}
+
 ?>
 
 <form role="form" method="post" class="well" id="course-create-form" novalidate
@@ -12,15 +49,40 @@ echo $createCoursePostMessage;
 
   <fieldset>
     <?php
-    $currentCourse = isset($createCourseContext['current_course']) ? $createCourseContext['current_course'] : null;
-    $editCourse = isset($createCourseContext['edit']) ? $createCourseContext['edit'] : null;
+    /**
+     * If on the server it is necessary to send course data back to user (because there is need to correct data), then
+     * this is stored in this variable
+     * @param array $displayedCourse
+     */
+    $displayedCourse = isset($createCourseContext['displayed_course']) ? $createCourseContext['displayed_course'] : null;
+
+    /**
+     * @param array $unmodifiedCourse
+     */
+    $unmodifiedCourse = $displayedCourse;
+    if (isset($createCourseContext['unmodified_course'])) {
+      $unmodifiedCourse = $createCourseContext['unmodified_course'];
+    }
+
+
+    /**
+     * This is set to true only if we are editing a course and not creating course from scratch
+     * @param boolean $isEditingCourse
+     */
+    $isEditingCourse = isset($createCourseContext['edit']) ? $createCourseContext['edit'] : false;
+
+    /**
+     * Whether our controls start out disabled. This will always be the case when showing an existing course
+     * @param string $disabled
+     */
     $disabled = '';
+
     $legend = 'Create New Course';
     $editIcon = '<span class="input-group-addon"></span>';
     $submitBtnLabel = 'Create Course';
     $departmentMappings = $createCourseContext['department_mapping'];
 
-    if ($editCourse) {
+    if ($isEditingCourse) {
       $submitBtnLabel = 'Edit Course';
       $disabled = 'disabled';
       $legend = 'Edit Course';
@@ -32,51 +94,60 @@ echo $createCoursePostMessage;
         </span>
       ';
 
-      $currentCourseJson = json_encode($currentCourse);
-      echo "<input type='hidden' value='{$currentCourseJson}' id='current-course-data' name='current_course_data' />";
+      $displayedCourseJson = json_encode($unmodifiedCourse);
+      $courseId = $displayedCourse['id'];
+      echo "<input type='hidden' value='{$displayedCourseJson}' id='current-course-data' name='current_course_data' />";
     }
 
     echo "<legend>{$legend}</legend>";
     ?>
 
-    <div class="form-group username-group">
+    <div class="form-group course-title-group">
       <label class="control-label" for="course-title">Course title</label>
 
       <div class="input-group">
         <input class="form-control check-original-course-data" type="text" name="course[title]" id="course-title"
-               required value="<?php if ($currentCourse) echo $currentCourse['title']; ?>" <?php echo $disabled; ?>
+               required value="<?php if ($displayedCourse) echo $displayedCourse['title']; ?>"
+          <?php echo $disabled; ?>
                data-fv-stringlength="true" data-fv-stringlength-min="3"/>
 
         <?php echo $editIcon; ?>
       </div>
     </div>
 
-    <div class="form-group first-name-group">
+    <div class="form-group course-code-group">
       <label class="control-label" for="course-code">Course code</label>
 
       <div class="input-group">
+        <?php
+        list($codeV, $codeD, $codeT) = getEditIcon($isEditingCourse, $displayedCourse, $unmodifiedCourse, 'code');
+        ?>
+
         <input class="form-control check-original-course-data" type="text" name="course[code]"
-               id="course-code" required
-               value="<?php if ($currentCourse) echo $currentCourse['code']; ?>" <?php echo $disabled; ?>
+               id="course-code" required value="<?php echo $codeV; ?>" <?php echo $codeD; ?>
                pattern="^[A-Za-z]{3}\.\d{3}"
                data-fv-regexp="true" data-fv-message="Please enter string such as GNS.102"
         />
 
-        <?php echo $editIcon; ?>
+        <?php echo $codeT; ?>
       </div>
     </div>
 
-    <div class="form-group last-name-group">
+    <div class="form-group course-unit-group">
       <label class="control-label" for="course-unit">Unit</label>
 
       <div class="input-group">
+        <?php
+        list($unitV, $unitD, $unitT) = getEditIcon($isEditingCourse, $displayedCourse, $unmodifiedCourse, 'unit');
+        ?>
+
         <input class="form-control check-original-course-data" type="text" name=" course[unit]"
                id="course-unit" required pattern="^\d{1,2}(?:\.\d{0,2})?$"
-               value="<?php if ($currentCourse) echo $currentCourse['unit']; ?>" <?php echo $disabled; ?>
+               value="<?php echo $unitV; ?>" <?php echo $unitD; ?>
                data-fv-regexp="true" data-fv-message="Please enter number such as 2 or 2.0"
         />
 
-        <?php echo $editIcon; ?>
+        <?php echo $unitT; ?>
       </div>
     </div>
 
@@ -84,85 +155,100 @@ echo $createCoursePostMessage;
       <label class="control-label" for="course-department">Department</label>
 
       <div class="input-group">
-        <select class="form-control check-original-course-data" name=" course[department]" id="course-department"
-                required
-          <?php echo $disabled; ?>
+        <?php
+        list($deptV, $deptD, $deptT) = getEditIcon($isEditingCourse, $displayedCourse, $unmodifiedCourse, 'department');
+        ?>
+
+        <select class="form-control check-original-course-data" name=" course[department]"
+                id="course-department" required <?php echo $deptD; ?>
         >
           <option value="">----</option>
 
           <?php
           foreach ($departmentMappings as $deptCode => $description) {
-            $deptSelected = $currentCourse && $currentCourse['department'] == $deptCode ? 'selected' : '';
+            $deptSelected = $displayedCourse && $displayedCourse['department'] == $deptCode ? 'selected' : '';
             echo "<option value='{$deptCode}' {$deptSelected}>$description</option>";
           }
           ?>
         </select>
 
-        <?php echo $editIcon; ?>
+        <?php echo $deptT; ?>
       </div>
     </div>
 
-    <div class="form-group level-group">
+    <div class="form-group course-level-group">
       <label class="control-label" for="course-level">Level</label>
 
       <div class="input-group">
-        <select class="form-control check-original-course-data" name=" course[class]" id="course-level" required
-          <?php echo $disabled; ?>
-        >
+        <?php
+        list($levelV, $levelD, $levelT) = getEditIcon($isEditingCourse, $displayedCourse, $unmodifiedCourse, 'class');
+        ?>
+
+        <select class="form-control check-original-course-data" name=" course[class]" id="course-level"
+                required <?php echo $levelD; ?> >
+
           <option value="">----</option>
 
           <?php
           foreach ($createCourseContext['levels_mapping'] as $code => $description) {
-            $levelSelected = $currentCourse && $currentCourse['class'] === $code ? 'selected' : '';
+            $levelSelected = $displayedCourse && $displayedCourse['class'] === $code ? 'selected' : '';
             echo "<option value='{$code}' {$levelSelected}>{$description}</option>";
           }
           ?>
         </select>
 
-        <?php echo $editIcon; ?>
+        <?php echo $levelT; ?>
       </div>
     </div>
 
-    <div class="form-group semester-group">
+    <div class="form-group course-semester-group">
       <label class="control-label" for="course-semester">Semester</label>
 
       <div class="input-group">
-        <select class="form-control check-original-course-data" name=" course[semester]" id="course-semester" required
-          <?php echo $disabled; ?>
-        >
+
+        <?php
+        list($semV, $semD, $semT) = getEditIcon($isEditingCourse, $displayedCourse, $unmodifiedCourse, 'semester');
+        ?>
+
+        <select class="form-control check-original-course-data" name=" course[semester]"
+                id="course-semester" required <?php echo $semD; ?> >
+
           <option value="">----</option>
           <option value="1"
-            <?php if ($currentCourse && $currentCourse['semester'] == 1) echo 'selected'; ?> >1st semester
+            <?php if ($displayedCourse && $displayedCourse['semester'] == 1) echo 'selected'; ?> >1st semester
           </option>
 
           <option value="2"
-            <?php if ($currentCourse && $currentCourse['semester'] == 2) echo 'selected'; ?>>2nd semester
+            <?php if ($displayedCourse && $displayedCourse['semester'] == 2) echo 'selected'; ?>>2nd semester
           </option>
         </select>
 
-        <?php echo $editIcon; ?>
+        <?php echo $semT; ?>
       </div>
     </div>
 
     <div class="form-group course-is-active-group">
       <label class="control-label" for="course-active">Active</label>
 
-      <?php
-      $checkActive = !$editCourse || ($currentCourse && $currentCourse['active']) ? 'checked' : '';
-      ?>
-      <input style="display: inline-block; margin-left: 10px; margin-right: 10px;"
-             class="check-original-course-data" type="checkbox" name="course[active]"
-             id="course-active" <?php echo $disabled . ' ' . $checkActive; ?> />
+      <div class="input-group">
+        <?php
+        list($actV, $actD, $actT) = getEditIcon($isEditingCourse, $displayedCourse, $unmodifiedCourse, 'active');
+        ?>
 
-      <?php
-      if ($editCourse) {
-        echo '
-            <span class="">
-              <span class="glyphicon glyphicon-pencil toggle-form-control-edit" style="cursor:pointer;"></span>
-              <span class="glyphicon glyphicon-eye-open toggle-form-control-edit" style="cursor:pointer;display: none;"></span>
-            </span>';
-      }
-      ?>
+        <select class="form-control check-original-course-data" name=" course[active]"
+                id="course-active" required <?php echo $actD; ?> >
+
+          <option value="1"
+            <?php if ($displayedCourse && $displayedCourse['active'] == 1) echo 'selected'; ?> >Active
+          </option>
+
+          <option value="0"
+            <?php if ($displayedCourse && $displayedCourse['active'] == 0) echo 'selected'; ?>>Inactive
+          </option>
+        </select>
+
+        <?php echo $actT; ?>
+      </div>
     </div>
 
   </fieldset>

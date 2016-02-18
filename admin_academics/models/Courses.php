@@ -69,15 +69,21 @@ class Courses1
   }
 
 
-  public static function courseIsUnique(array $params)
+  public static function courseIsUnique(array $params, array $excludeParams = null)
   {
     $params = self::transformLevel($params);
     $filter = getDbBindParamsFromColArray(array_keys($params));
     $query = "SELECT COUNT(*) FROM course_table WHERE {$filter}";
 
+    if ($excludeParams && count($excludeParams)) {
+      $query .= " AND " . getDbBindParamsFromColArray(array_keys($excludeParams), null, '<>');
+      $params = array_merge($params, $excludeParams);
+    }
+
     $logger = new SqlLogger(
       self::logger(),
-      'check if the combination of code, department, level and semester for a course is unique ',
+      'check if the combination of code, department, level and semester for a course is unique and optionally
+       exclude queries that match the filter in exclude param.',
       $query,
       $params
     );
@@ -120,6 +126,34 @@ class Courses1
 
     $logger->noData();
     return null;
+  }
+
+  /**
+   * @param array $changes
+   * @param array|null $filter
+   * @return int
+   */
+  public static function updateCourse(array $changes, array $filter = null)
+  {
+    $changesBindParams = getDbBindParamsFromColArray(array_keys($changes), ' , ');
+    $query = "UPDATE course_table SET {$changesBindParams} ";
+
+    if ($filter) $query .= ' WHERE ' . getDbBindParamsFromColArray(array_keys($filter));
+    else $filter = [];
+
+    $params = array_merge($changes, $filter);
+    $logger = new SqlLogger(self::logger(), 'Update student courses', $query, $params);
+    $stmt = get_db()->prepare($query);
+
+    if ($stmt->execute($params)) {
+      $logger->statementSuccess();
+      $result = 1;
+      $logger->dataRetrieved([$result]);
+      return $result;
+    }
+
+    $logger->noData();
+    return 0;
   }
 
   private static function logger()
