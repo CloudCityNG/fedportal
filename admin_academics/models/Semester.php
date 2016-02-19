@@ -460,14 +460,11 @@ Class Semester
   {
     $semesterIdsDbArray = toDbArray($semesterIds);
     $query = "SELECT DISTINCT(session_id) FROM semester WHERE id IN {$semesterIdsDbArray}";
-
-    $logMessage = SqlLogger::makeLogMessage('get session IDs from array of semester IDs', $query);
-
+    $logger = new SqlLogger(self::logger(), 'Get session IDs from array of semester IDs', $query);
     $stmt = get_db()->query($query);
 
     if ($stmt) {
-      SqlLogger::logStatementSuccess(self::logger(), $logMessage);
-
+      $logger->statementSuccess();
       $result = [];
 
       while ($row = $stmt->fetch()) {
@@ -475,12 +472,12 @@ Class Semester
       }
 
       if (count($result)) {
-        SqlLogger::logDataRetrieved(self::logger(), $logMessage, $result);
+        $logger->dataRetrieved($result);
         return self::dbDatesToCarbon($result);
       }
     }
 
-    SqlLogger::logNoData(self::logger(), $logMessage);
+    $logger->noData();
     return null;
   }
 
@@ -493,29 +490,25 @@ Class Semester
   public static function getSemestersInSession($sessionId)
   {
     $query = "SELECT * FROM semester WHERE session_id = ?";
-
     $param = [$sessionId];
-
-    self::logger()->addInfo("About to get semesters in session with query: {$query}, and param: ", $param);
-
+    $logger = new SqlLogger(self::logger(), "Get semesters in session", $query, $param);
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($param)) {
+      $logger->statementSuccess();
       $results = $stmt->fetchAll();
 
       if (count($results)) {
         $data = [];
 
-        self::logger()->addInfo('Query ran successfully, semesters are', $results);
-        foreach ($results as $result) {
-          $data[] = self::dbDatesToCarbon($result);
-        }
+        foreach ($results as $result) $data[] = self::dbDatesToCarbon($result);
 
+        $logger->dataRetrieved($data);
         return $data;
       }
     }
 
-    self::logger()->addWarning('Semesters not found.');
+    $logger->noData();
     return null;
   }
 

@@ -10,7 +10,8 @@
     "behat/mink-extension": "*",
     "behat/mink-goutte-driver": "*",
     "behat/mink-selenium2-driver": "*",
-    "ircmaxell/password-compat": "^1.0"
+    "ircmaxell/password-compat": "^1.0",
+    "skyzyx/monolog-json-pretty-print-formatter": "^1.0"
   },
   "autoload": {
     "classmap": [

@@ -28,8 +28,8 @@ define('LAST_ACTIVITY_AUTH_PREFIX_KEY', 'LAST-ACTIVITY-');
 include_once(__DIR__ . '/../vendor/autoload.php');
 
 use Monolog\Logger;
-
 use Monolog\Handler\RotatingFileHandler;
+use Skyzyx\Monolog\Formatter\JsonPrettyPrintFormatter;
 
 /**
  * @param string $name
@@ -44,7 +44,9 @@ function get_logger($name)
 
   if (!file_exists($logDir)) mkdir($logDir);
 
-  $log->pushHandler(new RotatingFileHandler($logDir . '/out_log.log', 0, Logger::DEBUG));
+  $handler = new RotatingFileHandler($logDir . '/out_log.log', 0, Logger::DEBUG);
+  $handler->setFormatter(new JsonPrettyPrintFormatter());
+  $log->pushHandler($handler);
 
   return $log;
 }

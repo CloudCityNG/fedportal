@@ -8,12 +8,22 @@ class SqlLogger
    * purpose => [query: 'the database SQL prepared statement to be executed'], [params: 'the SQL query parameters']
    * @see @constructor
    */
-  private $logMessage = '';
+  private $logMessage = 'Executing SQL: ';
 
   /**
    * @var \Monolog\Logger - logger instance that will be used for logging
    */
   private $logger;
+
+  /**
+   * @var string - The user executing the sql statement. Will be empty if there is no session
+   */
+  private $user;
+
+  /**
+   * @var array - The context to Monolog Logger object
+   */
+  private $loggerContext;
 
   /**
    * @see @method makeLogMessage
@@ -27,103 +37,59 @@ class SqlLogger
    */
   public function __construct(\Monolog\Logger $logger, $purpose, $query, array $params = null)
   {
-    $this->logMessage = self::makeLogMessage($purpose, $query, $params);
-    $logger->addInfo("Executing SQL: {$this->logMessage}");
+    $this->user = self::setSession();
+    $this->loggerContext = ['purpose_of_sql' => $purpose, 'user' => $this->user, 'sql_query' => $query];
+
+    if (is_array($params)) $this->loggerContext['sql_params'] = $params;
+
+    $logger->addInfo('Executing SQL: ', $this->loggerContext);
     $this->logger = $logger;
   }
 
-  /**
-   * Every method that does database query will use a general log message format that looks like:
-   * purpose => [query: 'the database SQL prepared statement to be executed'], [params: 'the SQL query parameters']
-   * the params part of the message is however optional since not all SQL prepared statements use parameters
-   *
-   * @param string $purpose - a brief summary of what the method wishes to do or what we wish to retrieve from database
-   * @param $query - the SQL vanilla statement or prepared statement
-   * @param array $params - the SQL prepared statement parameters - null if it does not use any parameter
-   * @return string - in the form
-   * purpose => [query: 'the database SQL prepared statement to be executed'], [params: 'the SQL query parameters']
-   */
-  public static function makeLogMessage($purpose, $query, array $params = null)
+  private static function setSession()
   {
-    $user = '';
-
-    if (session_status() === PHP_SESSION_NONE) {
-      session_start();
-    }
+    if (session_status() === PHP_SESSION_NONE) session_start();
 
     if (isset($_SESSION[USER_AUTH_SESSION_KEY])) {
-      $user = 'Username: "' . json_decode($_SESSION[USER_AUTH_SESSION_KEY], true)['username'] . '": ';
+      return json_decode($_SESSION[USER_AUTH_SESSION_KEY], true)['username'];
     }
 
-    $paramPart = $params ? ', [params: ' . print_r($params, true) . ']' : '';
-    return "{$user}{$purpose} =>  [query: {$query}]{$paramPart}";
+    return '';
   }
 
   /**
    * Log the result of a database query
-   * @param array $databaseResult - the result of the database query
+   * @param mixed $databaseResult - the result of the database query
    * @param array|null $hiddenParams - if specified, the values of the array entries will be set to 'hidden' in the
    * database result before logging. This is useful for hiding such things as user password
    */
-  public function dataRetrieved(array $databaseResult, array $hiddenParams = null)
+  public function dataRetrieved($databaseResult, array $hiddenParams = null)
   {
-    if($hiddenParams){
+    if ($hiddenParams) {
       foreach ($hiddenParams as $hiddenParam) {
         $databaseResult[$hiddenParam] = 'HIDDEN';
       }
     }
-    self::logDataRetrieved($this->logger, $this->logMessage, $databaseResult);
-  }
 
-  /**
-   * When a database query succeeds and data is retrieved from database, log the retrieved data
-   *
-   * @param \Monolog\Logger $logger - the logger to be used for logging
-   * @param string $logMessage - an optional log message, most likely the returned string from @method makeLogMessage
-   * @param array $databaseResult - the result obtained from the database
-   */
-  public static function logDataRetrieved(\Monolog\Logger $logger, $logMessage = '', array $databaseResult)
-  {
-    $logMessage = $logMessage ? "{$logMessage}:, " : '';
-    $logger->addInfo(
-      "Results successfully obtained for executed SQL: {$logMessage}: result is: ", $databaseResult);
+    $this->loggerContext['executed_sql_result'] = $databaseResult;
+
+    $this->logger->addInfo("Results successfully obtained for executed SQL:", $this->loggerContext);
   }
 
   public function noData()
   {
-    self::logNoData($this->logger, $this->logMessage);
-  }
-
-  /**
-   * When a database query fails or no result is returned by the database, we log this fact
-   *
-   * @param \Monolog\Logger $logger - the logger to be used for logging
-   * @param string $logMessage - a log message, most likely the returned string from @method makeLogMessage
-   */
-  public static function logNoData(\Monolog\Logger $logger, $logMessage)
-  {
-    $logger->addWarning("No data from database or database error for executed SQL: {$logMessage}");
+    $this->logger->addWarning(
+      "No data from database or database error for executed SQL:",
+      $this->loggerContext
+    );
   }
 
   public function statementSuccess(array $bindParams = null)
   {
-    self::logStatementSuccess($this->logger, $this->logMessage, $bindParams);
-  }
+    if ($bindParams) $this->loggerContext['sql_bind_params'] = $bindParams;
 
-  /**
-   * When a database query succeeds, log a success message
-   *
-   * @param \Monolog\Logger $logger - the logger to be used for logging
-   * @param string $logMessage - an optional log message, most likely the returned string from @method makeLogMessage
-   * @param array $bindParams - optional - used only if sql statement was executed with bind parameters
-   */
-  public static function logStatementSuccess(\Monolog\Logger $logger, $logMessage = '', array $bindParams = null)
-  {
-    $logMessage = $logMessage ? "{$logMessage}: " : '';
-    $msg = "Statement execution succeeds for SQL: {$logMessage}";
-
-    if ($bindParams) $msg .= ': bind params: ' . print_r($bindParams, true);
-
-    $logger->addInfo($msg);
+    $this->logger->addInfo(
+      "Statement execution succeeds for SQL:", $this->loggerContext
+    );
   }
 }

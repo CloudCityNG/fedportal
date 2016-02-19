@@ -4,13 +4,22 @@ require_once(__DIR__ . '/../../helpers/databases.php');
 require_once(__DIR__ . '/../../helpers/app_settings.php');
 require_once(__DIR__ . '/../../helpers/SqlLogger.php');
 require_once(__DIR__ . '/../set_student_login_session.php');
+require_once(__DIR__ . '/../../helpers/models/Pin.php');
 
 class StudentDashboardLogin
 {
 
   private static $LOG_NAME = 'StudentDashboardLogin';
 
-  public function get($studentLoginContext = null) { include(__DIR__ . '/view.php'); }
+  private static function logger()
+  {
+    return get_logger('StudentDashboardLogin');
+  }
+
+  public function get($studentLoginContext = null)
+  {
+    require(__DIR__ . '/view.php');
+  }
 
   public function post()
   {
@@ -24,32 +33,21 @@ class StudentDashboardLogin
       return;
     }
 
-    $query = "SELECT COUNT(*) FROM pin_table WHERE number=:username AND pass=:password";
-    $queryParam = ['username' => $username, 'password' => 'HIDDEN'];
-    $logger = new SqlLogger(get_logger(self::$LOG_NAME), 'Login student', $query, $queryParam);
-    $queryParam['password'] = $password;
-    $stmt = get_db()->prepare($query);
-
     try {
-      if ($stmt->execute($queryParam)) {
-        $logger->statementSuccess();
-        $result = $stmt->fetchColumn();
-        $logger->dataRetrieved([$result]);
+      $pinExists = Pin::exists(['number' => $username, 'pass' => $password]);
 
-        if ($result) {
-          setStudentLoginSession($username);
-          return;
-        }
+      if ($pinExists) setStudentLoginSession($username);
+      else $this->get($adminLoginContext);
 
-        $logger->noData();
-        $this->get($adminLoginContext);
-        return;
-      }
     } catch (PDOException $e) {
-      $log = get_logger(self::$LOG_NAME);
-      $log->addError("Login fails.");
-      logPdoException($e, "Error while running login students with query {$query}", $log);
-      $adminLoginContext['message'] = 'Unknown error occurred! Please try again.';
+      logPdoException($e, "Error while login in students", self::logger());
+      $adminLoginContext['message'] = 'Database error! Please try again. However if error persists please inform admin!';
+      $this->get($adminLoginContext);
+
+    } catch (Exception $ex) {
+
+      self::logger()->addError('Stack trace:', $ex->getTrace());
+      $adminLoginContext['message'] = 'Database error! Please try again. However if error persists please inform admin!';
       $this->get($adminLoginContext);
     }
   }

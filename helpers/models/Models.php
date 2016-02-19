@@ -14,7 +14,7 @@ class Models implements ArrayAccess
 
   protected $guarded = [];
 
-  public function __construct($model_data = null)
+  public function __construct(array $model_data = null)
   {
 
     if ($model_data) {
@@ -30,12 +30,12 @@ class Models implements ArrayAccess
     foreach ($model_data as $key => $val) {
 
       if (!in_array($key, $this->db_attributes)) {
-        throw new Exception("Invalid attribute: '$key' for $called_class");
+        throw new Exception("Invalid attribute: '{$key}' for model {$called_class}");
 
       }
 
       if (in_array($key, $this->guarded)) {
-        throw new Exception("Can not set protected attribute: '$key' for $called_class ");
+        throw new Exception("Can not set protected attribute: '{$key}' for model {$called_class} ");
       }
 
       $this{$key} = $val;

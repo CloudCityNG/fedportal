@@ -8,11 +8,7 @@ class Photo extends Models {
 
   protected $table = 'pics';
 
-  protected $db_attributes = [
-    'personalno',
-
-    'nameofpic',
-  ];
+  protected $db_attributes = ['personalno', 'nameofpic',];
 
   public function exists($reg_no)
   {

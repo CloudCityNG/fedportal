@@ -60,27 +60,23 @@ class StudentProfile
   {
     $query = "SELECT *FROM freshman_profile WHERE personalno = ?";
     $param = [$this->reg_no];
-
-    $logMessage = SqlLogger::makeLogMessage("get student bio data/profile", $query, $param);
-
+    $logger = new SqlLogger(self::logger(), "Get student bio data/profile", $query, $param);
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($param)) {
-      SqlLogger::logStatementSuccess(self::logger(), $logMessage);
-
+      $logger->statementSuccess();
       $fetchedArray = $stmt->fetch();
 
       if ($fetchedArray) {
-        SqlLogger::logDataRetrieved(self::logger(), $logMessage, $fetchedArray);
-
+        $logger->dataRetrieved($fetchedArray);
         $this->regNoValid = true;
-
         $this->names = $fetchedArray['first_name'] . ' ' . $fetchedArray['other_names'] . ' ' . $fetchedArray['surname'];
         $this->dept_code = $fetchedArray['course'];
         $this->admissionSession = $fetchedArray['currentsession'];
         $this->photo = self::getPhoto($this->reg_no, true);
       }
 
+      $logger->noData();
       $stmt->closeCursor();
     }
   }
@@ -152,27 +148,25 @@ class StudentProfile
   {
     $query = "SELECT * FROM student_currents WHERE reg_no = ? AND academic_year = ?";
     $params = [$regNo, $sessionCode];
-
-    $logMessage = SqlLogger::makeLogMessage(
-      'get the level and department a student was during a particular academic year',
+    $logger = new SqlLogger(
+      self::logger(),
+      'Get the level and department a student was during a particular academic year',
       $query,
       $params
     );
-
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($params)) {
-      SqlLogger::logStatementSuccess(self::logger(), $logMessage);
-
+      $logger->statementSuccess();
       $result = $stmt->fetch();
 
       if ($result) {
-        SqlLogger::logDataRetrieved(self::logger(), $logMessage, $result);
+        $logger->dataRetrieved($result);
         return $result;
       }
     }
 
-    SqlLogger::logNoData(self::logger(), $logMessage);
+    $logger->noData();
     return null;
   }
 
@@ -185,52 +179,42 @@ class StudentProfile
   public static function getRegisteredSessions($regNo)
   {
     $query = "SELECT * FROM student_currents WHERE  reg_no = '{$regNo}'";
-
-    $logMessage = SqlLogger::makeLogMessage(
-      'get all academic sessions in which a student signed up for courses',
-      $query
+    $logger = new SqlLogger(
+      self::logger(), 'Get all academic sessions in which a student signed up for courses', $query
     );
-
     $stmt = get_db()->query($query);
 
     if ($stmt) {
-      SqlLogger::logStatementSuccess(self::logger(), $logMessage);
-
+      $logger->statementSuccess();
       $result = $stmt->fetchAll();
 
       if (count($result)) {
-        SqlLogger::logDataRetrieved(self::logger(), $logMessage, $result);
+        $logger->dataRetrieved($result);
         return $result;
       }
     }
 
-    SqlLogger::logNoData(self::logger(), $logMessage);
+    $logger->noData();
     return null;
   }
 
   public static function student_exists($regNo)
   {
     $query = "SELECT Count(*) FROM freshman_profile WHERE personalno = ?";
-
     $param = [$regNo];
-
-    $logMessage = SqlLogger::makeLogMessage(
-      'confirm if student exists in database', $query, $param
-    );
-
+    $logger = new SqlLogger(self::logger(), 'Confirm if student exists in database', $query, $param);
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($param)) {
-
-      SqlLogger::logStatementSuccess(self::logger(), $logMessage);
+      $logger->statementSuccess();
 
       if ($stmt->fetchColumn()) {
-        SqlLogger::logDataRetrieved(self::logger(), $logMessage, [true]);
+        $logger->dataRetrieved(true);
         return true;
       }
     }
 
-    SqlLogger::logNoData(self::logger(), $logMessage);
+    $logger->noData();
     return false;
   }
 

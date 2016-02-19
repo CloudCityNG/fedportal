@@ -89,7 +89,8 @@ class CourseRegController1
   {
     $data = Courses1::getCourses([
       'department' => $dept_code,
-      'semester' => $semester
+      'semester' => $semester,
+      'active' => 1
     ]);
 
     $result = [];

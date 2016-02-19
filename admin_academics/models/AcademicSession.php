@@ -76,35 +76,26 @@ class AcademicSession
   public static function getCurrentSession()
   {
     $today = date('Y-m-d', time());
-
     $query = "SELECT *
               FROM session_table
               WHERE :today1 >= start_date
               AND :today2 <= end_date
               ORDER BY start_date LIMIT 1";
-
-    $queryParam = [
-      'today1' => $today,
-      'today2' => $today
-    ];
-
-    self::logger()->addInfo(
-      "About to get current session with query: {$query} and params: ", $queryParam
-    );
-
+    $queryParam = ['today1' => $today, 'today2' => $today];
+    $logger = new SqlLogger(self::logger(), 'Get current session', $query, $queryParam);
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($queryParam)) {
-
+      $logger->statementSuccess();
       $session = $stmt->fetch();
 
       if ($session) {
-        self::logger()->addInfo("Query successfully ran. Session is: ", $session);
+        $logger->dataRetrieved($session);
         return self::dbDatesToCarbon($session);
       }
     }
 
-    self::logger()->addWarning("Current session not found!");
+    $logger->noData();
     return null;
   }
 
@@ -276,24 +267,20 @@ class AcademicSession
   {
     $query = "SELECT * FROM session_table WHERE id = ?";
     $param = [$id];
-
-    $logMessage = SqlLogger::makeLogMessage('get a session from its ID', $query, $param);
-
+    $logger = new SqlLogger(self::logger(), 'Get a session from its ID', $query, $param);
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($param)) {
-      SqlLogger::logStatementSuccess(self::logger(), $logMessage);
-
+      $logger->statementSuccess();
       $result = $stmt->fetch();
 
       if ($result) {
-        SqlLogger::logDataRetrieved(self::logger(), $logMessage, $result);
-
+        $logger->dataRetrieved($result);
         return self::dbDatesToCarbon($result);
       }
     }
 
-    SqlLogger::logNoData(self::logger(), $logMessage);
+    $logger->noData();
     return null;
   }
 
@@ -333,22 +320,20 @@ class AcademicSession
   {
     $sessionDbIds = toDbArray($sessionIds);
     $query = "select * from session_table where id in {$sessionDbIds}";
-
-    $logMsg = SqlLogger::makeLogMessage("get session data from array of IDs", $query);
-
+    $logger = new SqlLogger(self::logger(), "get session data from array of IDs", $query);
     $stmt = get_db()->query($query);
 
     if ($stmt) {
-      SqlLogger::logStatementSuccess(self::logger(), $logMsg);
+      $logger->statementSuccess();
       $results = $stmt->fetchAll();
 
       if (count($results)) {
-        SqlLogger::logDataRetrieved(self::logger(), $logMsg, $results);
+        $logger->dataRetrieved($results);
         return self::dbDatesToCarbon($results);
       }
     }
 
-    SqlLogger::logNoData(self::logger(), $logMsg);
+    $logger->noData();
     return null;
   }
 }

@@ -21,23 +21,20 @@ Class AcademicDepartment
   public static function getAcademicDepartments()
   {
     $query = 'SELECT * FROM academic_departments';
-
-    $logMessage = SqlLogger::makeLogMessage('get all departments', $query);
-
+    $logger = new SqlLogger(self::logger(), 'Get all departments', $query);
     $stmt = get_db()->query($query);
 
     if ($stmt) {
-      SqlLogger::logStatementSuccess(self::logger(), $logMessage);
-
+      $logger->statementSuccess();
       $returnedVal = $stmt->fetchAll();
 
       if (count($returnedVal)) {
-        SqlLogger::logDataRetrieved(self::logger(), $logMessage, $returnedVal);
+        $logger->dataRetrieved($returnedVal);
         return $returnedVal;
       }
     }
 
-    SqlLogger::logNoData(self::logger(), $logMessage);
+    $logger->noData();
     return null;
   }
 
@@ -55,11 +52,8 @@ Class AcademicDepartment
   public static function getDeptNameFromCode($code)
   {
     $query = 'SELECT description FROM academic_departments WHERE code = ?';
-
     $params = [$code];
-
-    $logger = new SqlLogger(self::logger(), 'get department name from its code', $query, $params);
-
+    $logger = new SqlLogger(self::logger(), 'Get department name from its code', $query, $params);
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($params)) {
@@ -68,7 +62,7 @@ Class AcademicDepartment
 
       if ($returnedVal) {
         $logger->dataRetrieved($returnedVal);
-        return $returnedVal[0];;
+        return $returnedVal[0];
       }
     }
 
