@@ -18,7 +18,7 @@ Class A201511251448435207
         sex               VARCHAR(1) NULL,
         state_of_origin   VARCHAR(50) NULL,
         pic               VARCHAR(100) NULL,
-        `created_at`      TIMESTAMP NOT NULL,
+        `created_at`      TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
         `updated_at`      TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `deleted_at`      TIMESTAMP NULL DEFAULT NULL,
         is_super_user     BOOLEAN NOT NULL DEFAULT 0,
@@ -32,7 +32,7 @@ Class A201511251448435207
         `id`              INT           NOT NULL     AUTO_INCREMENT,
         name              VARCHAR(100)  NOT NULL,
         code              VARCHAR(50)   NOT NULL,
-        `created_at`      TIMESTAMP     NOT NULL,
+        `created_at`      TIMESTAMP     NOT NULL DEFAULT '0000-00-00 00:00:00',
         `updated_at`      TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `deleted_at`      TIMESTAMP     NULL DEFAULT NULL,
 
@@ -45,7 +45,7 @@ Class A201511251448435207
         `id`                    INT           NOT NULL     AUTO_INCREMENT,
         `staff_profile_id`      INT           NOT NULL,
         `staff_capability_id`   INT           NOT NULL,
-        `created_at`            TIMESTAMP     NOT NULL,
+        `created_at`            TIMESTAMP     NOT NULL DEFAULT '0000-00-00 00:00:00',
         `updated_at`            TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `deleted_at`            TIMESTAMP     NULL DEFAULT NULL,
 
