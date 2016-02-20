@@ -23,6 +23,7 @@ function logPdoException(PDOException $e, $message, Logger $log)
   $log->addError($message);
   $log->addError('Error code is ' . $e->getCode());
   $log->addError($e->getMessage());
+  $log->addError('Stack trace:', $e->getTrace());
 }
 
 function log_sql($query, $params, $log_level)

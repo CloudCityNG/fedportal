@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     'regNo' => $regNo
   ];
 
-  if (StudentProfile::student_exists($regNo)) {
+  if (StudentProfile::exists($regNo)) {
 
     $returned_val['found'] = true;
 

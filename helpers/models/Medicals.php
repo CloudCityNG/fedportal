@@ -1,25 +1,64 @@
 <?php
 
 require_once(__DIR__ . '/../databases.php');
-
 require_once(__DIR__ . '/../app_settings.php');
+require_once(__DIR__ . '/../SqlLogger.php');
 
 
 class Medicals
 {
   private static $LOG_NAME = 'Medicals';
 
-  public static function exists($reg_no = null)
+  private static function logger()
   {
-    $db = get_db();
+    return get_logger('MedicalsModel');
+  }
 
-    $stmt = $db->prepare(
-      "SELECT COUNT(*) FROM medical_info WHERE reg_no = ?"
-    );
+  /**
+   * Get students medical record and optionally filter by $filter param
+   * @param array|null $filter
+   * @return null|array
+   */
+  public static function get(array $filter = null)
+  {
+    $query = 'SELECT * FROM medical_info ';
+    $existsOnly = false;
 
-    $stmt->execute([$reg_no]);
+    if ($filter) {
+      if (isset($filter['__exists'])) {
 
-    return $stmt->fetchColumn();
+        if ($filter['__exists']) {
+          $existsOnly = true;
+          $query = 'SELECT COUNT(*) FROM medical_info ';
+        }
+
+        unset($filter['__exists']);
+      }
+
+      $dbBindParams = getDbBindParamsFromColArray(array_keys($filter));
+      $query .= " WHERE {$dbBindParams}";
+
+    } else $filter = [];
+
+    $logger = new SqlLogger(self::logger(), 'Get student medical record:', $query, $filter);
+    $stmt = get_db()->prepare($query);
+
+    if ($stmt->execute($filter)) {
+      $logger->statementSuccess();
+
+      if ($existsOnly) {
+        $result = $stmt->fetchColumn();
+        $logger->dataRetrieved($result);
+        return $result;
+      }
+
+      $result = $stmt->fetch();
+      $logger->dataRetrieved($result);
+      return $result;
+    }
+
+    $logger->noData();
+    return null;
   }
 
   public static function save($inputs)

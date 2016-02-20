@@ -15,32 +15,21 @@ class StudentRegistration
 {
 
   public $reg_no;
-
   public $html_status_classes;
-
   public $html_status_texts;
-
   public $form_completion = false;
-
   public $form_completion_class;
-
   public $form_completion_message;
-
   public $semester;
-
   private static $FORM_COMPLETION_SESSION_KEY = 'STUDENT-REG-FORM-REGISTRATION';
-
 
   public function __construct($reg_no = null)
   {
     if (session_status() == PHP_SESSION_NONE) session_start();
 
     $this->reg_no = $reg_no ? $reg_no : $_SESSION['REG_NO'];
-
     $this->semester = Semester::getCurrentSemester();
-
     $this->init_statuses();
-
     $this->set_form_completion_error();
   }
 
@@ -82,7 +71,7 @@ class StudentRegistration
 
     $photo = $photo_obj->exists($this->reg_no);
 
-    $medicals = Medicals::exists($this->reg_no);
+    $medicals = Medicals::get(['reg_no' => $this->reg_no, '__exists' => true]);
 
     $profile = $this->get_profile();
 
@@ -127,7 +116,6 @@ class StudentRegistration
     if (isset($_SESSION[self::$FORM_COMPLETION_SESSION_KEY])) {
 
       $form_completion = json_decode($_SESSION[self::$FORM_COMPLETION_SESSION_KEY]);
-
       $this->form_completion = true;
 
       if (isset($form_completion->error)) {

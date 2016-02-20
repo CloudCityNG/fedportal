@@ -58,9 +58,7 @@
 
   <?php include(__DIR__ . '/../../includes/js-footer.php'); ?>
   <script src="<?php echo path_to_link(__DIR__ . '/js/admin-academics-home.min.js', true) ?>"></script>
-  <?php if (isset($pageJsPath) && $pageJsPath) {
-    echo "<script src='{$pageJsPath}'></script>";
-  } ?>
+  <?php if (isset($pageJsPath) && $pageJsPath) echo "<script src='{$pageJsPath}'></script>"; ?>
 
 </body>
 </html>

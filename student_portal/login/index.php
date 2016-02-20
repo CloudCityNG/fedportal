@@ -3,14 +3,11 @@
 require_once(__DIR__ . '/../../helpers/databases.php');
 require_once(__DIR__ . '/../../helpers/app_settings.php');
 require_once(__DIR__ . '/../../helpers/SqlLogger.php');
-require_once(__DIR__ . '/../set_student_login_session.php');
 require_once(__DIR__ . '/../../helpers/models/Pin.php');
+require_once(__DIR__ . '/../../helpers/models/StudentProfile.php');
 
 class StudentDashboardLogin
 {
-
-  private static $LOG_NAME = 'StudentDashboardLogin';
-
   private static function logger()
   {
     return get_logger('StudentDashboardLogin');
@@ -36,7 +33,7 @@ class StudentDashboardLogin
     try {
       $pinExists = Pin::exists(['number' => $username, 'pass' => $password]);
 
-      if ($pinExists) setStudentLoginSession($username);
+      if ($pinExists) StudentProfile::setStudentLoginSession($username);
       else $this->get($adminLoginContext);
 
     } catch (PDOException $e) {
@@ -47,7 +44,7 @@ class StudentDashboardLogin
     } catch (Exception $ex) {
 
       self::logger()->addError('Stack trace:', $ex->getTrace());
-      $adminLoginContext['message'] = 'Database error! Please try again. However if error persists please inform admin!';
+      $adminLoginContext['message'] = 'General error! Please try again. However if error persists please inform admin!';
       $this->get($adminLoginContext);
     }
   }

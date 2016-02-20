@@ -16,7 +16,7 @@ class FreshmanRegController1
 
     $regNo = $_SESSION['REG_NO'];
 
-    if (StudentProfile::student_exists($regNo)) {
+    if (StudentProfile::exists($regNo)) {
 
       set_student_reg_form_completion_session1(
         'error', "Your bio data exists in database!");

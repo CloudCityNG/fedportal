@@ -1,69 +1,73 @@
 <?php
 
 require_once(__DIR__ . '/../databases.php');
-
 require_once(__DIR__ . '/../app_settings.php');
+require_once(__DIR__ . '/../SqlLogger.php');
 
 use Carbon\Carbon;
 
 class EduHistory
 {
 
-  private static $LOG_NAME = 'EduHistory';
-
-  public static function get($reg_no)
+  private static function logger()
   {
-    $log = get_logger(self::$LOG_NAME);
-
-    $db = get_db();
-
-    $log->addInfo("About to get education history for student '$reg_no'");
-
-    $query = "SELECT * FROM edu_history WHERE reg_no = ?";
-
-    $returned_val = [];
-
-    try {
-      $stmt = $db->prepare($query);
-
-      $stmt->execute([$reg_no]);
-
-      if ($stmt->rowCount()) {
-
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        $returned_val['pry_edu'] = self::get_pry_edu($result);
-
-        $returned_val['secondary_edu'] = self::get_secondary_edu($result);
-
-        $returned_val['o_level_scores'] = self::get_o_level_scores($result);
-
-        $returned_val['post_secondary'] = self::get_post_secondary($result);
-
-        $log->addInfo(
-          "Education history successfully retrieved from database as: ",
-          $returned_val
-        );
-
-      } else {
-        $log->addWarning("Education history not found in database.");
-      }
-
-    } catch (PDOException $e) {
-      logPdoException(
-        $e,
-        "Error occurred while retrieving education history",
-        $log
-      );
-    }
-
-    return $returned_val;
-
+    return get_logger('EduHistoryModel');
   }
 
-  private static function get_pry_edu($result)
+  /**
+   * Get students education history and optionally filter by $filter param
+   * @param array|null $filter
+   * @return null|array
+   */
+  public static function get(array $filter = null)
   {
+    $query = 'SELECT * FROM edu_history ';
+    $existsOnly = false;
 
+    if ($filter) {
+      if (isset($filter['__exists'])) {
+
+        if ($filter['__exists']) {
+          $existsOnly = true;
+          $query = 'SELECT COUNT(*) FROM edu_history ';
+        }
+
+        unset($filter['__exists']);
+      }
+
+      $dbBindParams = getDbBindParamsFromColArray(array_keys($filter));
+      $query .= " WHERE {$dbBindParams}";
+
+    } else $filter = [];
+
+    $logger = new SqlLogger(self::logger(), 'Get student education history:', $query, $filter);
+    $stmt = get_db()->prepare($query);
+
+    if ($stmt->execute($filter)) {
+      $logger->statementSuccess();
+
+      if ($existsOnly) {
+        $result = $stmt->fetchColumn();
+        $logger->dataRetrieved($result);
+        return $result;
+      }
+
+      $result = $stmt->fetch();
+      $logger->dataRetrieved($result);
+      $returned_val = [];
+      $returned_val['pry_edu'] = self::getPryEdu($result);
+      $returned_val['secondary_edu'] = self::getSecondaryEdu($result);
+      $returned_val['o_level_scores'] = self::getOlevelScores($result);
+      $returned_val['post_secondary'] = self::getPostSecondaryEdu($result);
+      return $returned_val;
+    }
+
+    $logger->noData();
+    return null;
+  }
+
+  private static function getPryEdu($result)
+  {
     $edu = json_decode($result['pry_edu']);
 
     return [
@@ -78,7 +82,7 @@ class EduHistory
 
   }
 
-  private static function get_secondary_edu($result)
+  private static function getSecondaryEdu($result)
   {
     $edu = json_decode($result['secondary_edu']);
 
@@ -94,7 +98,7 @@ class EduHistory
 
   }
 
-  private static function get_o_level_scores($result)
+  private static function getOlevelScores($result)
   {
 
     $o_levels = json_decode($result['o_level_scores']);
@@ -114,7 +118,6 @@ class EduHistory
     }
 
     return $container;
-
   }
 
   private static function normalize_date($val)
@@ -130,13 +133,11 @@ class EduHistory
     }
   }
 
-  private static function get_post_secondary(array $result)
+  private static function getPostSecondaryEdu(array $result)
   {
     $post = $result['post_secondary'];
 
-    if (!$post) {
-      return null;
-    }
+    if (!$post) return null;
 
     return [
       'name' => $post->name,

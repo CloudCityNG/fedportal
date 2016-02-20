@@ -22,7 +22,7 @@ class CourseRegController
   {
     $studentRegNo = $_SESSION['REG_NO'];
 
-    if (!StudentProfile::student_exists($studentRegNo)) {
+    if (!StudentProfile::exists($studentRegNo)) {
       self::exitOnError('You have not selected your department! Please complete bio data.');
     }
 

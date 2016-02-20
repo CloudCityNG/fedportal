@@ -1,10 +1,10 @@
 <?php
+require_once(__DIR__ . '/../../helpers/app_settings.php');
+require_once(__DIR__ . '/../../helpers/models/Pin.php');
 
 function studentDashboardSession()
 {
   if (session_status() === PHP_SESSION_NONE) session_start();
-
-  require_once(__DIR__ . '/../../helpers/app_settings.php');
 
   $login = STATIC_ROOT . 'student_portal/login/';
 
@@ -13,19 +13,15 @@ function studentDashboardSession()
     return;
   }
 
-  if (!trim($_SESSION[STUDENT_PORTAL_AUTH_KEY])) {
+  $regNo = trim($_SESSION[STUDENT_PORTAL_AUTH_KEY]);
+
+  if (!$regNo) {
     unset($_SESSION[STUDENT_PORTAL_AUTH_KEY]);
     header("location: $login");
     return;
   }
 
-  require_once(__DIR__ . '/../../helpers/databases.php');
-
-  $regNo = trim($_SESSION[STUDENT_PORTAL_AUTH_KEY]);
-  $stmt = get_db()->prepare("SELECT COUNT(*) FROM pin_table WHERE number = ? ;");
-  $stmt->execute([$regNo]);
-
-  if (!$stmt->fetchColumn()) {
+  if (!Pin::exists(['number' => $regNo])) {
     unset($_SESSION[STUDENT_PORTAL_AUTH_KEY]);
     header("location: {$login}");
     return;

@@ -45,7 +45,7 @@ if ($studentLoginContext) {
 
           <div class="col-sm-8">
             <input type="text" class="form-control" name="username" id="username" required minlength="3"
-            value="<?php echo $userName; ?>">
+            value="<?php echo $userName; ?>" />
           </div>
         </div>
 
@@ -53,7 +53,7 @@ if ($studentLoginContext) {
           <label for="password" class="control-label col-sm-4">Password</label>
 
           <div class="col-sm-8">
-            <input type="password" class="form-control" name="password" id="password" required minlength="6">
+            <input type="password" class="form-control" name="password" id="password" required minlength="6"/>
           </div>
         </div>
 

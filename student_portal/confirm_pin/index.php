@@ -3,7 +3,7 @@
 require_once(__DIR__ . '/../../helpers/databases.php');
 require_once(__DIR__ . '/../../helpers/app_settings.php');
 require_once(__DIR__ . '/../../helpers/SqlLogger.php');
-require_once(__DIR__ . '/../set_student_login_session.php');
+require_once(__DIR__ . '/../../helpers/models/StudentProfile.php');
 
 class ConfirmPinController
 {
@@ -49,7 +49,7 @@ class ConfirmPinController
         $logger->dataRetrieved([$result]);
 
         if ($result) {
-          setStudentLoginSession($regNo);
+          StudentProfile::setStudentLoginSession($regNo);
           return;
         }
 

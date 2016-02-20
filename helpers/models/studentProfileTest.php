@@ -13,7 +13,7 @@ class StudentProfileTest
 
   static function test_student_exists()
   {
-    echo StudentProfile::student_exists('abcde1');
+    echo StudentProfile::exists('abcde1');
   }
 
   static function test_get_billing_history()

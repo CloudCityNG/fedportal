@@ -12,7 +12,7 @@ require_once(__DIR__ . '/../../helpers/models/StudentProfile.php');
 
 $reg_no = $_POST['reg_no'];
 
-if (!StudentProfile::student_exists($reg_no)) {
+if (!StudentProfile::exists($reg_no)) {
   if (session_status() === PHP_SESSION_NONE) {
     session_start();
   }

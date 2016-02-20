@@ -59,8 +59,7 @@ class StudentCourses
   public static function getStudentCourses(array $data, $withLetterGrades = false, $gradeNullScore = false)
   {
     $query = "SELECT student_courses.id AS `id`, `reg_no`, `level`, `semester_id`, `score`, `title`, `unit`,
-              `department`, `code`
-
+                `department`, `code`
               FROM student_courses JOIN course_table ON (course_id = course_table.id)
               WHERE reg_no = :reg_no";
 
@@ -68,19 +67,16 @@ class StudentCourses
     if (isset($data['publish'])) $query .= ' AND publish = :publish';
 
     $logger = new SqlLogger(self::logger(), 'get student courses', $query, $data);
-
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($data)) {
       $logger->statementSuccess();
-
       $result = $stmt->fetchAll();
 
       if (count($result)) {
         if ($withLetterGrades) $result = self::addLetterGrades($result, $gradeNullScore);
 
         $logger->dataRetrieved($result);
-
         return $result;
       }
     }

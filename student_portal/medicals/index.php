@@ -14,7 +14,7 @@ class MedicalsController
   {
     $regNo = $_SESSION['REG_NO'];
 
-    if (Medicals::exists($regNo)) {
+    if (Medicals::get(['reg_no' => $regNo, '__exists' => true])) {
 
       set_student_reg_form_completion_session1(
         'error', "Your Medical data exists in database!");

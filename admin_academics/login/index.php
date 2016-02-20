@@ -3,13 +3,14 @@
 require_once(__DIR__ . '/../../helpers/databases.php');
 require_once(__DIR__ . '/../../helpers/app_settings.php');
 require_once(__DIR__ . '/../../helpers/SqlLogger.php');
+require_once(__DIR__ . '/../staff_profile/models/StaffProfile.php');
 
 class AdminLogin
 {
 
   private static $LOG_NAME = 'AdminLogin';
 
-  public function get($adminLoginContext=null)
+  public function get($adminLoginContext = null)
   {
     include(__DIR__ . '/view.php');
   }
@@ -49,22 +50,20 @@ class AdminLogin
     $username = trim($_POST['username']);
 
     $status = 'Login failed!';
+
     if (!$password || !$username) {
       $this->get([
         'status' => $status,
         'messages' => ['username or password incorrect']
       ]);
+
       return;
     }
 
-    $query = "SELECT * FROM staff_profile WHERE username=:username";
-    $query_param = ['username' => $username];
-    $logger = new SqlLogger(get_logger(self::$LOG_NAME), 'Login staff', $query, $query_param);
-    $stmt = get_db()->prepare($query);
+    $result = StaffProfile::getStaff(['username' => $username]);
 
-    if ($stmt->execute($query_param)) {
-      $logger->statementSuccess();
-      $result = $stmt->fetch();
+    if ($result) {
+      $result = $result[0];
       $userDbPwd = $result['password'];
 
       if (!password_verify($password, $userDbPwd)) {
@@ -94,9 +93,8 @@ class AdminLogin
         }
       }
 
-      if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-      }
+      if (session_status() === PHP_SESSION_NONE) session_start();
+
       session_regenerate_id();
       $_SESSION[USER_AUTH_SESSION_KEY] = json_encode($result, true);
       $_SESSION[STAFF_USER_SESSION_KEY] = STAFF_USER_SESSION_VALUE;
