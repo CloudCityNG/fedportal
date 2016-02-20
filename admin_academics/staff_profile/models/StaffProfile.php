@@ -1,7 +1,7 @@
 <?php
 
-require_once(__DIR__ . '/../../../helpers/databases.php');
 require_once(__DIR__ . '/../../../helpers/app_settings.php');
+require_once(__DIR__ . '/../../../helpers/databases.php');
 require_once(__DIR__ . '/../../../helpers/SqlLogger.php');
 
 use Carbon\Carbon;
@@ -14,6 +14,20 @@ class StaffProfile
   private static function logger()
   {
     return get_logger('StaffProfileModel');
+  }
+
+  private static function scramblePassword(array $data)
+  {
+    $result = [];
+
+    foreach ($data as $row) {
+      if (isset($row['password'])) {
+        $row['password'] = 'HIDDEN';
+        $result[] = $row;
+      }
+    }
+
+    return $result;
   }
 
   /**
@@ -33,19 +47,12 @@ class StaffProfile
 
     if ($stmt->execute($filter)) {
       $logger->statementSuccess();
-      $result = [];
-
-      while ($row = $stmt->fetch()) {
-        $row['password'] = 'HIDDEN';
-        $result[] = $row;
-      }
-      $logger->dataRetrieved($result);
-
+      $result = $stmt->fetchAll();
+      $logger->dataRetrieved(self::scramblePassword($result));
       return $result;
     }
 
     $logger->noData();
-
     return null;
   }
 
@@ -80,7 +87,7 @@ class StaffProfile
    */
   public static function updateProfile(array $changes, array $filter = null)
   {
-    if(isset($changes['password'])) $changes['password'] = password_hash($changes['password'], PASSWORD_DEFAULT);
+    if (isset($changes['password'])) $changes['password'] = password_hash($changes['password'], PASSWORD_DEFAULT);
 
     $changesBindParams = getDbBindParamsFromColArray(array_keys($changes), ' , ');
     $query = "UPDATE staff_profile SET {$changesBindParams} ";
