@@ -58,7 +58,7 @@ class StudentProfile
 
   private function initProfile()
   {
-    $query = "SELECT *FROM freshman_profile WHERE personalno = ?";
+    $query = "SELECT * FROM freshman_profile WHERE personalno = ?";
     $param = [$this->reg_no];
     $logger = new SqlLogger(self::logger(), "Get student bio data/profile", $query, $param);
     $stmt = get_db()->prepare($query);
@@ -109,10 +109,9 @@ class StudentProfile
    */
   public static function getStudentProfile($regNo)
   {
-    $log = get_logger('GetStudentProfileForSessionSetting');
     $query = "SELECT * FROM freshman_profile WHERE personalno=:reg_no";
     $param = ['reg_no' => $regNo];
-    $sqlLogger = new SqlLogger($log, 'Get student profile that will set in student session', $query, $param);
+    $sqlLogger = new SqlLogger(self::logger(), 'Get student profile: ', $query, $param);
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($param)) {

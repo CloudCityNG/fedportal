@@ -1,14 +1,14 @@
 <!doctype html>
 <html class="no-js" lang="">
 <head>
-  <?php include(__DIR__ . '/../../includes/header.php'); ?>
+  <?php require(__DIR__ . '/../../includes/header.php'); ?>
   <link rel="stylesheet" href="<?php echo path_to_link(__DIR__ . '/../../libs/css/main.min.css', true) ?>">
-  <link rel="stylesheet" href="<?php echo path_to_link(__DIR__ . '/css/course-reg.min.css', true) ?>"/>
+  <link rel="stylesheet" href="<?php echo $cssPath; ?>"/>
 </head>
 
 <body>
   <div class="app">
-    <?php include(__DIR__ . '/../includes/nav.php') ?>
+    <?php require(__DIR__ . '/../includes/nav.php') ?>
 
     <section class="layout">
       <section class="main-content">
@@ -16,7 +16,7 @@
           <div class="wrapper">
             <section class="panel">
               <div class="panel-body">
-                <?php require($view); ?>
+                <?php require(__DIR__ . '/view-main.php') ?>
               </div>
             </section>
           </div>
@@ -26,7 +26,6 @@
   </div>
 
   <?php include(__DIR__ . '/../../includes/js-footer.php'); ?>
-
-  <script src="<?php echo path_to_link(__DIR__ . '/js/register-courses.js', true) ?>"></script>
+  <script src="<?php echo $jsPath ?>"></script>
 </body>
 </html>

@@ -21,7 +21,7 @@ function studentDashboardSession()
     return;
   }
 
-  if (!Pin::exists(['number' => $regNo])) {
+  if (!Pin::get(['number' => $regNo, '__exists' => true])) {
     unset($_SESSION[STUDENT_PORTAL_AUTH_KEY]);
     header("location: {$login}");
     return;

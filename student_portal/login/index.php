@@ -31,7 +31,7 @@ class StudentDashboardLogin
     }
 
     try {
-      $pinExists = Pin::exists(['number' => $username, 'pass' => $password]);
+      $pinExists = Pin::get(['number' => $username, 'pass' => $password, '__exists' => true]);
 
       if ($pinExists) StudentProfile::setStudentLoginSession($username);
       else $this->get($adminLoginContext);

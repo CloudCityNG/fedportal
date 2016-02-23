@@ -26,21 +26,43 @@ class Pin
   }
 
   /**
-   * Checks if records exist in the database for the given filter
-   * @param array $filter
+   * Get pin from database and optionally filter with param $filter
+   * @param null|array $filter
    * @return null|string
    */
-  public static function exists(array $filter)
+  public static function get(array $filter = null)
   {
-    $dbFilter = getDbBindParamsFromColArray(array_keys($filter));
-    $query = "SELECT COUNT(*) FROM pin_table WHERE {$dbFilter}";
-    $logger = new SqlLogger(self::logger(), 'Check if pin exists', $query, self::hidePassword($filter));
+    $query = 'SELECT * FROM pin_table ';
+    $existsOnly = false;
+    $params = $filter;
+
+    if ($filter && count($filter)) {
+      if (isset($filter['__exists']) && $filter['__exists']) {
+        $query = 'SELECT COUNT(*) FROM pin_table ';
+        $existsOnly = true;
+      }
+
+      unset($filter['__exists']);
+      $dbFilter = getDbBindParamsFromColArray(array_keys($filter));
+      $query .= " WHERE {$dbFilter}";
+
+    } else $filter = [];
+
+    $logger = new SqlLogger(self::logger(), 'Get student registration pin data', $query, self::hidePassword($params));
     $stmt = get_db()->prepare($query);
 
     if ($stmt->execute($filter)) {
       $logger->statementSuccess();
-      $result = $stmt->fetchColumn();
+
+      if ($existsOnly) {
+        $result = $stmt->fetchColumn();
+        $logger->dataRetrieved($result);
+        return $result;
+      }
+
+      $result = $stmt->fetchAll();
       $logger->dataRetrieved([$result]);
+
       return $result;
     }
 

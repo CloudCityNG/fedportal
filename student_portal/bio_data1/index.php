@@ -4,6 +4,7 @@ require_once(__DIR__ . '/../../helpers/databases.php');
 require_once(__DIR__ . '/../../helpers/app_settings.php');
 require_once(__DIR__ . '/../home/set_student_reg_form_completion_session.php');
 require_once(__DIR__ . '/../../helpers/models/StudentProfile.php');
+require_once(__DIR__ . '/../../helpers/models/Pin.php');
 require_once(__DIR__ . '/../../admin_academics/models/AcademicSession.php');
 
 class FreshmanBioDataController
@@ -11,44 +12,36 @@ class FreshmanBioDataController
 
   private static $LOGGER_NAME = 'FreshmanBioDataController';
 
+  private static function logger()
+  {
+    return get_logger('FreshmanBioDataController');
+  }
+
   public function get()
   {
-    $regNo = $_SESSION['REG_NO'];
-    $email = $this->get_email($regNo);
+    $regNo = $_SESSION[STUDENT_PORTAL_AUTH_KEY];
+    $student = json_decode($_SESSION[USER_AUTH_SESSION_KEY], true);
+
+    if (!$student) $student = StudentProfile::getStudentProfile($regNo);
+
+    $email = self::getEmail($regNo);
     $link_template = __DIR__ . '/view.php';
     $pageJsPath = path_to_link(__DIR__ . '/js/bio-data.min.js', true);
     require(__DIR__ . '/../home1/container.php');
   }
 
-  private function get_email($regNo)
+  private static function getEmail($regNo)
   {
-    $log = get_logger(self::$LOGGER_NAME);
-
-    $query = "SELECT email FROM pin_table WHERE  number = ?";
-
-    $log->addInfo("About to get email for student \"$regNo\" with query: $query");
-
     try {
+      $result = Pin::get(['number' => $regNo]);
 
-      $stmt = get_db()->prepare($query);
-
-      $stmt->execute([$regNo]);
-
-      $email = $stmt->fetch(PDO::FETCH_NUM)[0];
-
-      $stmt->closeCursor();
-
-      return $email;
+      if ($result) return $result[0]['email'];
 
     } catch (PDOException $e) {
+      logPdoException($e, 'Error while getting student email from pin table', self::logger());
 
-      logPdoException(
-        $e,
-
-        "Error occurred while executing query $query
-         while setting view for student registration for bio data",
-
-        $log);
+    } catch (Exception $ex) {
+      self::logger()->addError('Error while getting student email from pin table', $ex->getTrace());
     }
 
     return '';

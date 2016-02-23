@@ -21,7 +21,6 @@ if (isset($_SESSION['STUDENT-REG-FORM-REGISTRATION'])) {
     $form_completion1_class = 'alert-success';
   }
 }
-
 unset($_SESSION['STUDENT-REG-FORM-REGISTRATION']);
 ?>
 
