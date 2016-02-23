@@ -1,6 +1,16 @@
 "use strict";
 
-var $form           = $('form').formValidation();
+var $form = $('form').formValidation();
+
+$('.show-date-picker').datepicker({
+  format: 'dd-mm-yyyy'
+})
+  .on('changeDate', function (evt) {
+    $form.formValidation(
+      'revalidateField',
+      $(evt.target).children('input.form-control').eq(0).prop('name')
+    );
+  });
 
 var subjects = [
       "PHYSICS",

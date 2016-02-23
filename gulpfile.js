@@ -1,4 +1,5 @@
 "use strict";
+/*jshint camelcase:false*/
 
 var gulp = require('gulp')
 var plugins = require('gulp-load-plugins')();
@@ -14,6 +15,9 @@ var createStaffProfile = staffProfile.createProfile
 var courses = adminAcademics.courses
 var createCourse = courses.createCourse
 
+var studentPortal = require('./student_portal/all.js')
+var eduHistory = studentPortal.edu_history
+
 var compressScripts = [
   './admin_academics/home/js/admin-academics-home.js',
   './admin_academics/login/js/login.js',
@@ -23,6 +27,7 @@ var compressScripts = [
   .concat(gradeStudent.minifyJs)
   .concat(createStaffProfile.minifyJs)
   .concat(createCourse.minifyJs)
+  .concat(eduHistory.minifyJs)
 
 var lessFiles = [
   './admin_academics/**/*.less',
@@ -33,12 +38,14 @@ gulp.task(gradeStudent.gulpTaskName, gradeStudent.gulpTaskFn(gulp, plugins))
 gulp.task(semester.gulpTaskName, semester.gulpTaskFn(gulp, plugins))
 gulp.task(createStaffProfile.gulpTaskName, createStaffProfile.gulpTaskFn(gulp, plugins))
 gulp.task(createCourse.gulpTaskName, createCourse.gulpTaskFn(gulp, plugins))
+gulp.task(eduHistory.gulpTaskName, eduHistory.gulpTaskFn(gulp, plugins))
 
 gulp.task('webpack', [
   gradeStudent.gulpTaskName,
   semester.gulpTaskName,
   createStaffProfile.gulpTaskName,
-  createCourse.gulpTaskName
+  createCourse.gulpTaskName,
+  eduHistory.gulpTaskName,
 ])
 
 gulp.task('initial-js', function () {

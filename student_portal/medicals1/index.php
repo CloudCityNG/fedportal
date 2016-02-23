@@ -21,21 +21,12 @@ class MedicalsController1
     if (Medicals::save($medicals_form_inputs)) {
 
 
-      set_student_reg_form_completion_session1(
-        'success', "Medical records successfully saved!");
+      set_student_reg_form_completion_session1('success', "Medical records successfully saved!");
 
-    } else {
+    } else set_student_reg_form_completion_session1('error', "Medical records cannot be saved!");
 
-      set_student_reg_form_completion_session1(
-        'error', "Medical records cannot be saved!"
-      );
-
-    }
-
-    $home = STATIC_ROOT . 'student_portal/home/';
+    $home = STATIC_ROOT . 'student_portal/home1/';
     header("Location: {$home}");
-
-    exit();
   }
 }
 
