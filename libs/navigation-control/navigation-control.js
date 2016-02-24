@@ -2,13 +2,10 @@
   "use strict";
 
   function NavigationController() {
-
     var $element = $(this)
-
-    var $allLinks = $element.find('.side-nav>.links>.link').click(function () {
-      toggleSelection($(this));
+    var $allLinks = $element.find('.side-nav .links>.link').click(function () {
+      toggleSelection($(this))
     })
-
     var query = location.search.split('&')[0]
     var $currentLink = $('[href^="' + location.pathname + query + '"]')
 
@@ -37,7 +34,7 @@
         .removeClass('expanded')
         .each(function () {
           $(this).children('.links').hide()
-            .children('.link').not('.current').removeClass('selected');
+            .children('.link').not('.current').removeClass('selected')
         });
 
       if (sideNav.is('.expanded')) {

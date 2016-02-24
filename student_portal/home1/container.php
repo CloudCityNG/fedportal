@@ -89,6 +89,8 @@ unset($_SESSION['STUDENT-REG-FORM-REGISTRATION']);
             <a class='link' href="<?php echo path_to_link(__DIR__ . '/../course_reg1') ?>">Sign up for courses</a>
           </div>
         </div>
+
+        <?php require(__DIR__ . '/../view_info1/course-exams-view-link.php')?>
       </div>
 
       <div class="col-sm-9 content-area-main">

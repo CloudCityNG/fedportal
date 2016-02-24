@@ -529,33 +529,30 @@ Class Semester
     }
 
     $x = trim($x, ', ') . ')';
-
     $query = "SELECT * FROM semester WHERE id IN $x";
-
-    self::logger()->addInfo('About to get semesters by array of id using query ' . $query);
-
+    $logger = new SqlLogger(self::logger(), 'Get semesters by array of id', $query);
     $stmt = get_db()->query($query);
 
     if ($stmt) {
+      $logger->statementSuccess();
       $results = [];
+
       if ($withSessions) {
         while ($row = $stmt->fetch()) {
           $row['session'] = AcademicSession::get_session_by_id($row['session_id']);
           $results[] = $row;
         }
 
-      } else {
-        $results = $stmt->fetchAll();
-      }
+      } else $results = $stmt->fetchAll();
 
       if (count($results)) {
 
-        self::logger()->addInfo('Semesters returned successfully, result is', $results);
+        $logger->dataRetrieved($results);
         return $results;
       }
     }
 
-    self::logger()->addWarning('Unable to get semesters using array of ids', $semesterIds);
+    $logger->noData();
     return null;
   }
 

@@ -6,7 +6,7 @@ require_once(__DIR__ . '/../../admin_academics/models/StudentCourses.php');
 require_once(__DIR__ . '/../../admin_academics/models/StudentCoursesUtilities.php');
 require(__DIR__ . '/CourseFormPDF.php');
 
-class ViewInfoController
+class ViewInfoController1
 {
 
   private static $PRINT_COURSE_FORM = 'print-course-form';
@@ -63,11 +63,7 @@ class ViewInfoController
       $this->semesterIds = StudentCourses::getSemesters($this->regNo);
 
     } catch (PDOException $e) {
-      logPdoException(
-        $e,
-        "Database {$errorMessage}",
-        self::logger()
-      );
+      logPdoException($e, "Database {$errorMessage}", self::logger());
 
     } catch (Exception $e) {
       self::logGeneralError($e, $errorMessage);
@@ -298,7 +294,7 @@ class ViewInfoController
   }
 }
 
-$viewInfoCtrl = new ViewInfoController();
+$viewInfoCtrl = new ViewInfoController1();
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
   $viewInfoCtrl->get();
