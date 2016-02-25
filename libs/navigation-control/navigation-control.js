@@ -17,9 +17,8 @@
     }
 
 
-    $('.side-nav>.title').click(function () {
-      var sideNav = $(this).parent();
-      emphasizeLinkContainer(sideNav)
+    $('.side-nav .title').click(function () {
+      emphasizeLinkContainer($(this).parent())
     });
 
     /**
@@ -33,21 +32,21 @@
         .siblings()
         .removeClass('expanded')
         .each(function () {
-          $(this).children('.links').hide()
+          $(this).children().not('.title').hide()
             .children('.link').not('.current').removeClass('selected')
-        });
+        })
 
       if (sideNav.is('.expanded')) {
         sideNav
           .removeClass('expanded')
-          .children('.links')
+          .children().not('.title')
           .fadeOut(100)
           .children('.link').not('.current').removeClass('selected');
 
       } else {
         sideNav
           .addClass('expanded')
-          .children('.links').fadeIn(1000);
+          .children('.links, .side-nav-intermediate').fadeIn(1000);
       }
     }
 

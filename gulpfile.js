@@ -31,7 +31,8 @@ var compressScripts = [
 
 var lessFiles = [
   './admin_academics/**/*.less',
-  './student_portal/**/*.less'
+  './student_portal/**/*.less',
+  'libs/navigation-control/navigation-control.less',
 ]
 
 gulp.task(gradeStudent.gulpTaskName, gradeStudent.gulpTaskFn(gulp, plugins))
@@ -49,7 +50,6 @@ gulp.task('webpack', [
 ])
 
 gulp.task('initial-js', function () {
-
   return gulp.src('bower_components/jquery/dist/jquery.js')
     .pipe(plugins.addSrc.append('bower_components/moment/moment.js'))
     .pipe(plugins.addSrc.append('bower_components/bootstrap/dist/js/bootstrap.js'))
@@ -80,6 +80,9 @@ gulp.task('initial-js', function () {
     .pipe(gulp.dest('./libs'))
 })
 
+var initialJsReload = ['libs/navigation-control/navigation-control.js']
+var initialCssReload = ['libs/navigation-control/navigation-control.min.css']
+
 gulp.task('initial-css', function () {
   return gulp.src([
       'bower_components/bootstrap/dist/css/bootstrap.css',
@@ -89,7 +92,8 @@ gulp.task('initial-css', function () {
       'bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
       'libs/css/jquery-ui.css',
       'libs/css/jquery.treeview.css',
-      'libs/css/skins/palette.css'
+      'libs/css/skins/palette.css',
+      'libs/navigation-control/navigation-control.min.css',
     ])
     .pipe(plugins.concat('compiled.css'))
     .pipe(plugins.sourcemaps.init())
@@ -123,6 +127,8 @@ gulp.task('less', function () {
 gulp.task('watch', function () {
   gulp.watch(compressScripts, ['compress-js'])
   gulp.watch(lessFiles, ['less'])
+  gulp.watch(initialJsReload, ['initial-js'])
+  gulp.watch(initialCssReload, ['initial-css'])
 })
 
 gulp.task('default', ['initial', 'watch', 'webpack'])

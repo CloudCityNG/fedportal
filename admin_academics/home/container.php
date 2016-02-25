@@ -40,12 +40,14 @@
 
     <div class="row content-area">
 
-      <div class="col-sm-3 side-bar-navs navigation-controls">
-        <?php if (UserSession::isCapable('can_view_session')) require(__DIR__ . '/session-link.php') ?>
-        <?php if (UserSession::isCapable('can_view_semester')) require(__DIR__ . '/semester-link.php') ?>
-        <?php if (UserSession::isCapable('can_view_exams')) require(__DIR__ . '/assessment-link.php') ?>
-        <?php if (UserSession::isCapable('can_view_courses')) require(__DIR__ . '/courses-link.php') ?>
-        <?php if (UserSession::isCapable('can_view_staff_profile')) require(__DIR__ . '/staff-profile-link.php') ?>
+      <div class="col-sm-3">
+        <div class="km-side-nav side-bar-navs navigation-controls ">
+          <?php if (UserSession::isCapable('can_view_session')) require(__DIR__ . '/session-link.php') ?>
+          <?php if (UserSession::isCapable('can_view_semester')) require(__DIR__ . '/semester-link.php') ?>
+          <?php if (UserSession::isCapable('can_view_exams')) require(__DIR__ . '/assessment-link.php') ?>
+          <?php if (UserSession::isCapable('can_view_courses')) require(__DIR__ . '/courses-link.php') ?>
+          <?php if (UserSession::isCapable('can_view_staff_profile')) require(__DIR__ . '/staff-profile-link.php') ?>
+        </div>
       </div>
 
       <div class="col-sm-9 content-area-main">

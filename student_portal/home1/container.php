@@ -70,27 +70,28 @@ unset($_SESSION['STUDENT-REG-FORM-REGISTRATION']);
     <?php require(__DIR__ . '/../../admin_academics/home/current_session_semester_info.php'); ?>
 
     <div class="row content-area">
+      <div class="col-sm-3">
+        <div class="side-bar-navs navigation-controls km-side-nav">
+          <div class="side-nav bio-data-side-bar-nav">
+            <span class="title">New student registration</span>
 
-      <div class="col-sm-3 side-bar-navs navigation-controls">
-        <div class="side-nav bio-data-side-bar-nav">
-          <span class="title">New student registration</span>
-
-          <div class='links'>
-            <a class='link' href="<?php echo path_to_link(__DIR__ . '/../bio_data1') ?>">Bio Data</a>
-            <a class='link' href="<?php echo path_to_link(__DIR__ . '/../edu_history1') ?>">Education History</a>
-            <a class='link' href="<?php echo path_to_link(__DIR__ . '/../medicals1') ?>">Medicals</a>
+            <div class='links'>
+              <a class='link' href="<?php echo path_to_link(__DIR__ . '/../bio_data1') ?>">Bio Data</a>
+              <a class='link' href="<?php echo path_to_link(__DIR__ . '/../edu_history1') ?>">Education History</a>
+              <a class='link' href="<?php echo path_to_link(__DIR__ . '/../medicals1') ?>">Medicals</a>
+            </div>
           </div>
-        </div>
 
-        <div class="side-nav course-reg-side-bar-nav">
-          <span class="title">Course registration</span>
+          <div class="side-nav course-reg-side-bar-nav">
+            <span class="title">Course registration</span>
 
-          <div class='links'>
-            <a class='link' href="<?php echo path_to_link(__DIR__ . '/../course_reg1') ?>">Sign up for courses</a>
+            <div class='links'>
+              <a class='link' href="<?php echo path_to_link(__DIR__ . '/../course_reg1') ?>">Sign up for courses</a>
+            </div>
           </div>
-        </div>
 
-        <?php require(__DIR__ . '/../view_info1/course-exams-view-link.php')?>
+          <?php require(__DIR__ . '/../view_info1/course-exams-view-link.php') ?>
+        </div>
       </div>
 
       <div class="col-sm-9 content-area-main">

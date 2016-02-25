@@ -95,7 +95,7 @@ function getRegisteredSessions($regNo)
     $sessionEnd = $session['end_date']->format('d-M-Y');
 
     $sessionView = "
-      <div class='side-nav side-nav-intermediate session-side-bar-nav'>
+      <div class='side-nav-intermediate session-side-bar-nav'>
         <span class='title'>
           <span style='display: block;'>{$sessionCode} session / {$sessionData['current_level_dept']['level']}</span>
           <span style='color: #C4BDBD;'>({$sessionStart} to $sessionEnd)</span>
@@ -112,10 +112,10 @@ function getRegisteredSessions($regNo)
       $viewResultUrl = "{$viewPrintUrl}?action='view-results&{$queryStringSemester}";
 
       $sessionView .= "
-         <a class='link' href='{$printCourseFormUrl}' class='student-portal-view-semester-info-link' target='_blank'>
+         <a class='link' href='{$printCourseFormUrl}' target='_blank'>
           Print Course Form
          </a>
-         <a href='$viewResultUrl' class='student-portal-view-semester-info-link'>
+         <a class='link' href='$viewResultUrl'>
           View Results
          </a>";
     }
