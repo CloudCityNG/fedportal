@@ -100,7 +100,7 @@ class StudentProfile
     $_SESSION[STUDENT_PORTAL_AUTH_KEY] = $regNo;
     $_SESSION['LAST-ACTIVITY-REG_NO'] = time();
     session_write_close();
-    header('location: ' . STATIC_ROOT . 'student_portal/home1/');
+    header('location: ' . STATIC_ROOT . 'student_portal/home/');
   }
 
   /**

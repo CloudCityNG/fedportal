@@ -23,10 +23,10 @@ class StudentDashboardLogin
 
     $password = trim($_POST['password']);
     $username = trim($_POST['username']);
-    $adminLoginContext = ['username' => $username];
+    $studentPortalLoginContext = ['username' => $username];
 
     if (!$password || !$username) {
-      $this->get($adminLoginContext);
+      $this->get($studentPortalLoginContext);
       return;
     }
 
@@ -34,18 +34,18 @@ class StudentDashboardLogin
       $pinExists = Pin::get(['number' => $username, 'pass' => $password, '__exists' => true]);
 
       if ($pinExists) StudentProfile::setStudentLoginSession($username);
-      else $this->get($adminLoginContext);
+      else $this->get($studentPortalLoginContext);
 
     } catch (PDOException $e) {
       logPdoException($e, "Error while login in students", self::logger());
-      $adminLoginContext['message'] = 'Database error! Please try again. However if error persists please inform admin!';
-      $this->get($adminLoginContext);
+      $studentPortalLoginContext['message'] = 'Database error! Please try again. However if error persists please inform admin!';
+      $this->get($studentPortalLoginContext);
 
     } catch (Exception $ex) {
 
       self::logger()->addError('Stack trace:', $ex->getTrace());
-      $adminLoginContext['message'] = 'General error! Please try again. However if error persists please inform admin!';
-      $this->get($adminLoginContext);
+      $studentPortalLoginContext['message'] = 'General error! Please try again. However if error persists please inform admin!';
+      $this->get($studentPortalLoginContext);
     }
   }
 }

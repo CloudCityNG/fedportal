@@ -1,76 +1,50 @@
-<!doctype html>
-<html class="no-js" lang="">
-<head>
-  <?php include(__DIR__ . '/../../includes/header.php') ?>
-  <link rel="stylesheet" href="<?php echo path_to_link(__DIR__ . '/../../libs/css/main.min.css', true) ?>">
-  <link rel="stylesheet"
-        href="<?php echo path_to_link(__DIR__ . '/../home/css/centralize.min.css', true) ?>"/>
-</head>
+<div class="">
+  <form role="form" class="well"
+    <?php
+    if (!$student) {
+      echo ' id="bio-data-form" method="post"
+                enctype="multipart/form-data"
+                data-fv-framework="bootstrap"
+                data-fv-message="This value is not valid"
+                data-fv-icon-valid="glyphicon glyphicon-ok"
+                data-fv-icon-invalid="glyphicon glyphicon-remove"
+                data-fv-icon-validating="glyphicon glyphicon-refresh"
+            ';
+    }
+    ?>
+  >
 
-<body>
-  <div class="app">
-    <?php include(__DIR__ . '/../includes/nav.php') ?>
+    <?php
+    if (!$student) {
+      echo "<input name='student_bio[personalno]' type='hidden' value='{$regNo}'>";
+    }
+    ?>
 
-    <section class="layout">
-      <!-- main content -->
-      <section class="main-content">
-        <!-- content wrapper -->
-        <div class="content-wrap">
+    <fieldset>
+      <legend class="text-center">Bio Data <?php if ($student) echo ' Completed'; ?> </legend>
+      <?php require(__DIR__ . '/bio-data-form.php') ?>
+    </fieldset>
 
-          <!-- inner content wrapper -->
-          <div class="wrapper">
-            <section class="panel">
-              <div class="panel-body">
-                <form role="form" method="post" class="well" id="bio-data-form"
-                      enctype="multipart/form-data"
-                      data-fv-framework="bootstrap"
-                      data-fv-message="This value is not valid"
-                      data-fv-icon-valid="glyphicon glyphicon-ok"
-                      data-fv-icon-invalid="glyphicon glyphicon-remove"
-                      data-fv-icon-validating="glyphicon glyphicon-refresh">
+    <?php
+    if (!$student) {
+      echo '
+          <fieldset>
+            <legend class="text-center">Upload Your Photo</legend>
 
-                  <input name="student_bio[personalno]"
-                         type="hidden"
-                         value="<?php echo $regNo; ?>">
+            <div class="form-group">
+              <input class="form-control" type="file" id="photo" name="photo" required
+                     data-fv-file="true"
+                     data-fv-file-type="image/jpeg,image/png,image/gif,image/png,image/tiff"
+                     data-fv-file-maxsize="51200"/>
+              <span>*** Please ensure that your photo does not exceed 50kb in size.</span>
+            </div>
+          </fieldset>
 
-                  <fieldset>
-                    <legend class="text-center">Bio Data</legend>
-
-                    <?php include(__DIR__ . '/bio-data-form.php') ?>
-                  </fieldset>
-
-                  <fieldset>
-                    <legend class="text-center">Upload Your Photo</legend>
-
-                    <div class="form-group">
-                      <input class="form-control" type="file" id="photo" name="photo" required
-                             data-fv-file="true"
-                             data-fv-file-type="image/jpeg,image/png,image/gif,image/png,image/tiff"
-                             data-fv-file-maxsize="51200"/>
-                      <span>*** Please ensure that your photo does not exceed 50kb in size.</span>
-                    </div>
-                  </fieldset>
-
-                  <div class="text-center">
-                    <button class="btn btn-primary btn-lg" type="submit">Register</button>
-                  </div>
-                </form>
-              </div>
-            </section>
+          <div class="text-center">
+            <button class="btn btn-primary btn-lg" type="submit">Register</button>
           </div>
-          <!-- /inner content wrapper -->
-
-        </div>
-        <!-- /content wrapper -->
-        <a class="exit-offscreen"></a>
-      </section>
-      <!-- /main content -->
-    </section>
-
-  </div>
-
-  <?php include(__DIR__ . '/../../includes/js-footer.php'); ?>
-
-  <script src="<?php echo path_to_link(__DIR__ . '/js/bio-data.min.js', true) ?>"></script>
-</body>
-</html>
+        ';
+    }
+    ?>
+  </form>
+</div>

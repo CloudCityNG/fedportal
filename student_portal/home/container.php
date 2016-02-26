@@ -76,9 +76,9 @@ unset($_SESSION['STUDENT-REG-FORM-REGISTRATION']);
             <span class="title">New student registration</span>
 
             <div class='links'>
-              <a class='link' href="<?php echo path_to_link(__DIR__ . '/../bio_data1') ?>">Bio Data</a>
-              <a class='link' href="<?php echo path_to_link(__DIR__ . '/../edu_history1') ?>">Education History</a>
-              <a class='link' href="<?php echo path_to_link(__DIR__ . '/../medicals1') ?>">Medicals</a>
+              <a class='link' href="<?php echo path_to_link(__DIR__ . '/../bio_data') ?>">Bio Data</a>
+              <a class='link' href="<?php echo path_to_link(__DIR__ . '/../edu_history') ?>">Education History</a>
+              <a class='link' href="<?php echo path_to_link(__DIR__ . '/../medicals') ?>">Medicals</a>
             </div>
           </div>
 
@@ -86,11 +86,11 @@ unset($_SESSION['STUDENT-REG-FORM-REGISTRATION']);
             <span class="title">Course registration</span>
 
             <div class='links'>
-              <a class='link' href="<?php echo path_to_link(__DIR__ . '/../course_reg1') ?>">Sign up for courses</a>
+              <a class='link' href="<?php echo path_to_link(__DIR__ . '/../course_reg') ?>">Sign up for courses</a>
             </div>
           </div>
 
-          <?php require(__DIR__ . '/../view_info1/course-exams-view-link.php') ?>
+          <?php require(__DIR__ . '/../view_info/course-exams-view-link.php') ?>
         </div>
       </div>
 

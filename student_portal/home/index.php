@@ -1,92 +1,77 @@
 <?php
 require_once(__DIR__ . '/../login/auth.php');
-require_once(__DIR__ . '/StudentRegistration.php');
+require_once(__DIR__ . '/../../helpers/models/EduHistory.php');
+require_once(__DIR__ . '/../../helpers/models/StudentProfile.php');
+require_once(__DIR__ . '/../../helpers/models/Medicals.php');
+require_once(__DIR__ . '/../../admin_academics/models/Semester.php');
+require_once(__DIR__ . '/../../admin_academics/models/StudentCourses.php');
 require_once(__DIR__ . '/../../helpers/app_settings.php');
 
-$student = new StudentRegistration;
-?>
+Class StudentDashboardHome
+{
+  public function get()
+  {
+    if (session_status() == PHP_SESSION_NONE) session_start();
+    $regNo = $_SESSION['REG_NO'];
 
-<!doctype html>
-<html class="no-js" lang="">
-<head>
-  <?php include(__DIR__ . '/../../includes/header.php') ?>
-  <link rel="stylesheet" href="<?php echo path_to_link(__DIR__ . '/../../libs/css/main.min.css', true) ?>">
-  <link rel="stylesheet" href="<?php echo path_to_link(__DIR__ . '/css/student-portal-home.min.css', true) ?>"/>
-</head>
+    $studentDashboardHomeContext = [
+      'bio_data' => self::getBioDataStatus($regNo),
+      'edu_history' => self::getEduHistoryStatus($regNo),
+      'medicals' => self::getMedicalStatus($regNo),
+      'course_reg' => self::getCourseStatus($regNo)
+    ];
 
-<body>
-  <div class="app horizontal-layout">
-    <?php include(__DIR__ . '/../includes/nav.php') ?>
+    $link_template = __DIR__ . '/view.php';
+    require_once(__DIR__ . '/container.php');
+  }
 
-    <section class="layout">
+  private static function getMedicalStatus($regNo)
+  {
+    $medical = Medicals::get(['reg_no' => $regNo, '__exists' => true]);
 
-      <!-- main content -->
-      <section class="main-content">
+    return [
+      'alert_class' => $medical ? 'alert-success' : 'alert-warning',
+      'text' => 'Medical record ' . ($medical ? '[completed]' : '[not started]'),
+      'link' => path_to_link(__DIR__ . '/../medicals')
+    ];
+  }
 
-        <!-- content wrapper -->
-        <div class="content-wrap">
+  private static function getEduHistoryStatus($regNo)
+  {
+    $edu = EduHistory::get(['reg_no' => $regNo, '__exists' => true]);
 
-          <!-- inner content wrapper -->
-          <div class="wrapper">
-            <div
-              class="h4 alert <?php echo $student->form_completion_class; ?> alert-dismissible form-completion-success-alert"
-              role="alert" style="display: <?php echo $student->form_completion ? 'block' : 'none' ?>;">
+    return [
+      'alert_class' => $edu ? 'alert-success' : 'alert-warning',
+      'text' => 'Education History ' . ($edu ? '[completed]' : '[not started]'),
+      'link' => path_to_link(__DIR__ . '/../edu_history')
+    ];
+  }
 
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
+  private static function getBioDataStatus($regNo)
+  {
+    $bio = StudentProfile::exists($regNo);
 
-              <?php echo $student->form_completion_message; ?>
-            </div>
+    return [
+      'alert_class' => $bio ? 'alert-success' : 'alert-warning',
+      'text' => 'Bio data ' . ($bio ? '[completed]' : '[not started]'),
+      'link' => path_to_link(__DIR__ . '/../bio_data')
+    ];
+  }
 
-            <div class="jumbotron registration-statuses">
-              <div class="legend h3">
-                Completion Status
-              </div>
+  private static function getCourseStatus($regNo)
+  {
+    $semester = Semester::getCurrentSemester();
+    $semesterText = Semester::renderSemesterNumber($semester['number']) . ' semester';
+    $courses = StudentCourses::student_signed_up_for_semester([
+      'reg_no' => $regNo, 'semester_id' => $semester['id']
+    ]);
 
-              <div class="h3 alert <?php echo $student->html_status_classes['bio_data']; ?> ">
-                <a href="">
-                  Bio Data [<?php echo $student->html_status_texts['bio_data'] ?>]
-                </a>
-              </div>
+    return [
+      'alert_class' => $courses ? 'alert-success' : 'alert-warning',
+      'text' => "   Course registration ({$semesterText}) " . ($courses ? '[completed]' : '[not started]'),
+      'link' => path_to_link(__DIR__ . '/../course_reg')
+    ];
+  }
+}
 
-              <div class="h3 alert <?php echo $student->html_status_classes['edu_history']; ?> ">
-                <a href="">
-                  Education History [<?php echo $student->html_status_texts['edu_history'] ?>]
-                </a>
-              </div>
-
-              <div class="h3 alert <?php echo $student->html_status_classes['photo']; ?> ">
-                <a href="">
-                  Photo Upload [<?php echo $student->html_status_texts['photo'] ?>]
-                </a>
-              </div>
-
-              <div class="h3 alert <?php echo $student->html_status_classes['medicals']; ?> ">
-                <a href="">
-                  Medical Records [<?php echo $student->html_status_texts['medicals'] ?>]
-                </a>
-              </div>
-
-              <div class="h3 alert <?php echo $student->html_status_classes['courses']; ?> ">
-                <a href="">
-                  Course Registration [<?php echo $student->html_status_texts['courses'] ?>]
-                </a>
-              </div>
-            </div>
-          </div>
-          <!-- /inner content wrapper -->
-
-        </div>
-        <!-- /content wrapper -->
-        <a class="exit-offscreen"></a>
-      </section>
-      <!-- /main content -->
-
-    </section>
-
-  </div>
-
-  <?php include(__DIR__ . '/../../includes/js-footer.php') ?>
-</body>
-</html>
+if ($_SERVER['REQUEST_METHOD'] === 'GET') (new StudentDashboardHome())->get();

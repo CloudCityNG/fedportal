@@ -15,107 +15,7 @@ include_once(__DIR__ . '/../../helpers/models/StudentProfile.php');
 require_once(__DIR__ . '/../home/set_student_reg_form_completion_session.php');
 include_once(__DIR__ . '/../../helpers/models/StudentBilling.php');
 
-class CourseRegController
-{
-
-  public function get()
-  {
-    $studentRegNo = $_SESSION['REG_NO'];
-
-    if (!StudentProfile::exists($studentRegNo)) {
-      self::exitOnError('You have not selected your department! Please complete bio data.');
-    }
-
-    $academicYear = AcademicSession::getCurrentSession();
-
-    if (!$academicYear) {
-      self::exitOnError('Current session not set. Please inform admin about this error.');
-    }
-
-    $academicYear = $academicYear['session'];
-
-    $semesterFromDb = Semester::getCurrentSemester();
-
-    if (!$semesterFromDb) {
-      self::exitOnError('Current semester not set. Please inform admin about this error.');
-    }
-
-    $profile = new StudentProfile($studentRegNo);
-
-    $course_data = StudentCourses::getStudentCoursesForSemester([
-      'reg_no' => $studentRegNo,
-      'semester_id' => $semesterFromDb['id']
-    ]);
-
-    $semester = $semesterFromDb['number'];
-
-    $studentCourseRegViewContext = [
-      'reg_no' => $studentRegNo,
-      'dept_name' => AcademicDepartment::getDeptNameFromCode($profile->dept_code),
-      'dept_code' => $profile->dept_code,
-      'current-level' => $profile->getCurrentLevelDept($academicYear)['level'],
-      'semester-text' => Semester::renderSemesterNumber($semester)
-    ];
-
-    if (!empty($course_data)) {
-      self::exitOnError(
-        'You have signed up for courses for this semester. Please contact admin if you need to make changes'
-      );
-
-    } else {
-      $courses_for_semester = $this->getCoursesForSemesterDept($profile->dept_code, $semester);
-      $view = __DIR__ . '/form.php';
-    }
-
-    require(__DIR__ . '/view.php');
-  }
-
-  /**
-   * @param string $message
-   */
-  private static function exitOnError($message)
-  {
-    set_student_reg_form_completion_session1('error', $message);
-    $home = STATIC_ROOT . 'student_portal/home/';
-    header("Location: {$home}");
-  }
-
-  /**
-   * @param string $dept_code
-   * @param string|int $semester
-   * @return array
-   */
-  private function getCoursesForSemesterDept($dept_code, $semester)
-  {
-    $data = Courses1::getCourses([
-      'department' => $dept_code,
-      'semester' => $semester
-    ]);
-
-    $result = [];
-
-    foreach ($data as $row) {
-      $data['code'] = $row['code'];
-      $data['title'] = $row['title'];
-      $data['unit'] = $row['unit'];
-      $data['id'] = $row['id'];
-
-      $class = $row['class'];
-
-      if (!isset($result[$class])) {
-        $result[$class] = [$data];
-
-      } else {
-        $result[$class][] = $data;
-      }
-
-    }
-
-    return $result;
-  }
-}
-
-class CourseRegistrationPostController
+class CourseRegController1
 {
   private $academic_year;
   private $reg_no;
@@ -134,40 +34,126 @@ class CourseRegistrationPostController
   private $coursesChosen;
   private $dept_code;
 
-  function __construct()
+  public function get()
+  {
+    $studentRegNo = $_SESSION['REG_NO'];
+
+    if (!StudentProfile::exists($studentRegNo)) {
+      self::exitOnError('You have not selected your department! Please complete bio data.');
+    }
+
+    $registerCoursesAcademicSession = AcademicSession::getCurrentSession();
+
+    if (!$registerCoursesAcademicSession) {
+      self::exitOnError('Current session not set. Please inform admin about this error.');
+    }
+
+    $registerCoursesAcademicYear = $registerCoursesAcademicSession['session'];
+    $semesterFromDb = Semester::getCurrentSemester();
+
+    if (!$semesterFromDb) {
+      self::exitOnError('Current semester not set. Please inform admin about this error.');
+    }
+
+    $semester = $semesterFromDb['number'];
+    $registerCoursesSemesterText = Semester::renderSemesterNumber($semester);
+    $course_data = StudentCourses::getStudentCoursesForSemester([
+      'reg_no' => $studentRegNo,
+      'semester_id' => $semesterFromDb['id']
+    ]);
+
+    if (!empty($course_data)) {
+      $printCourseFormLink = path_to_link(__DIR__ . '/../view_info1') .
+        "?action=print-course-form&semester_id={$semesterFromDb['id']}&semester_number={$semester}&session={$registerCoursesAcademicSession['session']}";
+
+      $link_template = __DIR__ . '/view-courses.php';
+
+    } else {
+
+      $profile = new StudentProfile($studentRegNo);
+      $studentCourseRegViewContext = [
+        'reg_no' => $studentRegNo,
+        'dept_name' => AcademicDepartment::getDeptNameFromCode($profile->dept_code),
+        'dept_code' => $profile->dept_code,
+        'current-level' => $profile->getCurrentLevelDept($registerCoursesAcademicYear)['level'],
+      ];
+
+      $courses_for_semester = $this->getCoursesForSemesterDept($profile->dept_code, $semester);
+      $link_template = __DIR__ . '/form.php';
+
+    }
+
+    $pageJsPath = path_to_link(__DIR__ . '/js/course-reg.js', true);
+    $pageCssPath = path_to_link(__DIR__ . '/css/course-reg.min.css', true);
+    require(__DIR__ . '/../home/container.php');
+  }
+
+  /**
+   * @param string $message
+   */
+  private static function exitOnError($message)
+  {
+    set_student_reg_form_completion_session1('error', $message);
+    $home = STATIC_ROOT . 'student_portal/home1/';
+    header("Location: {$home}");
+  }
+
+  /**
+   * @param string $dept_code
+   * @param string|int $semester
+   * @return array
+   */
+  private function getCoursesForSemesterDept($dept_code, $semester)
+  {
+    $data = Courses1::getCourses([
+      'department' => $dept_code,
+      'semester' => $semester,
+      'active' => 1
+    ]);
+
+    $result = [];
+
+    foreach ($data as $row) {
+      $data['code'] = $row['code'];
+      $data['title'] = $row['title'];
+      $data['unit'] = $row['unit'];
+      $data['id'] = $row['id'];
+
+      $class = $row['class'];
+
+      if (!isset($result[$class])) $result[$class] = [$data];
+      else $result[$class][] = $data;
+
+    }
+
+    return $result;
+  }
+
+  public function post()
   {
     $post = $_POST;
 
     if (isset($post['course_reg'])) {
 
       $this->reg_no = $post['reg_no'];
-
       $this->semesterNumber = $post['semester'];
-
       $this->academic_year = $post['academic_year'];
-
       $this->level = $post['level'];
-
       $this->coursesChosen = $post['course_reg'];
-
       $this->dept_code = $post['dept'];
+      $this->insert_courses();
 
     } else {
 
       set_student_reg_form_completion_session1('error', 'Did you forget to select your courses?');
-
       $this->redirectToDashboard();
-      return;
-
     }
   }
 
   private static function redirectToDashboard()
   {
-    $home = STATIC_ROOT . 'student_portal/home/';
+    $home = STATIC_ROOT . 'student_portal/home1/';
     header("Location: {$home}");
-
-    return;
   }
 
   public function insert_courses()
@@ -257,13 +243,12 @@ class CourseRegistrationPostController
 
 }
 
-$course_reg_controller = new CourseRegController;
+$course_reg_controller = new CourseRegController1;
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
   $course_reg_controller->get();
 
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $course_reg = new CourseRegistrationPostController;
 
-  $course_reg->insert_courses();
+  $course_reg_controller->post();
 }
