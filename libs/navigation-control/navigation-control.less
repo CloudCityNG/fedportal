@@ -22,18 +22,19 @@
       }
     }
 
-    & > .side-nav-intermediate {
+    .side-nav-intermediate {
       display: none;
       border-top: 1px solid #BBB;
-      padding: 8px 0;
+      padding: 8px 0 8px 15px;
       font-weight: bolder;
       font-size: 12px;
 
-      &:last-child {
+      &:last-of-type {
         border-bottom: 0;
+        padding-bottom: 0;
       }
 
-      &:first-child {
+      &:first-of-type {
         border-top: 0;
       }
 
@@ -53,10 +54,7 @@
         font-weight: bold;
       }
 
-      & > .links {
-        padding-left: 20px;
-        font-weight: normal;
-
+      .links {
         & > .link {
           &.selected {
             margin-bottom: 10px;

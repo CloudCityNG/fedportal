@@ -25,7 +25,7 @@ class MedicalsController1
 
     } else set_student_reg_form_completion_session1('error', "Medical records cannot be saved!");
 
-    $home = STATIC_ROOT . 'student_portal/home1/';
+    $home = STATIC_ROOT . 'student_portal/home/';
     header("Location: {$home}");
   }
 }

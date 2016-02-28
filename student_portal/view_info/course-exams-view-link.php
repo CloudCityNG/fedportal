@@ -17,9 +17,7 @@
         <span class='title'>
           <span style='display: block;'>{$sessionCode} session / {$sessionData['current_level_dept']['level']}</span>
           <span style='color: #C4BDBD;'>({$sessionStart} to $sessionEnd)</span>
-        </span>
-
-        <div class='links session-links'>";
+        </span>";
 
     foreach ($sessionData['semesters'] as $semesterNumber => $semesterData) {
       $semesterText = Semester::renderSemesterNumber($semesterNumber);
@@ -29,15 +27,21 @@
       $viewResultUrl = "{$viewPrintUrl}?action=view-results&{$queryStringSemester}";
 
       $sessionView .= "
-         <a class='link' href='{$printCourseFormUrl}' target='_blank'>
-          Print Course Form
-         </a>
-         <a class='link' href='$viewResultUrl'>
-          View Results
-         </a>";
+      <div class='side-nav-intermediate semester-side-bar-nav'>
+        <span class='title'>{$semesterText} semester</span>
+
+        <div class='links semester-links'>
+           <a class='link' href='{$printCourseFormUrl}'>
+            Print Course Form
+           </a>
+           <a class='link' href='$viewResultUrl'>
+            View Results
+           </a>
+      </div>
+     </div>";
     }
 
-    echo $sessionView . '</div></div>';
+    echo $sessionView . '</div>';
   }
   ?>
 </div>

@@ -63,7 +63,7 @@ class CourseRegController1
     ]);
 
     if (!empty($course_data)) {
-      $printCourseFormLink = path_to_link(__DIR__ . '/../view_info1') .
+      $printCourseFormLink = path_to_link(__DIR__ . '/../view_info') .
         "?action=print-course-form&semester_id={$semesterFromDb['id']}&semester_number={$semester}&session={$registerCoursesAcademicSession['session']}";
 
       $link_template = __DIR__ . '/view-courses.php';
@@ -94,7 +94,7 @@ class CourseRegController1
   private static function exitOnError($message)
   {
     set_student_reg_form_completion_session1('error', $message);
-    $home = STATIC_ROOT . 'student_portal/home1/';
+    $home = STATIC_ROOT . 'student_portal/home/';
     header("Location: {$home}");
   }
 
@@ -152,7 +152,7 @@ class CourseRegController1
 
   private static function redirectToDashboard()
   {
-    $home = STATIC_ROOT . 'student_portal/home1/';
+    $home = STATIC_ROOT . 'student_portal/home/';
     header("Location: {$home}");
   }
 

@@ -96,7 +96,7 @@ class FreshmanBioDataController
         $log->addInfo("Bio data successfully created.");
         $this->handlePhoto($_POST['student_bio']['personalno']);
         set_student_reg_form_completion_session1('success', 'Bio data saved.');
-        header('Location: ' . STATIC_ROOT . 'student_portal/home1/');
+        header('Location: ' . STATIC_ROOT . 'student_portal/home/');
         return;
 
       } catch (PDOException $e) {

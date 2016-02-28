@@ -67,7 +67,7 @@ class EduHistoryController
         'Error occurred while saving education history!');
     }
 
-    $home = STATIC_ROOT . 'student_portal/home1/';
+    $home = STATIC_ROOT . 'student_portal/home/';
     header("Location: {$home}");
     return;
   }
